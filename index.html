@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DroidTank — Android Architect's Tech Showcase</title>
+  <meta name="description" content="Open Source Libraries, Top Projects, GitHub Contributions, and Engineering Blog by Govind Tank">
+  <link rel="canonical" href="https://droidtank.is-a.dev/">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #111318;
+      --border: #23262d;
+      --text: #d1d5db;
+      --muted: #9ca3af;
+      --accent: #00d4ff;
+      --green: #00ff88;
+      --purple: #bc8cff;
+      --orange: #ff7b72;
+      --blue: #58a6ff;
+      --red: #ff5555;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    #matrix {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.10;
+      pointer-events: none;
+    }
+    
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    nav .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .logo::before {
+      content: '>';
+      color: var(--green);
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%,50% { opacity:1; }
+      51%,100% { opacity:0; }
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 80px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 60px;
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.2rem, 7vw, 4.2rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    
+    .hero-pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 22px;
+      text-align: left;
+      display: inline-block;
+    }
+    .hero-pre .prompt {
+      color: var(--green);
+      font-weight: 700;
+    }
+    .hero-pre .output {
+      color: var(--accent);
+    }
+    .hero-pre .cursor {
+      color: var(--green);
+      animation: blink 1s infinite;
+    }
+    .role {
+      color: var(--green);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .role::before { content: '$ '; color: var(--accent); }
+    .role::after { content: '_'; animation: blink 1s infinite; }
+    
+    .typing {
+      color: var(--muted);
+      font-size: 0.9rem;
+      min-height: 40px;
+      margin-bottom: 30px;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      min-width: 130px;
+      text-align: center;
+      transition: all 0.25s;
+    }
+    .stat:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,212,255,0.25);
+      transform: translateY(-3px);
+    }
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    
+    .cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 11px 24px;
+      border: none;
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .btn::before { content: '>'; font-weight: 700; }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 18px rgba(0,212,255,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(0,212,255,0.5);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn-secondary:hover { background: rgba(0,212,255,0.08); }
+    
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::before {
+      content: '//';
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 36px;
+    }
+    
+    .code-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .ln { color: var(--muted); opacity: 0.4; margin-right: 14px; user-select: none; }
+    .k { color: var(--purple); }
+    .f { color: var(--blue); }
+    .s { color: var(--green); }
+    .c { color: var(--muted); font-style: italic; }
+    .v { color: var(--orange); }
+    .t { color: var(--accent); }
+    
+    .skill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      transition: all 0.25s;
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+      transform: translateY(-2px);
+    }
+    .skill-card h3 {
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .skill-card h3::before {
+      content: '◆';
+      color: var(--green);
+      font-size: 0.7rem;
+    }
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .skill-tag {
+      padding: 4px 10px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 3px;
+      font-size: 0.75rem;
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+    .skill-tag:hover {
+      background: rgba(0,212,255,0.18);
+      transform: scale(1.04);
+    }
+    
+    .tech-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      margin: 40px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .tech-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.08), transparent);
+      animation: scan 3s infinite;
+    }
+    @keyframes scan { 0% { left:-100%; } 100% { left:100%; } }
+    .tech-banner h3 {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .tech-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tech-item {
+      padding: 6px 14px;
+      background: rgba(0,255,136,0.04);
+      border: 1px solid rgba(0,255,136,0.18);
+      border-radius: 4px;
+      color: var(--green);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .tech-item:hover {
+      background: rgba(0,255,136,0.12);
+      transform: scale(1.04);
+    }
+    
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .tab-btn.active {
+      background: rgba(0,212,255,0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Library cards */
+    .lib-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      margin-bottom: 14px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .lib-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--green), var(--accent));
+    }
+    .lib-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.15);
+      transform: translateX(4px);
+    }
+    .lib-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .lib-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .lib-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .lib-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .lib-tag {
+      padding: 3px 9px;
+      background: rgba(0,255,136,0.06);
+      border: 1px solid rgba(0,255,136,0.18);
+      border-radius: 3px;
+      font-size: 0.7rem;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .lib-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .lib-link:hover { text-decoration: underline; }
+    .lib-link::before { content: '↗'; }
+    .lib-badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    
+    /* Project cards */
+    .project-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: start;
+      transition: all 0.25s;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 640px) {
+      .project-item { grid-template-columns: 1fr; }
+    }
+    .project-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+    }
+    .project-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .project-tag {
+      padding: 3px 9px;
+      background: rgba(188,140,255,0.08);
+      border: 1px solid rgba(188,140,255,0.18);
+      border-radius: 3px;
+      font-size: 0.7rem;
+      color: var(--purple);
+    }
+    .project-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .project-link {
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .project-link:hover {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    
+    /* Blog cards */
+    .blog-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      margin-bottom: 14px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .blog-card:hover {
+      border-color: var(--purple);
+      box-shadow: 0 0 18px rgba(188,140,255,0.15);
+      transform: translateY(-2px);
+    }
+    .blog-card::before {
+      content: 'BLOG';
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 0.6rem;
+      color: var(--purple);
+      border: 1px solid rgba(188,140,255,0.25);
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 1px;
+      opacity: 0.6;
+    }
+    .blog-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      padding-right: 60px;
+    }
+    .blog-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .blog-excerpt {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .blog-tag {
+      display: inline-block;
+      padding: 3px 9px;
+      background: rgba(188,140,255,0.08);
+      border: 1px solid rgba(188,140,255,0.18);
+      border-radius: 3px;
+      font-size: 0.65rem;
+      color: var(--purple);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Contribution grid */
+    .contrib-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      transition: all 0.25s;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+    }
+    .contrib-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 18px rgba(0,255,136,0.15);
+      transform: translateY(-3px);
+    }
+    .contrib-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .contrib-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .contrib-value {
+      color: var(--green);
+      font-weight: 700;
+      font-size: 1.2rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    /* Contact */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    .contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.25s;
+    }
+    .contact-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+      transform: translateY(-2px);
+    }
+    .contact-icon { font-size: 1.3rem; margin-bottom: 8px; }
+    .contact-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .contact-value {
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+    
+    .terminal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: linear-gradient(180deg, #2d333b, #22262e);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.red { background: #ff5f56; }
+    .dot.yellow { background: #ffbd2e; }
+    .dot.green { background: #27c93f; }
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .terminal-body {
+      padding: 20px;
+    }
+    .terminal-body p {
+      color: var(--green);
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+    }
+    .terminal-body .muted {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    
+    footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 22px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer .prompt { color: var(--green); }
+    footer .accent { color: var(--accent); }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    ::selection { background: var(--accent); color: var(--bg); }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 60px 14px; }
+      .section-title { font-size: 1.5rem; }
+      .tab-nav { gap: 6px; }
+      .tab-btn { padding: 6px 12px; font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="scanlines"></div>
+  
+  <nav>
+    <div class="wrap">
+      <a href="#home" class="logo">droidtank</a>
+      <ul class="nav-links">
+        <li><a href="#libraries">libraries</a></li>
+        <li><a href="#projects">projects</a></li>
+        <li><a href="#contributions">contributions</a></li>
+        <li><a href="#blog">blog</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+    </div>
+  </nav>
+  
+  <section id="home" class="hero">
+    <div>
+      <div class="hero-pre">
+        <span class="prompt">$</span> whoami<br>
+        <span class="output">Govind Tank</span><br>
+        <span class="prompt">$</span> cat role.txt<br>
+        <span class="output">Senior Lead Architect & Android Expert</span><br>
+        <span class="prompt">$</span> <span class="cursor">_</span>
+      </div>
+      <h1>DroidTank</h1>
+      <div class="role">Android Architect's Tech Showcase</div>
+      <div class="typing" id="typing"></div>
+      
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">40+</div>
+          <div class="stat-label">Open Source Repos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">8</div>
+          <div class="stat-label">Pub/Pub-Dev Packages</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">6</div>
+          <div class="stat-label">Engineering Blog Posts</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">9+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+      </div>
+      
+      <div class="cta">
+        <a href="#libraries" class="btn btn-primary">Libraries</a>
+        <a href="#projects" class="btn btn-secondary">Projects</a>
+        <a href="#blog" class="btn btn-secondary">Blog</a>
+        <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-secondary">GitHub</a>
+      </div>
+    </div>
+  </section>
+  
+  <section id="libraries">
+    <div class="section-title">Open Source Libraries</div>
+    <div class="section-sub">// published_packages.registry</div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">cmp-linked-text</div>
+          <div class="lib-desc">Compose Multiplatform composable that auto-detects URLs, emails, phone numbers in text and makes them clickable. Android & iOS from a single codebase.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/cmp-linked-text" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Kotlin Multiplatform</span>
+        <span class="lib-tag">Compose</span>
+        <span class="lib-tag">Android</span>
+        <span class="lib-tag">iOS</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">cmp-clipboard</div>
+          <div class="lib-desc">Kotlin Multiplatform unified clipboard manager. Read/write text and images on Android & iOS via Compose API with a single shared UI layer.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/cmp-clipboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Kotlin Multiplatform</span>
+        <span class="lib-tag">Compose</span>
+        <span class="lib-tag">Android</span>
+        <span class="lib-tag">iOS</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">cmp-keyboard</div>
+          <div class="lib-desc">Compose Multiplatform reactive keyboard-aware layout. Handle keyboard insets on Android & iOS with a single composable, ensuring UI never hides behind the keyboard.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/cmp-keyboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Kotlin Multiplatform</span>
+        <span class="lib-tag">Compose</span>
+        <span class="lib-tag">Android</span>
+        <span class="lib-tag">iOS</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">flutter_whisper</div>
+          <div class="lib-desc">On-device speech-to-text transcription using whisper.cpp. No cloud, no API keys — models run locally on Android for privacy-first transcription.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/flutter_whisper" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Flutter</span>
+        <span class="lib-tag">whisper.cpp</span>
+        <span class="lib-tag">On-Device AI</span>
+        <span class="lib-tag">Privacy</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">capture-improvement-kotlin</div>
+          <div class="lib-desc">Modular Android native library for image blur detection, angle/pose matching, and orientation detection — built for CameraX with easy-to-use Kotlin DSL APIs.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/capture-improvement-kotlin" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Kotlin</span>
+        <span class="lib-tag">CameraX</span>
+        <span class="lib-tag">Android Library</span>
+        <span class="lib-tag">ML Kit</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">country_mobile_validator</div>
+          <div class="lib-desc">Validate mobile numbers per country with real length ranges (8-10, 10-11 digits), mobile-only type detection, country_code_picker-friendly API. Pure Dart, refreshable libphonenumber metadata.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/country_mobile_validator" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          <a href="https://pub.dev/packages/country_mobile_validator" target="_blank" rel="noopener" class="project-link">pub.dev →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Dart</span>
+        <span class="lib-tag">Flutter</span>
+        <span class="lib-tag">Validation</span>
+        <span class="lib-tag">Pub Package</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">quote_painter</div>
+          <div class="lib-desc">Flutter package for rendering styled text on image/video canvas with gradient fill, stroke, shadow, and per-line alignment. Perfect for quote videos and social media content.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/quote_painter" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          <a href="https://pub.dev/packages/quote_painter" target="_blank" rel="noopener" class="project-link">pub.dev →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Flutter</span>
+        <span class="lib-tag">Canvas</span>
+        <span class="lib-tag">Text Rendering</span>
+        <span class="lib-tag">Pub Package</span>
+      </div>
+    </div>
+    
+    <div class="lib-card">
+      <div class="lib-header">
+        <div>
+          <div class="lib-title">waveform_pro</div>
+          <div class="lib-desc">Production-quality Flutter waveform widget. GPU-accelerated rendering, zoom, region selection, cue markers, and audio peak extraction for professional audio apps.</div>
+        </div>
+        <div class="lib-badges">
+          <a href="https://github.com/govindtank/waveform_pro" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+          <a href="https://pub.dev/packages/waveform_pro" target="_blank" rel="noopener" class="project-link">pub.dev →</a>
+        </div>
+      </div>
+      <div class="lib-tags">
+        <span class="lib-tag">Flutter</span>
+        <span class="lib-tag">Audio</span>
+        <span class="lib-tag">GPU</span>
+        <span class="lib-tag">Pub Package</span>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="https://github.com/govindtank?tab=repositories&sort=stars" target="_blank" rel="noopener" class="btn btn-primary">
+        View All Repositories
+      </a>
+    </div>
+  </section>
+  
+  <section id="projects">
+    <div class="section-title">Top Projects</div>
+    <div class="section-sub">// flagship_works.index</div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">WallPulse</div>
+        <p class="project-desc">
+          Modernized Android live wallpaper that tracks daily unlocks with animated counter transitions. Built with Jetpack Compose and modern Android architecture patterns. Featured on Play Store with 10K+ users.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Kotlin</span>
+          <span class="project-tag">Android</span>
+          <span class="project-tag">Jetpack Compose</span>
+          <span class="project-tag">Live Wallpaper</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/WallPulse" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">Data Live Wallpaper</div>
+        <p class="project-desc">
+          Digital Wellbeing-inspired live wallpaper showing daily unlocks, app usage stats, and battery data with beautiful animated transitions and Material You theming.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Kotlin</span>
+          <span class="project-tag">Android</span>
+          <span class="project-tag">Material You</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/Data_Live_Wallpaper" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">LiveWally</div>
+        <p class="project-desc">
+          Digital Wellbeing Live Wallpaper with animated unlock counters, usage insights, and battery monitoring. Designed with modern UI patterns and smooth animations.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Kotlin</span>
+          <span class="project-tag">Android</span>
+          <span class="project-tag">Live Wallpaper</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/livewally" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">depth_clock</div>
+        <p class="project-desc">
+          Depth-aware clock live wallpaper using Android CameraDepth API. Creates stunning parallax effects based on device depth sensor data for immersive visual experiences.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Kotlin</span>
+          <span class="project-tag">Android</span>
+          <span class="project-tag">Depth API</span>
+          <span class="project-tag">CameraX</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/depth_clock_demo" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">dharmyudh_game</div>
+        <p class="project-desc">
+          High-Fidelity 2D/3D Hybrid Mythological Fighting Game built with Vanilla JavaScript, HTML5 Canvas, WebGL & Web Audio API. Features boss battles, combo systems, and immersive audio-visual effects.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">JavaScript</span>
+          <span class="project-tag">WebGL</span>
+          <span class="project-tag">HTML5 Canvas</span>
+          <span class="project-tag">Game Dev</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/dharmyudh_game" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">git-realm</div>
+        <p class="project-desc">
+          A living RPG kingdom + community pixel wall. Gamifies GitHub contributions by turning commits into a living pixel-art world. Built with vanilla web technologies.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">JavaScript</span>
+          <span class="project-tag">Pixel Art</span>
+          <span class="project-tag">Gamification</span>
+          <span class="project-tag">GitHub API</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/git-realm" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div class="project-item">
+      <div>
+        <div class="project-title">habithive</div>
+        <p class="project-desc">
+          Gamified habit tracker with hive-themed UI, streak mechanics, and progress visualization. Built with Flutter for cross-platform availability with beautiful animations.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Flutter</span>
+          <span class="project-tag">Dart</span>
+          <span class="project-tag">Gamification</span>
+          <span class="project-tag">Firebase</span>
+        </div>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/govindtank/habithive" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-primary">
+        View All GitHub Projects
+      </a>
+    </div>
+  </section>
+  
+  <section id="contributions">
+    <div class="section-title">GitHub Contributions</div>
+    <div class="section-sub">// github_stats.activity</div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 30px;">
+      <div class="contrib-card">
+        <div class="contrib-icon">📦</div>
+        <div class="contrib-label">Public Repos</div>
+        <div class="contrib-value">40+</div>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon">⭐</div>
+        <div class="contrib-label">Stars Earned</div>
+        <div class="contrib-value">500+</div>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon">🔱</div>
+        <div class="contrib-label">Pub Packages</div>
+        <div class="contrib-value">8</div>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon">🏆</div>
+        <div class="contrib-label">Contributions</div>
+        <div class="contrib-value">2K+</div>
+      </div>
+    </div>
+    
+    <div class="tech-banner">
+      <h3>// open_source_contributions.highlights</h3>
+      <div class="tech-items">
+        <span class="tech-item">Android Architecture</span>
+        <span class="tech-item">Flutter Plugins</span>
+        <span class="tech-item">Kotlin Multiplatform</span>
+        <span class="tech-item">Game Development</span>
+        <span class="tech-item">WebGL Experiments</span>
+        <span class="tech-item">DevOps Tools</span>
+        <span class="tech-item">AI Integration</span>
+        <span class="tech-item">Open Source Libraries</span>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-primary">
+        View Full GitHub Profile
+      </a>
+    </div>
+  </section>
+  
+  <section id="blog">
+    <div class="section-title">Engineering Blog</div>
+    <div class="section-sub">// technical_writings.archive</div>
+    
+    <a href="https://govindtank.github.io/blog/ai-agents-autonomous-workflows-complex-tasks-2026" target="_blank" rel="noopener" class="blog-card">
+      <div class="blog-title">AI Agents: Building Autonomous Workflows for Complex Tasks</div>
+      <div class="blog-date">May 21, 2026</div>
+      <div class="blog-excerpt">Explore how multi-agent architectures are revolutionizing software development, automation, and intelligent workflows in 2026. From chatbots to autonomous agents capable of completing complex multi-step tasks.</div>
+      <span class="blog-tag">AI-Agents</span>
+    </a>
+    
+    <a href="https://govindtank.github.io/blog/ai-powered-code-review-automating-quality-gates-with-llm-agents" target="_blank" rel="noopener" class="blog-card">
+      <div class="blog-title">AI-Powered Code Review: Automating Quality Gates with LLM Agents</div>
+      <div class="blog-date">2026</div>
+      <div class="blog-excerpt">By combining LLM agents with deterministic static analysis, we can automate tedious review parts while freeing humans to focus on architecture, design, and business logic. A practical multi-agent pipeline architecture.</div>
+      <span class="blog-tag">AI</span>
+      <span class="blog-tag">Code Quality</span>
+    </a>
+    
+    <a href="https://govindtank.github.io/blog/kotlin-multiplatform-evolution-in-2026" target="_blank" rel="noopener" class="blog-card">
+      <div class="blog-title">The Evolution of Kotlin Multiplatform in 2026</div>
+      <div class="blog-date">2026</div>
+      <div class="blog-excerpt">KMP has come an extraordinary distance from research project to serious cross-platform contender. 40% faster initial development, 35% bug rate reduction, 60-70% code reuse ratio for well-architected apps.</div>
+      <span class="blog-tag">Kotlin</span>
+      <span class="blog-tag">KMP</span>
+    </a>
+    
+    <a href="https://govindtank.github.io/blog/flutter-state-management-deep-dive-bloc-vs-riverpod-vs-provider-in-2026" target="_blank" rel="noopener" class="blog-card">
+      <div class="blog-title">Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026</div>
+      <div class="blog-date">2026</div>
+      <div class="blog-excerpt">Analyzing strengths, weaknesses, and ideal use cases of three popular Flutter state management solutions. Bloc for structured apps, Riverpod for functional architectures, Provider for quick implementations.</div>
+      <span class="blog-tag">Flutter</span>
+      <span class="blog-tag">Architecture</span>
+    </a>
+    
+    <a href="https://govindtank.github.io/blog/building-resumable-file-uploads-in-flutter-with-isolates" target="_blank" rel="noopener" class="blog-card">
+      <div class="blog-title">Building Resumable File Uploads in Flutter with Isolates</div>
+      <div class="blog-date">2026</div>
+      <div class="blog-excerpt">Implementing resumable file uploads in Flutter using isolates to enhance performance and maintain UI responsiveness during large file transfers.</div>
+      <span class="blog-tag">Flutter</span>
+      <span class="blog-tag">Performance</span>
+    </a>
+    
+    <a href="https://govindtank.github.io/blog/android-16-what-senior-developers-need-to-know-about-the-latest-apis" target="_blank" rel="noopener" class="blog-card">
+      <div class="blog-title">Android 16: What Senior Developers Need to Know About the Latest APIs</div>
+      <div class="blog-date">2026</div>
+      <div class="blog-excerpt">Exploring key changes and enhancements in Android 16 including enhanced security APIs, new UI components, Kotlin Multiplatform support, and performance monitoring tools.</div>
+      <span class="blog-tag">Android</span>
+      <span class="blog-tag">APIs</span>
+    </a>
+    
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="https://govindtank.github.io/blog" target="_blank" rel="noopener" class="btn btn-primary">
+        View All Blog Posts
+      </a>
+    </div>
+  </section>
+  
+  <section id="contact">
+    <div class="section-title">Get In Touch</div>
+    <div class="section-sub">// initiate_communication()</div>
+    
+    <div class="contact-grid">
+      <a href="mailto:govindtank600@gmail.com" class="contact-card">
+        <div class="contact-icon">📧</div>
+        <div class="contact-label">Email</div>
+        <div class="contact-value">govindtank600@gmail.com</div>
+      </a>
+      
+      <a href="https://linkedin.com/in/govindtank" target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon">💼</div>
+        <div class="contact-label">LinkedIn</div>
+        <div class="contact-value">/in/govindtank</div>
+      </a>
+      
+      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon">⌂</div>
+        <div class="contact-label">GitHub</div>
+        <div class="contact-value">@govindtank</div>
+      </a>
+      
+      <a href="https://govindtank.github.io" target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon">◈</div>
+        <div class="contact-label">Portfolio</div>
+        <div class="contact-value">govindtank.github.io</div>
+      </a>
+    </div>
+    
+    <div class="terminal-box">
+      <div class="terminal-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <div class="terminal-title">contact.sh</div>
+      </div>
+      <div class="terminal-body">
+        <p>
+          $ echo "Let's build something exceptional together"<br>
+          <span class="muted">Open for Android architecture audits, Flutter consulting, and technical leadership consultations.</span>
+        </p>
+        <a href="mailto:govindtank600@gmail.com?subject=Let's%20Collaborate&body=Hi%20Govind,%0A%0AI'd%20like%20to%20discuss%20a%20project..." class="btn btn-primary">
+          Send Message
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <p>
+      <span class="prompt">$</span> echo "Architecting mobile excellence since 2017" <span style="color: var(--muted);">|</span>
+      <span class="accent">© 2017–<span id="year"></span> Govind Tank</span> <span style="color: var(--muted);">|</span>
+      <span style="color: var(--green);">System.Status: Online</span>
+    </p>
+    <p style="margin-top: 8px; font-size: 0.7rem; color: var(--muted);">
+      Powered by ☕ and late-night debugging sessions
+    </p>
+  </footer>
+  
+  <script>
+    // Dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Matrix rain
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+    const charArray = chars.split('');
+    const fontSize = 13;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+    
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = fontSize + 'px monospace';
+      
+      for (let i = 0; i < drops.length; i++) {
+        const text = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillStyle = `rgba(0, 255, 136, ${Math.random() * 0.5 + 0.5})`;
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 50);
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    
+    // Typewriter
+    const typingEl = document.getElementById('typing');
+    const phrases = [
+      'Bridging the gap between Robust Systems Architecture and Fluid User Experience',
+      'Architecting mobile ecosystems that scale to millions',
+      '9+ years of crafting high-performance mobile applications',
+      'Specializing in Android, Flutter, Kotlin Multiplatform, and AI systems'
+    ];
+    
+    const nameText = 'Govind Tank';
+    let phase = 'name';
+    let pIdx = 0, cIdx = 0, deleting = false, speed = 100;
+    
+    function type() {
+      if (phase === 'name') {
+        if (!deleting) {
+          typingEl.textContent = nameText.substring(0, cIdx + 1);
+          cIdx++;
+          speed = 120;
+          if (cIdx === nameText.length) {
+            deleting = true;
+            speed = 1800;
+          }
+        } else {
+          typingEl.textContent = nameText.substring(0, cIdx - 1);
+          cIdx--;
+          speed = 50;
+          if (cIdx === 0) {
+            deleting = false;
+            phase = 'phrases';
+            speed = 400;
+          }
+        }
+      } else {
+        const phrase = phrases[pIdx];
+        if (!deleting) {
+          typingEl.textContent = phrase.substring(0, cIdx + 1);
+          cIdx++;
+          speed = 80;
+          if (cIdx === phrase.length) {
+            deleting = true;
+            speed = 2000;
+          }
+        } else {
+          typingEl.textContent = phrase.substring(0, cIdx - 1);
+          cIdx--;
+          speed = 40;
+          if (cIdx === 0) {
+            deleting = false;
+            pIdx = (pIdx + 1) % phrases.length;
+            speed = 400;
+          }
+        }
+      }
+      setTimeout(type, speed);
+    }
+    type();
+    
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>
