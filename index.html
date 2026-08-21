@@ -452,12 +452,16 @@ function hideBlog(i) {
 
 /* ===== PROJECTS DATA ===== */
 const projects = [
-  {title:'Hermes Agent', desc:'AI-powered development agent with cron automation, subagent delegation, skill system, and multi-provider LLM support.', tags:['TypeScript','Node.js','AI'], url:'https://github.com/govindtank/hermes-agent'},
-  {title:'Flutter Portfolio App', desc:'Production Flutter app on Play Store showcasing mobile architecture patterns, state management, and CI/CD.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.govindtank.portfolio'},
+  {title:'Stock Scanner', desc:'Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Plotly visualizations.', tags:['Python','Flask','Plotly'], url:'https://github.com/govindtank/stock-scanner'},
+  {title:'Portfolio App', desc:'Production Flutter app on Play Store showcasing mobile architecture patterns, state management, and CI/CD.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.govindtank.portfolio'},
   {title:'GGPA', desc:'Google Play listing for GGPA app — mobile productivity tool with offline-first architecture.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.ggpa'},
-  {title:'Stock Scanner / Flask Dashboard', desc:'Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Plotly visualizations.', tags:['Python','Flask','Plotly'], url:'https://github.com/govindtank/stock-scanner-repo'},
-  {title:'Blog Automation System', desc:'Cron-driven blog generation with local LLM fallback, content validation, and GitHub Pages deployment.', tags:['Python','Cron','LLM'], url:'https://github.com/govindtank/droidtank.is-a.dev'},
-  {title:'Android Live Wallpaper Engine', desc:'Material You live wallpaper with multi-mode rendering, shared launcher, and BroadcastReceiver settings.', tags:['Kotlin','OpenGL ES','Android'], url:'https://github.com/govindtank/android-live-wallpaper'},
+  {title:'LiveWally', desc:'Digital Wellbeing Live Wallpaper that tracks daily unlocks with animated counter transitions.', tags:['Kotlin','OpenGL ES','Android'], url:'https://github.com/govindtank/livewally'},
+  {title:'WallPulse', desc:'Modernized Android live wallpaper with daily unlock tracking and smooth animated counters.', tags:['Kotlin','Android','Live Wallpaper'], url:'https://github.com/govindtank/WallPulse'},
+  {title:'cmp-keyboard', desc:'Compose Multiplatform reactive keyboard-aware layout. Handle keyboard insets on Android & iOS with a single composable.', tags:['Kotlin','Compose Multiplatform'], url:'https://github.com/govindtank/cmp-keyboard'},
+  {title:'cmp-clipboard', desc:'Kotlin Multiplatform unified clipboard manager. Read/write text and images on Android & iOS via Compose API.', tags:['Kotlin','Compose Multiplatform'], url:'https://github.com/govindtank/cmp-clipboard'},
+  {title:'flutter_whisper', desc:'On-device speech-to-text transcription using whisper.cpp. No cloud, no API keys — models run locally on Android.', tags:['Flutter','Dart','Whisper'], url:'https://github.com/govindtank/flutter_whisper'},
+  {title:'waveform_pro', desc:'Production-quality Flutter waveform widget with GPU-accelerated rendering, zoom, region selection, and cue markers.', tags:['Flutter','Dart','Audio'], url:'https://github.com/govindtank/waveform_pro'},
+  {title:'Dharmyudh', desc:'High-fidelity 2D/3D hybrid mythological fighting game built with vanilla JS, HTML5 Canvas, WebGL & Web Audio API.', tags:['JavaScript','WebGL','Game'], url:'https://github.com/govindtank/dharmyudh_game'},
 ];
 
 const projGrid = document.getElementById('proj-grid');
@@ -471,12 +475,18 @@ projects.forEach(p => {
 
 /* ===== CONTRIBUTIONS DATA ===== */
 const contributions = [
-  {repo:'govindtank/hermes-agent', desc:'Core agent loop, cron system, skill registry, subagent orchestration', stars:120, forks:18},
-  {repo:'govindtank/stock-scanner-repo', desc:'Darvas Box scanner, regime-aware advisor, portfolio tracker, Flask dashboard', stars:85, forks:12},
-  {repo:'govindtank/flutter-portfolio', desc:'Production Flutter app with BLoC, Material 3, CI/CD, Play Store deployment', stars:64, forks:9},
-  {repo:'govindtank/droidtank.is-a.dev', desc:'Matrix rain + cyberpunk portfolio site, embedded blogs, GitHub Pages', stars:42, forks:6},
-  {repo:'govindtank/portfolio-src', desc:'Astro blog source, markdown pipeline, content automation scripts', stars:28, forks:4},
-  {repo:'govindtank/android-live-wallpaper', desc:'Material You LWP, multi-mode engines, shared preferences, BroadcastReceiver', stars:35, forks:7},
+  {repo:'govindtank/stock-scanner', desc:'Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Flask dashboard', url:'https://github.com/govindtank/stock-scanner'},
+  {repo:'govindtank/livewally', desc:'Digital Wellbeing Live Wallpaper with unlock tracking and animated counters', url:'https://github.com/govindtank/livewally'},
+  {repo:'govindtank/WallPulse', desc:'Modernized Android live wallpaper with daily unlock tracking and animated transitions', url:'https://github.com/govindtank/WallPulse'},
+  {repo:'govindtank/cmp-keyboard', desc:'Compose Multiplatform keyboard-aware layout for Android & iOS', url:'https://github.com/govindtank/cmp-keyboard'},
+  {repo:'govindtank/cmp-clipboard', desc:'Kotlin Multiplatform unified clipboard manager for Android & iOS', url:'https://github.com/govindtank/cmp-clipboard'},
+  {repo:'govindtank/cmp-linked-text', desc:'Compose Multiplatform composable that auto-detects URLs, emails, phone numbers in text', url:'https://github.com/govindtank/cmp-linked-text'},
+  {repo:'govindtank/capture-improvement-kotlin', desc:'Android native library for image blur detection, angle/pose matching, and orientation detection', url:'https://github.com/govindtank/capture-improvement-kotlin'},
+  {repo:'govindtank/flutter_whisper', desc:'On-device speech-to-text using whisper.cpp on Android — no cloud, no API keys', url:'https://github.com/govindtank/flutter_whisper'},
+  {repo:'govindtank/quote_painter', desc:'Flutter package for rendering styled text on image/video canvas with gradient fill, stroke, shadow', url:'https://github.com/govindtank/quote_painter'},
+  {repo:'govindtank/waveform_pro', desc:'Production-quality Flutter waveform widget with GPU-accelerated rendering and zoom', url:'https://github.com/govindtank/waveform_pro'},
+  {repo:'govindtank/dharmyudh_game', desc:'High-fidelity 2D/3D hybrid mythological fighting game with WebGL & Web Audio', url:'https://github.com/govindtank/dharmyudh_game'},
+  {repo:'govindtank/Box-Breakout-Tracker', desc:'Portfolio assistance and Box and Momentum Tracker for stock analysis', url:'https://github.com/govindtank/Box-Breakout-Tracker'},
 ];
 
 const contribGrid = document.getElementById('contrib-grid');
