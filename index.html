@@ -40,16 +40,11 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-      background: 
-        radial-gradient(ellipse at 20% 30%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(188, 140, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 136, 0.04) 0%, transparent 60%),
-        radial-gradient(ellipse at 10% 80%, rgba(255, 0, 255, 0.03) 0%, transparent 40%),
-        linear-gradient(180deg, #020408 0%, #050a14 50%, #020408 100%);
+      background: #020408;
       pointer-events: none;
     }
     
-    .stars {
+    #particle-canvas {
       position: fixed;
       inset: 0;
       z-index: 0;
@@ -68,8 +63,8 @@
       animation: nebulaPulse 12s ease-in-out infinite alternate;
     }
     @keyframes nebulaPulse {
-      0% { opacity: 0.5; }
-      100% { opacity: 1; }
+      0% { opacity: 0.4; }
+      100% { opacity: 0.9; }
     }
     
     .grid-overlay {
@@ -78,17 +73,22 @@
       z-index: 0;
       pointer-events: none;
       background-image: 
-        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-      background-size: 50px 50px;
-      mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 60px 60px; }
     }
     
     .scanlines {
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 4px);
       pointer-events: none;
       z-index: 1;
     }
@@ -105,6 +105,7 @@
       content: '';
       position: absolute;
       background: var(--accent);
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
     }
     .hud-tl { top: 20px; left: 20px; }
     .hud-tl::before { top: 0; left: 0; width: 30px; height: 2px; }
@@ -118,6 +119,81 @@
     .hud-br { bottom: 20px; right: 20px; }
     .hud-br::before { bottom: 0; right: 0; width: 30px; height: 2px; }
     .hud-br::after { bottom: 0; right: 0; width: 2px; height: 30px; }
+    
+    .hud-circle {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      pointer-events: none;
+      z-index: 2;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    .hud-circle-1 {
+      width: 100px;
+      height: 100px;
+      top: 10%;
+      right: 5%;
+      animation-delay: 0s;
+    }
+    .hud-circle-2 {
+      width: 60px;
+      height: 60px;
+      bottom: 20%;
+      left: 3%;
+      animation-delay: 1s;
+    }
+    .hud-circle-3 {
+      width: 140px;
+      height: 140px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: 2s;
+    }
+    @keyframes pulse {
+      0%, 100% { 
+        opacity: 0.3;
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.6;
+        transform: scale(1.05);
+      }
+    }
+    .hud-circle-3 {
+      animation-name: pulseCenter;
+    }
+    @keyframes pulseCenter {
+      0%, 100% { 
+        opacity: 0.2;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% { 
+        opacity: 0.4;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+    }
+    
+    .data-stream {
+      position: fixed;
+      width: 1px;
+      height: 100px;
+      background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 1;
+      animation: dataFlow 3s linear infinite;
+    }
+    .data-stream:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .data-stream:nth-child(2) { left: 30%; animation-delay: 1s; }
+    .data-stream:nth-child(3) { left: 50%; animation-delay: 2s; }
+    .data-stream:nth-child(4) { left: 70%; animation-delay: 0.5s; }
+    .data-stream:nth-child(5) { left: 90%; animation-delay: 1.5s; }
+    @keyframes dataFlow {
+      0% { transform: translateY(-100px); opacity: 0; }
+      50% { opacity: 0.4; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
     
     nav {
       position: fixed;
@@ -914,6 +990,16 @@
       75% { transform: translateY(-30px) rotate(3deg); }
     }
     
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), 0 0 30px rgba(188, 140, 255, 0.3); }
+    }
+    
     .blog-detail .content h1 {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 1.6rem;
@@ -1016,7 +1102,7 @@
 </head>
 <body>
   <div id="cosmos"></div>
-  <div class="stars" id="stars"></div>
+  <canvas id="particle-canvas"></canvas>
   <div class="nebula"></div>
   <div class="grid-overlay"></div>
   <div class="scanlines"></div>
@@ -1024,6 +1110,14 @@
   <div class="hud-corner hud-tr"></div>
   <div class="hud-corner hud-bl"></div>
   <div class="hud-corner hud-br"></div>
+  <div class="hud-circle hud-circle-1"></div>
+  <div class="hud-circle hud-circle-2"></div>
+  <div class="hud-circle hud-circle-3"></div>
+  <div class="data-stream"></div>
+  <div class="data-stream"></div>
+  <div class="data-stream"></div>
+  <div class="data-stream"></div>
+  <div class="data-stream"></div>
   
   <nav>
     <div class="wrap">
@@ -1606,57 +1700,156 @@
     // Dynamic year
     document.getElementById('year').textContent = new Date().getFullYear();
     
-    // Generate stars with varying sizes and colors
-    const starsContainer = document.getElementById('stars');
-    const starColors = ['#ffffff', '#00d4ff', '#bc8cff', '#00ff88', '#ff7b72'];
-    for (let i = 0; i < 150; i++) {
-      const star = document.createElement('div');
-      const size = Math.random() * 2 + 0.5;
-      const color = starColors[Math.floor(Math.random() * starColors.length)];
-      star.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size}px;
-        background: ${color};
-        border-radius: 50%;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        opacity: ${Math.random() * 0.8 + 0.2};
-        animation: twinkle ${Math.random() * 4 + 2}s ease-in-out infinite alternate;
-        animation-delay: ${Math.random() * 3}s;
-        box-shadow: 0 0 ${size * 2}px ${color};
-      `;
-      starsContainer.appendChild(star);
+    // Interactive particle system with connecting lines
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.size = Math.random() * 2 + 0.5;
+        this.color = ['#00d4ff', '#bc8cff', '#00ff88', '#ff7b72', '#ffffff'][Math.floor(Math.random() * 5)];
+        this.alpha = Math.random() * 0.5 + 0.3;
+      }
+      
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Mouse interaction
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          this.x -= dx * 0.02;
+          this.y -= dy * 0.02;
+        }
+        
+        // Wrap around edges
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+      }
+      
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
     }
     
-    // Add floating space objects
+    // Create particles
+    for (let i = 0; i < 80; i++) {
+      particles.push(new Particle());
+    }
+    
+    // Draw connections between nearby particles
+    function drawConnections() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(0, 212, 255, ${0.15 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    // Animation loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      
+      drawConnections();
+      requestAnimationFrame(animate);
+    }
+    animate();
+    
+    // Mouse tracking
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+    
+    // Add floating space objects with improved effects
     const spaceObjects = ['🚀', '🛸', '🌍', '⭐', '🌟', '💫', '🔮', '⚡'];
     const objectsContainer = document.createElement('div');
     objectsContainer.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;';
     document.body.appendChild(objectsContainer);
     
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) {
       const obj = document.createElement('div');
       obj.textContent = spaceObjects[i % spaceObjects.length];
       obj.style.cssText = `
         position: absolute;
-        font-size: ${Math.random() * 20 + 15}px;
+        font-size: ${Math.random() * 24 + 16}px;
         left: ${Math.random() * 100}%;
         top: ${Math.random() * 100}%;
-        opacity: ${Math.random() * 0.4 + 0.1};
-        animation: float ${Math.random() * 10 + 15}s ease-in-out infinite;
+        opacity: ${Math.random() * 0.5 + 0.2};
+        animation: float ${Math.random() * 15 + 20}s ease-in-out infinite;
         animation-delay: ${Math.random() * -20}s;
-        filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+        filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.6));
       `;
       objectsContainer.appendChild(obj);
     }
     
-    // Mouse interaction - parallax effect on stars
+    // Add pulsing star field overlay
+    const starOverlay = document.createElement('div');
+    starOverlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: 
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 25% 75%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(2px 2px at 40% 40%, rgba(0,212,255,0.9), transparent),
+        radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 70% 85%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 80% 30%, rgba(188,140,255,0.8), transparent),
+        radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 15% 55%, rgba(0,255,136,0.7), transparent),
+        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(2px 2px at 35% 90%, rgba(255,123,114,0.7), transparent);
+      animation: twinkle 4s ease-in-out infinite;
+    `;
+    document.body.appendChild(starOverlay);
+    
+    // Mouse interaction - parallax effect on space objects
     document.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 20;
-      const y = (e.clientY / window.innerHeight - 0.5) * 20;
-      starsContainer.style.transform = `translate(${x}px, ${y}px)`;
-      objectsContainer.style.transform = `translate(${-x * 0.5}px, ${-y * 0.5}px)`;
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+      objectsContainer.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+      starOverlay.style.transform = `translate(${-x * 0.3}px, ${-y * 0.3}px)`;
     });
     
     // Blog content embedded from actual markdown files
