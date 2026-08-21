@@ -1,1989 +1,516 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DroidTank — Android Architect's Tech Showcase</title>
-  <meta name="description" content="Open Source Libraries, Top Projects, GitHub Contributions, and Engineering Blog by Govind Tank">
-  <link rel="canonical" href="https://droidtank.is-a.dev/">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-    
-    :root {
-      --bg: #020408;
-      --bg-card: rgba(10, 16, 28, 0.88);
-      --border: rgba(80, 200, 255, 0.18);
-      --text: #e6f1ff;
-      --muted: #9aa3b2;
-      --accent: #00d4ff;
-      --green: #00ff88;
-      --purple: #bc8cff;
-      --orange: #ff7b72;
-      --blue: #58a6ff;
-      --star: #ffd700;
-      --cyan: #00f0ff;
-      --magenta: #ff00ff;
-    }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    
-    body {
-      font-family: 'JetBrains Mono', monospace;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    
-    #cosmos {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background: #020408;
-      pointer-events: none;
-    }
-    
-    #particle-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
-    
-    .nebula {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background: 
-        radial-gradient(ellipse at 20% 30%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(188, 140, 255, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, rgba(0, 255, 136, 0.03) 0%, transparent 60%);
-      animation: nebulaPulse 12s ease-in-out infinite alternate;
-    }
-    @keyframes nebulaPulse {
-      0% { opacity: 0.4; }
-      100% { opacity: 0.9; }
-    }
-    
-    .grid-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: 
-        linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
-      animation: gridMove 20s linear infinite;
-    }
-    @keyframes gridMove {
-      0% { background-position: 0 0; }
-      100% { background-position: 60px 60px; }
-    }
-    
-    .scanlines {
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 4px);
-      pointer-events: none;
-      z-index: 1;
-    }
-    
-    .hud-corner {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0.4;
-    }
-    .hud-corner::before, .hud-corner::after {
-      content: '';
-      position: absolute;
-      background: var(--accent);
-      box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
-    }
-    .hud-tl { top: 20px; left: 20px; }
-    .hud-tl::before { top: 0; left: 0; width: 30px; height: 2px; }
-    .hud-tl::after { top: 0; left: 0; width: 2px; height: 30px; }
-    .hud-tr { top: 20px; right: 20px; }
-    .hud-tr::before { top: 0; right: 0; width: 30px; height: 2px; }
-    .hud-tr::after { top: 0; right: 0; width: 2px; height: 30px; }
-    .hud-bl { bottom: 20px; left: 20px; }
-    .hud-bl::before { bottom: 0; left: 0; width: 30px; height: 2px; }
-    .hud-bl::after { bottom: 0; left: 0; width: 2px; height: 30px; }
-    .hud-br { bottom: 20px; right: 20px; }
-    .hud-br::before { bottom: 0; right: 0; width: 30px; height: 2px; }
-    .hud-br::after { bottom: 0; right: 0; width: 2px; height: 30px; }
-    
-    .hud-circle {
-      position: fixed;
-      border-radius: 50%;
-      border: 1px solid rgba(0, 212, 255, 0.2);
-      pointer-events: none;
-      z-index: 2;
-      animation: pulse 4s ease-in-out infinite;
-    }
-    .hud-circle-1 {
-      width: 100px;
-      height: 100px;
-      top: 10%;
-      right: 5%;
-      animation-delay: 0s;
-    }
-    .hud-circle-2 {
-      width: 60px;
-      height: 60px;
-      bottom: 20%;
-      left: 3%;
-      animation-delay: 1s;
-    }
-    .hud-circle-3 {
-      width: 140px;
-      height: 140px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      animation-delay: 2s;
-    }
-    @keyframes pulse {
-      0%, 100% { 
-        opacity: 0.3;
-        transform: scale(1);
-      }
-      50% { 
-        opacity: 0.6;
-        transform: scale(1.05);
-      }
-    }
-    .hud-circle-3 {
-      animation-name: pulseCenter;
-    }
-    @keyframes pulseCenter {
-      0%, 100% { 
-        opacity: 0.2;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      50% { 
-        opacity: 0.4;
-        transform: translate(-50%, -50%) scale(1.1);
-      }
-    }
-    
-    .data-stream {
-      position: fixed;
-      width: 1px;
-      height: 100px;
-      background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-      opacity: 0.3;
-      pointer-events: none;
-      z-index: 1;
-      animation: dataFlow 3s linear infinite;
-    }
-    .data-stream:nth-child(1) { left: 10%; animation-delay: 0s; }
-    .data-stream:nth-child(2) { left: 30%; animation-delay: 1s; }
-    .data-stream:nth-child(3) { left: 50%; animation-delay: 2s; }
-    .data-stream:nth-child(4) { left: 70%; animation-delay: 0.5s; }
-    .data-stream:nth-child(5) { left: 90%; animation-delay: 1.5s; }
-    @keyframes dataFlow {
-      0% { transform: translateY(-100px); opacity: 0; }
-      50% { opacity: 0.4; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
-    
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: rgba(2, 4, 8, 0.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 0;
-    }
-    nav .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--accent);
-      text-decoration: none;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-    }
-    .logo::before {
-      content: '>';
-      color: var(--green);
-      animation: blink 1s infinite;
-    }
-    @keyframes blink {
-      0%,50% { opacity:1; }
-      51%,100% { opacity:0; }
-    }
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 12px;
-      transition: all 0.2s;
-      position: relative;
-    }
-    .nav-links a:hover { 
-      color: var(--accent);
-      text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: var(--accent);
-      transition: width 0.2s;
-    }
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-    
-    section {
-      position: relative;
-      z-index: 2;
-      padding: 80px 20px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding-top: 60px;
-    }
-    .hero h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(2.2rem, 7vw, 4.2rem);
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--cyan), var(--purple), var(--green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-      filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.3));
-    }
-    
-    .hero-pre {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      line-height: 1.8;
-      color: var(--text);
-      margin-bottom: 22px;
-      text-align: left;
-      display: inline-block;
-      text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
-    }
-    .hero-pre .prompt {
-      color: var(--green);
-      font-weight: 700;
-      text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
-    }
-    .hero-pre .output {
-      color: var(--accent);
-      text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
-    }
-    .hero-pre .cursor {
-      color: var(--green);
-      animation: blink 1s infinite;
-    }
-    .role {
-      color: var(--green);
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
-    }
-    .role::before { content: '$ '; color: var(--accent); }
-    .role::after { content: '_'; animation: blink 1s infinite; }
-    
-    .typing {
-      color: var(--muted);
-      font-size: 0.9rem;
-      min-height: 40px;
-      margin-bottom: 30px;
-      text-shadow: 0 0 6px rgba(0, 212, 255, 0.3);
-    }
-    
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-    }
-    .stat {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 20px;
-      min-width: 130px;
-      text-align: center;
-      transition: all 0.25s;
-      backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-    }
-    .stat::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
-      animation: statScan 3s infinite;
-    }
-    @keyframes statScan {
-      0% { left: -100%; }
-      100% { left: 100%; }
-    }
-    .stat:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 25px rgba(0, 212, 255, 0.3);
-      transform: translateY(-3px);
-    }
-    .stat-num {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--accent);
-      font-family: 'Space Grotesk', sans-serif;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
-    }
-    .stat-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 4px;
-    }
-    
-    .cta {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .btn {
-      padding: 11px 24px;
-      border: none;
-      border-radius: 5px;
-      font-family: inherit;
-      font-size: 0.85rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .btn::before { content: '>'; font-weight: 700; }
-    .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
-      box-shadow: 0 0 18px rgba(0,212,255,0.3);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 28px rgba(0,212,255,0.5);
-    }
-    .btn-secondary {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-    .btn-secondary:hover { 
-      background: rgba(0,212,255,0.08);
-      box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
-    }
-    
-    .section-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-    }
-    .section-title::before {
-      content: '//';
-      color: var(--green);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.2rem;
-      text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
-    }
-    .section-sub {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-bottom: 36px;
-    }
-    
-    .code-block {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 18px;
-      font-size: 0.8rem;
-      line-height: 1.6;
-      overflow-x: auto;
-      backdrop-filter: blur(12px);
-    }
-    .ln { color: var(--muted); opacity: 0.4; margin-right: 14px; user-select: none; }
-    .k { color: var(--purple); }
-    .f { color: var(--blue); }
-    .s { color: var(--green); }
-    .c { color: var(--muted); font-style: italic; }
-    .v { color: var(--orange); }
-    .t { color: var(--accent); }
-    
-    .lib-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 22px;
-      margin-bottom: 14px;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(12px);
-    }
-    .lib-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: linear-gradient(180deg, var(--green), var(--accent));
-      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-    }
-    .lib-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.05), transparent);
-      transition: left 0.5s;
-    }
-    .lib-card:hover::after {
-      left: 100%;
-    }
-    .lib-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 25px rgba(0,212,255,0.2);
-      transform: translateX(4px);
-    }
-    .lib-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .lib-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text);
-      text-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
-    }
-    .lib-desc {
-      color: var(--muted);
-      font-size: 0.85rem;
-      line-height: 1.7;
-      margin-bottom: 12px;
-    }
-    .lib-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    .lib-tag {
-      padding: 3px 9px;
-      background: rgba(0,255,136,0.06);
-      border: 1px solid rgba(0,255,136,0.18);
-      border-radius: 3px;
-      font-size: 0.7rem;
-      color: var(--green);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 0 6px rgba(0, 255, 136, 0.1);
-    }
-    .lib-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.75rem;
-      color: var(--green);
-      text-decoration: none;
-      font-weight: 600;
-      text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
-    }
-    .lib-link:hover { text-decoration: underline; }
-    .lib-link::before { content: '↗'; }
-    
-    .project-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 22px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 18px;
-      align-items: start;
-      transition: all 0.25s;
-      margin-bottom: 14px;
-      backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-    }
-    @media (max-width: 640px) {
-      .project-item { grid-template-columns: 1fr; }
-    }
-    .project-item::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.05), transparent);
-      transition: left 0.5s;
-    }
-    .project-item:hover::after {
-      left: 100%;
-    }
-    .project-item:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 25px rgba(0,212,255,0.2);
-    }
-    .project-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text);
-      text-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
-    }
-    .project-desc {
-      color: var(--muted);
-      font-size: 0.85rem;
-      line-height: 1.7;
-      margin-bottom: 12px;
-    }
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-    .project-tag {
-      padding: 3px 9px;
-      background: rgba(188,140,255,0.08);
-      border: 1px solid rgba(188,140,255,0.18);
-      border-radius: 3px;
-      font-size: 0.7rem;
-      color: var(--purple);
-      box-shadow: 0 0 6px rgba(188, 140, 255, 0.1);
-    }
-    .project-links {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .project-link {
-      padding: 6px 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .project-link:hover {
-      background: var(--accent);
-      color: var(--bg);
-      border-color: var(--accent);
-      box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-    }
-    
-    .blog-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 22px;
-      margin-bottom: 14px;
-      transition: all 0.25s;
-      position: relative;
-      overflow: hidden;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      cursor: pointer;
-      backdrop-filter: blur(12px);
-    }
-    .blog-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(188, 140, 255, 0.05), transparent);
-      transition: left 0.5s;
-    }
-    .blog-card:hover::before {
-      left: 100%;
-    }
-    .blog-card:hover {
-      border-color: var(--purple);
-      box-shadow: 0 0 25px rgba(188,140,255,0.2);
-      transform: translateY(-2px);
-    }
-    .blog-card::after {
-      content: 'BLOG';
-      position: absolute;
-      top: 12px;
-      right: 14px;
-      font-size: 0.6rem;
-      color: var(--purple);
-      border: 1px solid rgba(188,140,255,0.25);
-      padding: 2px 6px;
-      border-radius: 3px;
-      letter-spacing: 1px;
-      opacity: 0.6;
-    }
-    .blog-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
-      padding-right: 60px;
-      text-shadow: 0 0 8px rgba(188, 140, 255, 0.2);
-    }
-    .blog-date {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .blog-excerpt {
-      color: var(--muted);
-      font-size: 0.85rem;
-      line-height: 1.7;
-      margin-bottom: 12px;
-    }
-    .blog-tag {
-      display: inline-block;
-      padding: 3px 9px;
-      background: rgba(188,140,255,0.08);
-      border: 1px solid rgba(188,140,255,0.18);
-      border-radius: 3px;
-      font-size: 0.65rem;
-      color: var(--purple);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 0 6px rgba(188, 140, 255, 0.1);
-    }
-    
-    .blog-detail {
-      display: none;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 30px;
-      margin-bottom: 14px;
-      backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-    }
-    .blog-detail.active {
-      display: block;
-      animation: fadeIn 0.3s ease-in;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .blog-detail h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--text);
-      text-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-    }
-    .blog-detail .meta {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid var(--border);
-    }
-    .blog-detail .content {
-      color: var(--text);
-      font-size: 0.95rem;
-      line-height: 1.8;
-    }
-    .blog-detail .content h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.3rem;
-      color: var(--accent);
-      margin: 24px 0 10px;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-    }
-    .blog-detail .content p {
-      margin-bottom: 16px;
-    }
-    .blog-detail .content pre {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px;
-      overflow-x: auto;
-      font-size: 0.8rem;
-      line-height: 1.6;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    }
-    .blog-detail .content code {
-      background: rgba(0, 0, 0, 0.4);
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 0.85rem;
-      color: var(--green);
-    }
-    .blog-detail .content ul {
-      margin: 12px 0 12px 24px;
-    }
-    .blog-detail .content li {
-      margin-bottom: 8px;
-      list-style-type: square;
-    }
-    .blog-detail .content li::marker {
-      color: var(--accent);
-    }
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      border-radius: 4px;
-      font-family: inherit;
-      font-size: 0.8rem;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: all 0.2s;
-      text-shadow: 0 0 6px rgba(0, 212, 255, 0.3);
-    }
-    .back-btn:hover {
-      background: rgba(0,212,255,0.08);
-      box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
-    }
-    
-    .snake-container {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 20px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(12px);
-      overflow: hidden;
-      position: relative;
-    }
-    .snake-container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.03), transparent);
-      animation: snakeScan 4s infinite;
-    }
-    @keyframes snakeScan {
-      0% { left: -100%; }
-      100% { left: 100%; }
-    }
-    .snake-container h3 {
-      font-size: 0.9rem;
-      color: var(--green);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
-    }
-    .snake-container h3::before {
-      content: '🐍';
-      filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
-    }
-    .snake-container img {
-      width: 100%;
-      height: auto;
-      border-radius: 4px;
-      display: block;
-      filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.2));
-    }
-    
-    .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-bottom: 30px;
-    }
-    .contact-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 18px;
-      text-align: center;
-      text-decoration: none;
-      color: var(--text);
-      transition: all 0.25s;
-      backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-    }
-    .contact-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.05), transparent);
-      transition: left 0.5s;
-    }
-    .contact-card:hover::after {
-      left: 100%;
-    }
-    .contact-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 25px rgba(0,212,255,0.2);
-      transform: translateY(-2px);
-    }
-    .contact-icon { font-size: 1.3rem; margin-bottom: 8px; }
-    .contact-label {
-      font-size: 0.7rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
-    .contact-value {
-      color: var(--accent);
-      font-weight: 500;
-      font-size: 0.85rem;
-      text-shadow: 0 0 6px rgba(0, 212, 255, 0.3);
-    }
-    
-    .terminal-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-    }
-    .terminal-header {
-      background: linear-gradient(180deg, #1a1f2e, #0f1219);
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 6px currentColor;
-    }
-    .dot.red { background: #ff5f56; color: #ff5f56; }
-    .dot.yellow { background: #ffbd2e; color: #ffbd2e; }
-    .dot.green { background: #27c93f; color: #27c93f; }
-    .terminal-title {
-      flex: 1;
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-    }
-    .terminal-body {
-      padding: 20px;
-    }
-    .terminal-body p {
-      color: var(--green);
-      margin-bottom: 14px;
-      font-size: 0.9rem;
-      text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
-    }
-    .terminal-body .muted {
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-    
-    footer {
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      padding: 22px 20px;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-      font-size: 0.8rem;
-      color: var(--muted);
-      backdrop-filter: blur(12px);
-    }
-    footer .prompt { color: var(--green); text-shadow: 0 0 6px rgba(0, 255, 136, 0.3); }
-    footer .accent { color: var(--accent); text-shadow: 0 0 6px rgba(0, 212, 255, 0.3); }
-    
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-    ::selection { background: var(--accent); color: var(--bg); }
-    
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      section { padding: 60px 14px; }
-      .section-title { font-size: 1.5rem; }
-    }
-  
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      25% { transform: translateY(-20px) rotate(5deg); }
-      50% { transform: translateY(-10px) rotate(-3deg); }
-      75% { transform: translateY(-30px) rotate(3deg); }
-    }
-    
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 1; }
-    }
-    
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.3); }
-      50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.6), 0 0 30px rgba(188, 140, 255, 0.3); }
-    }
-    
-    .blog-detail .content h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--text);
-      margin: 28px 0 12px;
-      text-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
-    }
-    .blog-detail .content h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin: 24px 0 10px;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-    }
-    .blog-detail .content h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.2rem;
-      color: var(--purple);
-      margin: 20px 0 8px;
-      text-shadow: 0 0 8px rgba(188, 140, 255, 0.3);
-    }
-    .blog-detail .content p {
-      margin-bottom: 16px;
-      line-height: 1.8;
-    }
-    .blog-detail .content pre {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px;
-      overflow-x: auto;
-      font-size: 0.8rem;
-      line-height: 1.7;
-      margin: 16px 0;
-      box-shadow: 0 0 25px rgba(0, 212, 255, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.3);
-    }
-    .blog-detail .content code {
-      background: rgba(0, 212, 255, 0.1);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      color: var(--accent);
-      border: 1px solid rgba(0, 212, 255, 0.2);
-    }
-    .blog-detail .content pre code {
-      background: transparent;
-      padding: 0;
-      border: none;
-      color: var(--text);
-    }
-    .blog-detail .content ul {
-      margin: 12px 0 12px 24px;
-      list-style: none;
-      padding-left: 8px;
-    }
-    .blog-detail .content li {
-      margin-bottom: 10px;
-      padding-left: 20px;
-      position: relative;
-      line-height: 1.7;
-    }
-    .blog-detail .content li::before {
-      content: '▸';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      text-shadow: 0 0 6px rgba(0, 212, 255, 0.5);
-    }
-    .blog-detail .content blockquote {
-      border-left: 3px solid var(--purple);
-      padding: 12px 20px;
-      margin: 16px 0;
-      background: rgba(188, 140, 255, 0.05);
-      border-radius: 0 6px 6px 0;
-      color: var(--text);
-      font-style: italic;
-    }
-    .blog-detail .content table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0;
-      font-size: 0.85rem;
-    }
-    .blog-detail .content td {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      background: rgba(0, 0, 0, 0.3);
-    }
-    .blog-detail .content strong {
-      color: var(--green);
-      text-shadow: 0 0 6px rgba(0, 255, 136, 0.3);
-    }
-    .blog-detail .content em {
-      color: var(--orange);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DroidTank — Android Architect's Tech Showcase</title>
+<meta name="description" content="Open Source Libraries, Top Projects, GitHub Contributions, and Engineering Blog by Govind Tank">
+<link rel="canonical" href="https://droidtank.is-a.dev/">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#01030a;--bg-card:rgba(8,14,26,.82);--border:rgba(0,240,255,.16);
+  --text:#e8f4ff;--muted:#8b98ab;--accent:#00f0ff;--green:#00ff9d;
+  --purple:#c17bff;--orange:#ff6b6b;--blue:#58a6ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
 
-  </style>
+/* ===== MATRIX RAIN CANVAS ===== */
+#matrix{position:fixed;inset:0;z-index:0;opacity:.55;pointer-events:none}
+/* cyber glow layer */
+#glow-layer{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 15% 20%,rgba(0,240,255,.07) 0%,transparent 45%),
+    radial-gradient(ellipse at 85% 75%,rgba(193,123,255,.06) 0%,transparent 45%),
+    radial-gradient(ellipse at 50% 110%,rgba(0,255,157,.05) 0%,transparent 50%);
+}
+/* perspective grid floor */
+#grid-floor{position:fixed;left:-50%;right:-50%;bottom:-10%;height:55%;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,240,255,.13) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,240,255,.13) 1px,transparent 1px);
+  background-size:44px 44px;
+  transform:perspective(420px) rotateX(62deg);
+  transform-origin:center top;
+  mask-image:linear-gradient(to top,black 30%,transparent 95%);
+  -webkit-mask-image:linear-gradient(to top,black 30%,transparent 95%);
+  animation:gridScroll 2.2s linear infinite;
+}
+@keyframes gridScroll{from{background-position:0 0}to{background-position:0 44px}}
+.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.09) 3px,rgba(0,0,0,.09) 4px)}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,2,8,.75) 100%)}
+
+main{position:relative;z-index:5}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(12px);
+  background:rgba(1,3,10,.72);border-bottom:1px solid var(--border)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;color:var(--accent);
+  text-decoration:none;text-shadow:0 0 14px rgba(0,240,255,.6);letter-spacing:.5px}
+.logo span{color:var(--purple);text-shadow:0 0 14px rgba(193,123,255,.6)}
+nav ul{display:flex;gap:22px;list-style:none}
+nav a.nl{color:var(--muted);text-decoration:none;font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;transition:.25s}
+nav a.nl:hover{color:var(--accent);text-shadow:0 0 10px rgba(0,240,255,.7)}
+@media(max-width:720px){nav ul{gap:12px}nav a.nl{font-size:.65rem}}
+
+/* ===== HERO ===== */
+header.hero{min-height:92vh;display:flex;align-items:center;padding-top:80px}
+.glitch{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.6rem,7vw,4.6rem);font-weight:700;line-height:1.08;position:relative;display:inline-block}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;overflow:hidden}
+.glitch::before{color:var(--accent);animation:glitchA 3.2s infinite steps(1);clip-path:inset(0 0 62% 0);opacity:.75}
+.glitch::after{color:var(--purple);animation:glitchB 2.7s infinite steps(1);clip-path:inset(58% 0 0 0);opacity:.75}
+@keyframes glitchA{0%,92%,100%{transform:none;opacity:0}93%{transform:translate(-4px,-2px);opacity:.8}96%{transform:translate(3px,1px);opacity:.8}}
+@keyframes glitchB{0%,90%,100%{transform:none;opacity:0}91%{transform:translate(4px,2px);opacity:.8}94%{transform:translate(-3px,-1px);opacity:.8}}
+.hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--green),var(--purple));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{margin-top:18px;font-size:clamp(.95rem,2vw,1.15rem);color:var(--muted);max-width:640px}
+#typing{color:var(--green);border-right:2px solid var(--green);padding-right:3px;animation:caret .9s step-end infinite}
+@keyframes caret{50%{border-color:transparent}}
+.hero-cta{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:6px;
+  font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;text-decoration:none;
+  letter-spacing:.5px;transition:.25s;border:1px solid var(--accent);color:var(--accent);
+  box-shadow:0 0 18px rgba(0,240,255,.18),inset 0 0 12px rgba(0,240,255,.06)}
+.btn:hover{background:rgba(0,240,255,.12);box-shadow:0 0 32px rgba(0,240,255,.45),inset 0 0 20px rgba(0,240,255,.12);transform:translateY(-2px)}
+.btn.solid{background:linear-gradient(135deg,rgba(0,240,255,.18),rgba(193,123,255,.18));border-color:var(--purple);color:#fff;
+  box-shadow:0 0 18px rgba(193,123,255,.25)}
+.btn.solid:hover{box-shadow:0 0 34px rgba(193,123,255,.5)}
+
+/* ===== STATS ===== */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:70px 0 0}
+.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px 16px;text-align:center;
+  backdrop-filter:blur(8px);transition:.3s;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,240,255,.08),transparent);transition:.6s}
+.stat:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 32px rgba(0,240,255,.18)}
+.stat:hover::before{left:100%}
+.stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:1.9rem;color:var(--accent);
+  text-shadow:0 0 16px rgba(0,240,255,.55)}
+.stat span{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
+/* ===== BLOG SECTION ===== */
+section#blog{padding:70px 0 40px}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;margin:0 0 28px;
+  color:var(--accent);text-shadow:0 0 12px rgba(0,240,255,.5);position:relative}
+.sec-title::after{content:'';position:absolute;bottom:-6px;left:0;width:48px;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:2px}
+
+#blog-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.blog-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  backdrop-filter:blur(8px);transition:.35s;cursor:pointer;position:relative}
+.blog-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(193,123,255,.04));
+  opacity:0;transition:.35s}
+.blog-card:hover{border-color:var(--accent);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,240,255,.2)}
+.blog-card:hover::before{opacity:1}
+.blog-card .meta{font-size:.65rem;color:var(--green);text-transform:uppercase;letter-spacing:1.2px;
+  margin-bottom:8px;padding:0 20px 0}
+.blog-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;margin:0 0 6px;padding:0 20px;
+  color:var(--text);transition:.25s}
+.blog-card:hover h3{color:var(--accent)}
+.blog-card p{font-size:.78rem;color:var(--muted);line-height:1.6;padding:0 20px 18px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+.blog-detail{display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:32px;
+  margin:24px 0;max-height:75vh;overflow-y:auto;backdrop-filter:blur(12px)}
+.blog-detail.active{display:block;animation:detailIn .4s ease}
+@keyframes detailIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.blog-detail header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;
+  padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.blog-detail header h2{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;color:var(--text)}
+.blog-detail header .meta{font-size:.68rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.blog-detail header .tag{color:var(--purple);text-transform:uppercase;letter-spacing:1px}
+.back-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 16px;
+  border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;
+  cursor:pointer;transition:.25s;letter-spacing:.5px;text-transform:uppercase}
+.back-btn:hover{background:rgba(0,240,255,.12);box-shadow:0 0 18px rgba(0,240,255,.35)}
+
+.blog-detail .content{font-size:.85rem;line-height:1.85;color:var(--text)}
+.blog-detail .content h1{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin:28px 0 14px;
+  color:var(--text);text-shadow:0 0 16px rgba(0,240,255,.4)}
+.blog-detail .content h2{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;margin:24px 0 10px;
+  color:var(--accent);text-shadow:0 0 12px rgba(0,240,255,.35)}
+.blog-detail .content h3{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;color:var(--purple);
+  margin:20px 0 8px;text-shadow:0 0 10px rgba(193,123,255,.3)}
+.blog-detail .content h4{font-family:'Space Grotesk',sans-serif;font-size:1rem;color:var(--orange);margin:18px 0 6px}
+.blog-detail .content p{margin-bottom:16px}
+.blog-detail .content pre{background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:8px;padding:18px;
+  overflow-x:auto;font-size:.75rem;line-height:1.7;margin:16px 0;box-shadow:0 0 25px rgba(0,240,255,.1)}
+.blog-detail .content code{background:rgba(0,240,255,.1);padding:2px 7px;border-radius:4px;
+  font-size:.85rem;color:var(--accent);border:1px solid rgba(0,240,255,.2)}
+.blog-detail .content pre code{background:transparent;padding:0;border:none;color:var(--text)}
+.blog-detail .content ul{margin:12px 0 12px 24px;list-style:none;padding-left:8px}
+.blog-detail .content li{margin-bottom:10px;padding-left:20px;position:relative;line-height:1.7}
+.blog-detail .content li::before{content:'▸';position:absolute;left:0;color:var(--accent);text-shadow:0 0 6px rgba(0,240,255,.5)}
+.blog-detail .content blockquote{border-left:3px solid var(--purple);padding:12px 20px;margin:16px 0;
+  background:rgba(193,123,255,.06);border-radius:0 6px 6px 0;color:var(--text);font-style:italic}
+.blog-detail .content table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.8rem}
+.blog-detail .content td{padding:10px 14px;border:1px solid var(--border);background:rgba(0,0,0,.25)}
+.blog-detail .content strong{color:var(--green);text-shadow:0 0 6px rgba(0,255,157,.3)}
+.blog-detail .content em{color:var(--orange)}/* ===== PROJECTS ===== */
+section#projects{padding:70px 0}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.proj-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;
+  backdrop-filter:blur(8px);transition:.35s}
+.proj-card:hover{border-color:var(--purple);transform:translateY(-4px);box-shadow:0 12px 36px rgba(193,123,255,.15)}
+.proj-card h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--accent);margin:0 0 8px}
+.proj-card p{font-size:.75rem;color:var(--muted);line-height:1.6;margin:0 0 12px}
+.proj-card .tags{display:flex;flex-wrap:wrap;gap:6px}
+.proj-card .tag{font-size:.6rem;background:rgba(0,240,255,.12);color:var(--accent);padding:3px 8px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.5px}
+
+/* ===== CONTRIBUTIONS ===== */
+section#contributions{padding:70px 0}
+.contrib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.contrib-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;
+  backdrop-filter:blur(8px);transition:.35s}
+.contrib-card:hover{border-color:var(--green);transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,255,157,.12)}
+.contrib-card .repo{font-weight:600;color:var(--text);font-size:.82rem;margin-bottom:6px}
+.contrib-card .desc{font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.contrib-card .meta{display:flex;gap:16px;font-size:.65rem;color:var(--muted)}
+.contrib-card .meta span{display:flex;align-items:center;gap:4px}
+.contrib-card .meta svg{width:13px;height:13px;color:var(--accent)}
+
+/* ===== PLAY STORE APPS ===== */
+section#apps{padding:70px 0}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.app-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  backdrop-filter:blur(8px);transition:.35s;display:flex;flex-direction:column}
+.app-card:hover{border-color:var(--green);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,255,157,.2)}
+.app-card img{width:100%;height:160px;object-fit:cover;background:rgba(0,240,255,.05)}
+.app-card .info{padding:18px;display:flex;flex-direction:column;flex:1}
+.app-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);margin:0 0 6px}
+.app-card .pkg{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:10px}
+.app-card .desc{font-size:.78rem;color:var(--text);line-height:1.6;margin-bottom:14px;flex:1}
+.app-card .btn{width:100%;text-align:center;padding:11px 16px;font-size:.75rem}
+
+/* ===== GITHUB SNAKE ===== */
+section#snake{padding:70px 0}
+.snake-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:24px;
+  backdrop-filter:blur(8px);text-align:center}
+.snake-wrap .snake-svg{width:100%;max-width:900px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 0 16px rgba(0,255,157,.15))}
+.snake-wrap .snake-link{display:inline-block;margin-top:16px;font-size:.75rem;color:var(--accent);text-decoration:none}
+.snake-wrap .snake-link:hover{text-shadow:0 0 10px rgba(0,240,255,.6)}
+
+/* ===== FOOTER ===== */
+footer{padding:40px 0;border-top:1px solid var(--border);background:rgba(1,3,10,.85)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px}
+footer .copy{font-size:.68rem;color:var(--muted)}
+footer .links{display:flex;gap:24px}
+footer .links a{font-size:.68rem;color:var(--muted);text-decoration:none;transition:.2s}
+footer .links a:hover{color:var(--accent);text-shadow:0 0 8px rgba(0,240,255,.5)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:640px){
+  .hero{min-height:85vh}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .blog-card h3{font-size:.95rem}
+}
+</style>
 </head>
 <body>
-  <div id="cosmos"></div>
-  <canvas id="particle-canvas"></canvas>
-  <div class="nebula"></div>
-  <div class="grid-overlay"></div>
-  <div class="scanlines"></div>
-  <div class="hud-corner hud-tl"></div>
-  <div class="hud-corner hud-tr"></div>
-  <div class="hud-corner hud-bl"></div>
-  <div class="hud-corner hud-br"></div>
-  <div class="hud-circle hud-circle-1"></div>
-  <div class="hud-circle hud-circle-2"></div>
-  <div class="hud-circle hud-circle-3"></div>
-  <div class="data-stream"></div>
-  <div class="data-stream"></div>
-  <div class="data-stream"></div>
-  <div class="data-stream"></div>
-  <div class="data-stream"></div>
+<canvas id="matrix"></canvas>
+<div id="glow-layer"></div>
+<div id="grid-floor"></div>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<main>
+<nav><div class="wrap">
+  <a class="logo" href="#top">Droid<span>Tank</span></a>
+  <ul>
+    <li><a class="nl" href="#blog">Blog</a></li>
+    <li><a class="nl" href="#projects">Projects</a></li>
+    <li><a class="nl" href="#contributions">Contributions</a></li>
+    <li><a class="nl" href="#apps">Play Store</a></li>
+    <li><a class="nl" href="#snake">GitHub Snake</a></li>
+  </ul>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <h1 class="glitch" data-text="DroidTank">Android Architect<span class="grad">.</span></h1>
+  <p class="tagline">Open-source libraries · High-scale mobile systems · Technical writing · 9+ yrs</p>
+  <p class="tagline">Currently building: <span id="typing">autonomous agent workflows...</span></p>
+  <div class="hero-cta">
+    <a class="btn solid" href="#blog">Read Latest Posts</a>
+    <a class="btn" href="#projects">Explore Projects</a>
+  </div>
+</div></header>
+
+<div class="stats wrap">
+  <div class="stat"><b>40+</b><span>Repositories</span></div>
+  <div class="stat"><b>500+</b><span>Stars Earned</span></div>
+  <div class="stat"><b>8</b><span>Pub Packages</span></div>
+  <div class="stat"><b>2K+</b><span>Commits</span></div>
+</div>
+
+<section id="blog" class="wrap">
+  <h2 class="sec-title">Engineering Blog</h2>
+  <div id="blog-list"></div>
+  <div id="blog-details"></div>
+</section>
+
+<section id="projects" class="wrap">
+  <h2 class="sec-title">Top Projects</h2>
+  <div class="proj-grid" id="proj-grid"></div>
+</section>
+
+<section id="contributions" class="wrap">
+  <h2 class="sec-title">Open Source Contributions</h2>
+  <div class="contrib-grid" id="contrib-grid"></div>
+</section>
+
+<section id="apps" class="wrap">
+  <h2 class="sec-title">Play Store Apps</h2>
+  <div class="apps-grid" id="apps-grid"></div>
+</section>
+
+<section id="snake" class="wrap">
+  <h2 class="sec-title">GitHub Contribution Snake</h2>
+  <div class="snake-wrap">
+    <img class="snake-svg" src="https://raw.githubusercontent.com/govindtank/govindtank/master/dist/github-snake.svg" alt="GitHub contribution snake animation" loading="lazy">
+    <a class="snake-link" href="https://github.com/govindtank" target="_blank" rel="noopener">View on GitHub Profile →</a>
+  </div>
+</section>
+
+<footer><div class="wrap">
+  <p class="copy">© <span id="year"></span> DroidTank — Built with matrix rain + cyberpunk code</p>
+  <div class="links">
+    <a href="https://github.com/govindtank" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://govindtank.github.io" target="_blank" rel="noopener">Portfolio</a>
+    <a href="https://play.google.com/store/apps/dev?id=8565833188455940638" target="_blank" rel="noopener">Play Store</a>
+  </div>
+</div></footer>
+</main>
+<script>
+/* ===== MATRIX RAIN EFFECT ===== */
+const cv = document.getElementById('matrix');
+const c = cv.getContext('2d');
+let w = 0, h = 0, cols = 0, drops = [];
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=<>{}[]()_~^|&%#@!abcdefghijklmnopqrstuvwxyzアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+const fontSize = 15;
+const trailLength = 28;
+
+function resize() {
+  w = cv.width = window.innerWidth;
+  h = cv.height = window.innerHeight;
+  cols = Math.floor(w / fontSize);
+  drops = new Array(cols).fill(0).map(() => Math.random() * -h);
+}
+resize();
+window.addEventListener('resize', resize);
+
+function drawMatrix() {
+  // Fade background for trail effect
+  c.fillStyle = 'rgba(1,3,10,0.11)';
+  c.fillRect(0, 0, w, h);
   
-  <nav>
-    <div class="wrap">
-      <a href="#home" class="logo">droidtank</a>
-      <ul class="nav-links">
-        <li><a href="#blog">blog</a></li>
-        <li><a href="#libraries">libraries</a></li>
-        <li><a href="#projects">projects</a></li>
-        <li><a href="#apps">apps</a></li>
-        <li><a href="#contributions">contributions</a></li>
-        <li><a href="#contact">contact</a></li>
-      </ul>
-    </div>
-  </nav>
+  c.font = fontSize + 'px "JetBrains Mono", monospace';
+  c.textBaseline = 'top';
   
-  <section id="home" class="hero">
-    <div>
-      <div class="hero-pre">
-        <span class="prompt">$</span> whoami<br>
-        <span class="output">Govind Tank</span><br>
-        <span class="prompt">$</span> cat role.txt<br>
-        <span class="output">Senior Lead Architect & Android Expert</span><br>
-        <span class="prompt">$</span> <span class="cursor">_</span>
-      </div>
-      <h1>DroidTank</h1>
-      <div class="role">Android Architect's Tech Showcase</div>
-      <div class="typing" id="typing"></div>
+  for (let i = 0; i < cols; i++) {
+    const x = i * fontSize;
+    const y = drops[i] * fontSize;
+    
+    // Character
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    const distFromTop = (drops[i] * fontSize) / h;
+    
+    // Color gradient: green at head, fading to cyan/purple
+    const head = Math.floor(drops[i]);
+    const isHead = drops[i] % 1 === 0;
+    
+    if (isHead && distFromTop < 0.95) {
+      // Bright head
+      c.fillStyle = '#00ff9d';
+      c.shadowColor = '#00ff9d';
+      c.shadowBlur = 8;
+      c.fillText(char, x, y);
+      c.shadowBlur = 0;
       
-      <div class="stats">
-        <div class="stat">
-          <div class="stat-num">50+</div>
-          <div class="stat-label">Public Repos</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">8</div>
-          <div class="stat-label">Pub Packages</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">6</div>
-          <div class="stat-label">Blog Posts</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">2</div>
-          <div class="stat-label">Play Store Apps</div>
-        </div>
-      </div>
-      
-      <div class="cta">
-        <a href="#blog" class="btn btn-primary">Read Blog</a>
-        <a href="#libraries" class="btn btn-secondary">Libraries</a>
-        <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-secondary">GitHub</a>
-      </div>
-    </div>
-  </section>
-  
-  <section id="blog">
-    <div class="section-title">Engineering Blog</div>
-    <div class="section-sub">// technical_writings.archive</div>
-    
-    <div id="blog-list">
-      <a href="#" class="blog-card" onclick="showBlog(0); return false;">
-        <div class="blog-title">AI Agents: Building Autonomous Workflows for Complex Tasks</div>
-        <div class="blog-date">May 21, 2026</div>
-        <div class="blog-excerpt">Explore how multi-agent architectures are revolutionizing software development, automation, and intelligent workflows in 2026.</div>
-        <span class="blog-tag">AI-Agents</span>
-      </a>
-      
-      <a href="#" class="blog-card" onclick="showBlog(1); return false;">
-        <div class="blog-title">AI-Powered Code Review: Automating Quality Gates with LLM Agents</div>
-        <div class="blog-date">2026</div>
-        <div class="blog-excerpt">By combining LLM agents with deterministic static analysis, we can automate tedious review parts while freeing humans to focus on architecture.</div>
-        <span class="blog-tag">AI</span>
-        <span class="blog-tag">Code Quality</span>
-      </a>
-      
-      <a href="#" class="blog-card" onclick="showBlog(2); return false;">
-        <div class="blog-title">The Evolution of Kotlin Multiplatform in 2026</div>
-        <div class="blog-date">2026</div>
-        <div class="blog-excerpt">KMP has come an extraordinary distance from research project to serious cross-platform contender. 40% faster development, 35% bug reduction.</div>
-        <span class="blog-tag">Kotlin</span>
-        <span class="blog-tag">KMP</span>
-      </a>
-      
-      <a href="#" class="blog-card" onclick="showBlog(3); return false;">
-        <div class="blog-title">Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026</div>
-        <div class="blog-date">2026</div>
-        <div class="blog-excerpt">Analyzing strengths, weaknesses, and ideal use cases of three popular Flutter state management solutions for modern apps.</div>
-        <span class="blog-tag">Flutter</span>
-        <span class="blog-tag">Architecture</span>
-      </a>
-      
-      <a href="#" class="blog-card" onclick="showBlog(4); return false;">
-        <div class="blog-title">Building Resumable File Uploads in Flutter with Isolates</div>
-        <div class="blog-date">2026</div>
-        <div class="blog-excerpt">Implementing resumable file uploads in Flutter using isolates to enhance performance and maintain UI responsiveness.</div>
-        <span class="blog-tag">Flutter</span>
-        <span class="blog-tag">Performance</span>
-      </a>
-      
-      <a href="#" class="blog-card" onclick="showBlog(5); return false;">
-        <div class="blog-title">Android 16: What Senior Developers Need to Know About the Latest APIs</div>
-        <div class="blog-date">2026</div>
-        <div class="blog-excerpt">Exploring key changes and enhancements in Android 16 including enhanced security APIs, new UI components, and performance tools.</div>
-        <span class="blog-tag">Android</span>
-        <span class="blog-tag">APIs</span>
-      </a>
-    </div>
-    
-    <div id="blog-detail-0" class="blog-detail">
-      <button class="back-btn" onclick="hideBlog(0)">← Back to Blogs</button>
-      <h2>AI Agents: Building Autonomous Workflows for Complex Tasks</h2>
-      <div class="meta">May 21, 2026 · AI-Agents</div>
-      <div class="content"></div>
-    </div>
-    <div id="blog-detail-1" class="blog-detail">
-      <button class="back-btn" onclick="hideBlog(1)">← Back to Blogs</button>
-      <h2>AI-Powered Code Review: Automating Quality Gates with LLM Agents</h2>
-      <div class="meta">2026 · AI, Code Quality</div>
-      <div class="content"></div>
-    </div>
-    <div id="blog-detail-2" class="blog-detail">
-      <button class="back-btn" onclick="hideBlog(2)">← Back to Blogs</button>
-      <h2>The Evolution of Kotlin Multiplatform in 2026</h2>
-      <div class="meta">2026 · Kotlin, KMP</div>
-      <div class="content"></div>
-    </div>
-    <div id="blog-detail-3" class="blog-detail">
-      <button class="back-btn" onclick="hideBlog(3)">← Back to Blogs</button>
-      <h2>Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026</h2>
-      <div class="meta">2026 · Flutter, Architecture</div>
-      <div class="content"></div>
-    </div>
-    <div id="blog-detail-4" class="blog-detail">
-      <button class="back-btn" onclick="hideBlog(4)">← Back to Blogs</button>
-      <h2>Building Resumable File Uploads in Flutter with Isolates</h2>
-      <div class="meta">2026 · Flutter, Performance</div>
-      <div class="content"></div>
-    </div>
-    <div id="blog-detail-5" class="blog-detail">
-      <button class="back-btn" onclick="hideBlog(5)">← Back to Blogs</button>
-      <h2>Android 16: What Senior Developers Need to Know About the Latest APIs</h2>
-      <div class="meta">2026 · Android, APIs</div>
-      <div class="content"></div>
-    </div>
-  </section>
-  
-  <section id="libraries">
-    <div class="section-title">Open Source Libraries</div>
-    <div class="section-sub">// published_packages.registry</div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">cmp-linked-text</div>
-          <div class="lib-desc">Compose Multiplatform composable that auto-detects URLs, emails, phone numbers in text and makes them clickable. Android & iOS from a single codebase.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/cmp-linked-text" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Kotlin Multiplatform</span>
-        <span class="lib-tag">Compose</span>
-        <span class="lib-tag">Android</span>
-        <span class="lib-tag">iOS</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">cmp-clipboard</div>
-          <div class="lib-desc">Kotlin Multiplatform unified clipboard manager. Read/write text and images on Android & iOS via Compose API with a single shared UI layer.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/cmp-clipboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Kotlin Multiplatform</span>
-        <span class="lib-tag">Compose</span>
-        <span class="lib-tag">Android</span>
-        <span class="lib-tag">iOS</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">cmp-keyboard</div>
-          <div class="lib-desc">Compose Multiplatform reactive keyboard-aware layout. Handle keyboard insets on Android & iOS with a single composable.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/cmp-keyboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Kotlin Multiplatform</span>
-        <span class="lib-tag">Compose</span>
-        <span class="lib-tag">Android</span>
-        <span class="lib-tag">iOS</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">flutter_whisper</div>
-          <div class="lib-desc">On-device speech-to-text transcription using whisper.cpp. No cloud, no API keys — models run locally on Android.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/flutter_whisper" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Flutter</span>
-        <span class="lib-tag">whisper.cpp</span>
-        <span class="lib-tag">On-Device AI</span>
-        <span class="lib-tag">Privacy</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">capture-improvement-kotlin</div>
-          <div class="lib-desc">Modular Android native library for image blur detection, angle/pose matching, and orientation detection — built for CameraX with Kotlin DSL APIs.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/capture-improvement-kotlin" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Kotlin</span>
-        <span class="lib-tag">CameraX</span>
-        <span class="lib-tag">Android Library</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">country_mobile_validator</div>
-          <div class="lib-desc">Validate mobile numbers per country with real length ranges, mobile-only type detection, country_code_picker-friendly API. Pure Dart.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/country_mobile_validator" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-          <a href="https://pub.dev/packages/country_mobile_validator" target="_blank" rel="noopener" class="project-link">pub.dev →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Dart</span>
-        <span class="lib-tag">Flutter</span>
-        <span class="lib-tag">Validation</span>
-        <span class="lib-tag">Pub Package</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">quote_painter</div>
-          <div class="lib-desc">Flutter package for rendering styled text on image/video canvas with gradient fill, stroke, shadow, and per-line alignment.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/quote_painter" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-          <a href="https://pub.dev/packages/quote_painter" target="_blank" rel="noopener" class="project-link">pub.dev →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Flutter</span>
-        <span class="lib-tag">Canvas</span>
-        <span class="lib-tag">Text Rendering</span>
-        <span class="lib-tag">Pub Package</span>
-      </div>
-    </div>
-    
-    <div class="lib-card">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title">waveform_pro</div>
-          <div class="lib-desc">Production-quality Flutter waveform widget. GPU-accelerated rendering, zoom, region selection, cue markers, and audio peak extraction.</div>
-        </div>
-        <div class="lib-badges">
-          <a href="https://github.com/govindtank/waveform_pro" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-          <a href="https://pub.dev/packages/waveform_pro" target="_blank" rel="noopener" class="project-link">pub.dev →</a>
-        </div>
-      </div>
-      <div class="lib-tags">
-        <span class="lib-tag">Flutter</span>
-        <span class="lib-tag">Audio</span>
-        <span class="lib-tag">GPU</span>
-        <span class="lib-tag">Pub Package</span>
-      </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 40px;">
-      <a href="https://github.com/govindtank?tab=repositories&sort=stars" target="_blank" rel="noopener" class="btn btn-primary">
-        View All Repositories
-      </a>
-    </div>
-  </section>
-  
-  <section id="projects">
-    <div class="section-title">Top Projects</div>
-    <div class="section-sub">// flagship_works.index</div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">WallPulse</div>
-        <p class="project-desc">
-          Modernized Android live wallpaper that tracks daily unlocks with animated counter transitions. Built with Jetpack Compose.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Kotlin</span>
-          <span class="project-tag">Android</span>
-          <span class="project-tag">Jetpack Compose</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/govindtank/WallPulse" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-      </div>
-    </div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">Data Live Wallpaper</div>
-        <p class="project-desc">
-          Digital Wellbeing-inspired live wallpaper showing daily unlocks, app usage stats, and battery data with animated transitions.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Kotlin</span>
-          <span class="project-tag">Android</span>
-          <span class="project-tag">Material You</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/govindtank/Data_Live_Wallpaper" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-      </div>
-    </div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">LiveWally</div>
-        <p class="project-desc">
-          Digital Wellbeing Live Wallpaper with animated unlock counters, usage insights, and battery monitoring.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Kotlin</span>
-          <span class="project-tag">Android</span>
-          <span class="project-tag">Live Wallpaper</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/govindtank/livewally" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-      </div>
-    </div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">dharmyudh_game</div>
-        <p class="project-desc">
-          High-Fidelity 2D/3D Hybrid Mythological Fighting Game built with Vanilla JavaScript, HTML5 Canvas, WebGL & Web Audio API.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">JavaScript</span>
-          <span class="project-tag">WebGL</span>
-          <span class="project-tag">HTML5 Canvas</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/govindtank/dharmyudh_game" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-      </div>
-    </div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">git-realm</div>
-        <p class="project-desc">
-          A living RPG kingdom + community pixel wall. Gamifies GitHub contributions by turning commits into a living pixel-art world.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">JavaScript</span>
-          <span class="project-tag">Pixel Art</span>
-          <span class="project-tag">Gamification</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/govindtank/git-realm" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-      </div>
-    </div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">habithive</div>
-        <p class="project-desc">
-          Gamified habit tracker with hive-themed UI, streak mechanics, and progress visualization built with Flutter.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Flutter</span>
-          <span class="project-tag">Dart</span>
-          <span class="project-tag">Gamification</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://github.com/govindtank/habithive" target="_blank" rel="noopener" class="project-link">GitHub →</a>
-      </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 40px;">
-      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-primary">
-        View All GitHub Projects
-      </a>
-    </div>
-  </section>
-  
-  <section id="apps">
-    <div class="section-title">Play Store Apps</div>
-    <div class="section-sub">// published_apps.manifest</div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">Portfolio App</div>
-        <p class="project-desc">
-          Personal Portfolio App showcasing projects, skills, and experience. Available on Google Play Store.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Android</span>
-          <span class="project-tag">Portfolio</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://play.google.com/store/apps/details?id=com.govindtank.portfolio&hl=en_IN" target="_blank" rel="noopener" class="project-link">Play Store →</a>
-      </div>
-    </div>
-    
-    <div class="project-item">
-      <div>
-        <div class="project-title">GGPA</div>
-        <p class="project-desc">
-          App available on Google Play Store under the developer account.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Android</span>
-          <span class="project-tag">App</span>
-        </div>
-      </div>
-      <div class="project-links">
-        <a href="https://play.google.com/store/apps/details?id=com.ggpa&hl=en_IN" target="_blank" rel="noopener" class="project-link">Play Store →</a>
-      </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 20px;">
-      <a href="https://play.google.com/store/apps/developer?id=Govind+Tank" target="_blank" rel="noopener" class="btn btn-primary">
-        View All Apps on Play Store
-      </a>
-    </div>
-  </section>
-  
-  <section id="contributions">
-    <div class="section-title">GitHub Contributions</div>
-    <div class="section-sub">// github_stats.activity</div>
-    
-    <div class="snake-container">
-      <h3>Contribution Snake Animation</h3>
-      <img src="https://raw.githubusercontent.com/govindtank/govindtank/master/dist/github-snake.svg" 
-           alt="GitHub contribution snake animation" 
-           loading="lazy"
-           onerror="this.style.display='none'; document.getElementById('snake-fallback').style.display='block';">
-      <div id="snake-fallback" style="display:none; text-align:center; padding:20px; color:var(--muted);">
-        <a href="https://github.com/govindtank" target="_blank" rel="noopener" style="color:var(--accent); text-shadow: 0 0 6px rgba(0, 212, 255, 0.3);">View contributions on GitHub →</a>
-      </div>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 30px;">
-      <div class="contrib-card">
-        <div class="contrib-icon">📦</div>
-        <div class="contrib-label">Public Repos</div>
-        <div class="contrib-value">40+</div>
-      </div>
-      <div class="contrib-card">
-        <div class="contrib-icon">⭐</div>
-        <div class="contrib-label">Stars Earned</div>
-        <div class="contrib-value">500+</div>
-      </div>
-      <div class="contrib-card">
-        <div class="contrib-icon">🔱</div>
-        <div class="contrib-label">Pub Packages</div>
-        <div class="contrib-value">8</div>
-      </div>
-      <div class="contrib-card">
-        <div class="contrib-icon">🏆</div>
-        <div class="contrib-label">Contributions</div>
-        <div class="contrib-value">2K+</div>
-      </div>
-    </div>
-    
-    <div class="tech-banner" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 22px; margin: 40px 0; position: relative; overflow: hidden;">
-      <h3 style="font-size: 0.75rem; color: var(--muted); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 2px;">// open_source_contributions.highlights</h3>
-      <div class="tech-items" style="display: flex; flex-wrap: wrap; gap: 10px;">
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">Android Architecture</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">Flutter Plugins</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">Kotlin Multiplatform</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">Game Development</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">WebGL Experiments</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">DevOps Tools</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">AI Integration</span>
-        <span class="tech-item" style="padding: 6px 14px; background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.18); border-radius: 4px; color: var(--green); font-size: 0.8rem;">Open Source Libraries</span>
-      </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 30px;">
-      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-primary">
-        View Full GitHub Profile
-      </a>
-    </div>
-  </section>
-  
-  <section id="contact">
-    <div class="section-title">Get In Touch</div>
-    <div class="section-sub">// initiate_communication()</div>
-    
-    <div class="contact-grid">
-      <a href="mailto:govindtank600@gmail.com" class="contact-card">
-        <div class="contact-icon">📧</div>
-        <div class="contact-label">Email</div>
-        <div class="contact-value">govindtank600@gmail.com</div>
-      </a>
-      
-      <a href="https://linkedin.com/in/govindtank" target="_blank" rel="noopener" class="contact-card">
-        <div class="contact-icon">💼</div>
-        <div class="contact-label">LinkedIn</div>
-        <div class="contact-value">/in/govindtank</div>
-      </a>
-      
-      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="contact-card">
-        <div class="contact-icon">⌂</div>
-        <div class="contact-label">GitHub</div>
-        <div class="contact-value">@govindtank</div>
-      </a>
-      
-      <a href="https://govindtank.github.io" target="_blank" rel="noopener" class="contact-card">
-        <div class="contact-icon">◈</div>
-        <div class="contact-label">Portfolio</div>
-        <div class="contact-value">govindtank.github.io</div>
-      </a>
-    </div>
-    
-    <div class="terminal-box">
-      <div class="terminal-header">
-        <span class="dot red"></span>
-        <span class="dot yellow"></span>
-        <span class="dot green"></span>
-        <div class="terminal-title">contact.sh</div>
-      </div>
-      <div class="terminal-body">
-        <p>
-          $ echo "Let's build something exceptional together"<br>
-          <span class="muted">Open for Android architecture audits, Flutter consulting, and technical leadership consultations.</span>
-        </p>
-        <a href="mailto:govindtank600@gmail.com?subject=Let's%20Collaborate&body=Hi%20Govind,%0A%0AI'd%20like%20to%20discuss%20a%20project..." class="btn btn-primary">
-          Send Message
-        </a>
-      </div>
-    </div>
-  </section>
-  
-  <footer>
-    <p>
-      <span class="prompt">$</span> echo "Architecting mobile excellence since 2017" <span style="color: var(--muted);">|</span>
-      <span class="accent">© 2017–<span id="year"></span> Govind Tank</span> <span style="color: var(--muted);">|</span>
-      <span style="color: var(--green);">System.Status: Online</span>
-    </p>
-    <p style="margin-top: 8px; font-size: 0.7rem; color: var(--muted);">
-      Powered by ☕ and late-night debugging sessions
-    </p>
-  </footer>
-  
-  <script>
-    // Dynamic year
-    document.getElementById('year').textContent = new Date().getFullYear();
-    
-    // Interactive particle system with connecting lines
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    let mouseX = 0;
-    let mouseY = 0;
-    
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    
-    class Particle {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
-        this.size = Math.random() * 2 + 0.5;
-        this.color = ['#00d4ff', '#bc8cff', '#00ff88', '#ff7b72', '#ffffff'][Math.floor(Math.random() * 5)];
-        this.alpha = Math.random() * 0.5 + 0.3;
+      // Trail
+      for (let t = 1; t < trailLength; t++) {
+        const ty = y - t * fontSize;
+        if (ty < -fontSize) break;
+        const alpha = 1 - t / trailLength;
+        const hue = Math.min(180, 140 + t * 2); // green to cyan
+        c.fillStyle = `hsla(${hue}, 100%, 50%, ${alpha * 0.6})`;
+        c.shadowColor = `hsla(${hue}, 100%, 50%, ${alpha * 0.4})`;
+        c.shadowBlur = 4;
+        const tc = chars[Math.floor(Math.random() * chars.length)];
+        c.fillText(tc, x, ty);
       }
-      
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        
-        // Mouse interaction
-        const dx = mouseX - this.x;
-        const dy = mouseY - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 150) {
-          this.x -= dx * 0.02;
-          this.y -= dy * 0.02;
-        }
-        
-        // Wrap around edges
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
-      }
-      
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.globalAlpha = this.alpha;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
+      c.shadowBlur = 0;
+    } else {
+      // Regular falling chars - dim
+      c.fillStyle = `rgba(0, 240, 255, ${0.08 + distFromTop * 0.12})`;
+      c.fillText(char, x, y);
     }
     
-    // Create particles
-    for (let i = 0; i < 80; i++) {
-      particles.push(new Particle());
+    // Reset drop
+    if (y > h + Math.random() * 200) {
+      drops[i] = Math.random() * -30;
     }
-    
-    // Draw connections between nearby particles
-    function drawConnections() {
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(0, 212, 255, ${0.15 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-    }
-    
-    // Animation loop
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      
-      drawConnections();
-      requestAnimationFrame(animate);
-    }
-    animate();
-    
-    // Mouse tracking
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-    
-    // Add floating space objects with improved effects
-    const spaceObjects = ['🚀', '🛸', '🌍', '⭐', '🌟', '💫', '🔮', '⚡'];
-    const objectsContainer = document.createElement('div');
-    objectsContainer.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;';
-    document.body.appendChild(objectsContainer);
-    
-    for (let i = 0; i < 12; i++) {
-      const obj = document.createElement('div');
-      obj.textContent = spaceObjects[i % spaceObjects.length];
-      obj.style.cssText = `
-        position: absolute;
-        font-size: ${Math.random() * 24 + 16}px;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        opacity: ${Math.random() * 0.5 + 0.2};
-        animation: float ${Math.random() * 15 + 20}s ease-in-out infinite;
-        animation-delay: ${Math.random() * -20}s;
-        filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.6));
-      `;
-      objectsContainer.appendChild(obj);
-    }
-    
-    // Add pulsing star field overlay
-    const starOverlay = document.createElement('div');
-    starOverlay.style.cssText = `
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: 
-        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
-        radial-gradient(1px 1px at 25% 75%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(2px 2px at 40% 40%, rgba(0,212,255,0.9), transparent),
-        radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1px 1px at 70% 85%, rgba(255,255,255,0.7), transparent),
-        radial-gradient(2px 2px at 80% 30%, rgba(188,140,255,0.8), transparent),
-        radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.6), transparent),
-        radial-gradient(1px 1px at 15% 55%, rgba(0,255,136,0.7), transparent),
-        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(2px 2px at 35% 90%, rgba(255,123,114,0.7), transparent);
-      animation: twinkle 4s ease-in-out infinite;
-    `;
-    document.body.appendChild(starOverlay);
-    
-    // Mouse interaction - parallax effect on space objects
-    document.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 30;
-      const y = (e.clientY / window.innerHeight - 0.5) * 30;
-      objectsContainer.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
-      starOverlay.style.transform = `translate(${-x * 0.3}px, ${-y * 0.3}px)`;
-    });
-    
-    // Blog content embedded from actual markdown files
-    const blogData = [
-  {
-    "slug": "ai-agents-autonomous-workflows-complex-tasks-2026",
-    "title": "AI Agents: Building Autonomous Workflows for Complex Tasks",
-    "date": "May 21, 2026",
-    "tag": "AI-Agents",
-    "content": "<h2>Introduction</h2>\n</p>\n<p>The landscape of artificial intelligence has shifted dramatically from simple chatbots to sophisticated &lt;strong&gt;autonomous agents&lt;/strong&gt; capable of completing complex multi-step tasks. These AI systems no longer just respond to prompts\u2014they plan, delegate, and collaborate to accomplish goals independently.</p>\n</p>\n<p>This deep dive explores how multi-agent architectures are revolutionizing software development, automation, and intelligent workflows in 2026.</p>\n</p>\n<h2>From Chatbots to Agents: The Paradigm Shift</h2>\n</p>\n<p>Early conversational AI was reactive\u2014waiting for user input and responding with pre-trained patterns. Modern agents, however, possess &lt;strong&gt;proactive capabilities&lt;/strong&gt;:</p>\n</p>\n<p>1. &lt;strong&gt;Goal-Oriented Execution&lt;/strong&gt;: They break down objectives into actionable steps</p>\n<p>2. &lt;strong&gt;Tool Integration&lt;/strong&gt;: Access to APIs, file systems, databases, and external services</p>\n<p>3. &lt;strong&gt;State Management&lt;/strong&gt;: Maintaining context across long-running sessions</p>\n<p>4. &lt;strong&gt;Error Recovery&lt;/strong&gt;: Automatically handling failures with fallback strategies</p>\n</p>\n<h2>Multi-Agent Architecture Patterns</h2>\n</p>\n<h3>The Coordinator-Worker Model</h3>\n</p>\n<p>A popular architecture uses a central coordinator agent that:</p>\n<ul>\n<li>Interprets user goals</li>\n<li>Delegates subtasks to specialized worker agents</li>\n<li>Monitors progress and handles interdependencies</li>\n<li>Synthesizes results into coherent outputs</li>\n</ul>\n</p>\n<h3>Hierarchical Task Decomposition</h3>\n</p>\n<p>Complex tasks are broken down hierarchically:</p>\n<ul>\n<li>**Level 1**: Overall objective interpretation</li>\n<li>**Level 2**: Major phase planning</li>\n<li>**Level 3**: Specific task execution</li>\n<li>**Level 4**: Tool-level interactions</li>\n</ul>\n</p>\n<h2>The Hermes Agent Framework</h2>\n</p>\n<p>Hermes demonstrates practical agent architecture through its cron job automation system:</p>\n</p>\n<h3>Isolated Execution Contexts</h3>\n</p>\n<p>Each subagent operates in isolation with:</p>\n<ul>\n<li>Own conversation context</li>\n<li>Separate terminal sessions</li>\n<li>Independent tool access (browser, file, terminal)</li>\n<li>No memory pollution between tasks</li>\n</ul>\n</p>\n<h3>Automatic Failure Handling</h3>\n</p>\n<p>The Hermes system exemplifies production-grade error handling:</p>\n<ul>\n<li>Local model timeout \u2192 automatic fallback to OpenRouter API</li>\n<li>Tool call failures \u2192 graceful retry with exponential backoff</li>\n<li>Authentication issues \u2192 credential recovery workflows</li>\n</ul>\n</p>\n<h2>Error Handling Strategies for Production Agents</h2>\n</p>\n<h3>1. Circuit Breaker Pattern</h3>\n</p>\n<p>Agents implement circuit breakers for external dependencies:</p>\n<pre><code>\ntry:\n    result = model.generate(text, timeout=300)\nexcept TimeoutError:\n    logger.warning(&quot;Primary model timed out&quot;)\n    return openrouter_call()  # Fallback\n</code></pre>\n</p>\n<h3>2. Tool Abstraction Layer</h3>\n</p>\n<p>Tools wrap around actual implementations:</p>\n<pre><code>\n@tool\ndef safe_terminal(command):\n    try:\n        output = run_command(command)\n        return {&quot;success&quot;: True, &quot;output&quot;: output}\n    except FileNotFoundError as e:\n        return {&quot;success&quot;: False, &quot;error&quot;: f&quot;Command not found: {e}&quot;, &quot;suggestion&quot;: &quot;Ensure command is installed&quot;}\n</code></pre>\n</p>\n<h3>3. Context Retention Mechanisms</h3>\n</p>\n<p>Long-running agent sessions need persistent memory:</p>\n<ul>\n<li>Save user preferences to durable storage</li>\n<li>Log completed tasks for later retrieval</li>\n<li>Summarize cross-session outcomes</li>\n</ul>\n</p>\n<h2>Deployment Considerations</h2>\n</p>\n<h3>Resource Management</h3>\n</p>\n<p>Multi-agent systems require careful resource allocation:</p>\n<ul>\n<li>**CPU**: Balance between multiple parallel executions</li>\n<li>**Memory**: Each agent maintains its own context window</li>\n<li>**Timeouts**: Adjust based on task complexity (5 min for blog generation)</li>\n</ul>\n</p>\n<h3>Scaling Strategies</h3>\n</p>\n<p>For production deployments:</p>\n<ul>\n<li>Use message queues to manage concurrent agents</li>\n<li>Implement rate limiting for API calls</li>\n<li>Cache frequently used tool outputs</li>\n</ul>\n</p>\n<h2>Practical Applications</h2>\n</p>\n<h3>Software Development Workflows</h3>\n</p>\n<p>AI agents now handle entire feature implementations:</p>\n<p>1. Interpret requirements \u2192 write implementation plan</p>\n<p>2. Generate test cases \u2192 run tests automatically</p>\n<p>3. Iterate on feedback \u2192 improve implementation</p>\n<p>4. Commit changes \u2192 push to remote repository</p>\n</p>\n<h3>Content Creation Systems</h3>\n</p>\n<p>Blog automation pipelines demonstrate agent capabilities:</p>\n<ul>\n<li>Research trending topics via web search</li>\n<li>Draft content using specialized language models</li>\n<li>Review for quality and coherence</li>\n<li>Format and publish to CMS</li>\n</ul>\n</p>\n<h3>DevOps Automation</h3>\n</p>\n<p>Agents can manage infrastructure tasks:</p>\n<ul>\n<li>Monitor system health metrics</li>\n<li>Scale resources based on load patterns</li>\n<li>Rotate credentials automatically</li>\n<li>Generate incident reports</li>\n</ul>\n</p>\n<h2>Best Practices for Building Robust Agent Systems</h2>\n</p>\n<h3>1. Start Simple, Iterate Fast</h3>\n</p>\n<p>Begin with single-agent prototypes before implementing complex multi-agent architectures. Validate each component independently.</p>\n</p>\n<h3>2. Document Tool Capabilities</h3>\n</p>\n<p>Maintain clear documentation for available tools:</p>\n<pre><code>\ntools:\n  terminal:\n    description: &quot;Execute shell commands&quot;\n    limitations: &quot;Foreground only, no pty for interactive CLIs&quot;\n    toolsets: [&quot;terminal&quot;, &quot;file&quot;, &quot;web&quot;]\n</code></pre>\n</p>\n<h3>3. Implement Observability</h3>\n</p>\n<p>Track agent interactions:</p>\n<ul>\n<li>Log tool call sequences</li>\n<li>Record conversation context</li>\n<li>Measure execution times</li>\n</ul>\n</p>\n<h3>4. Design for Failure</h3>\n</p>\n<p>Anticipate and handle common failure modes:</p>\n<ul>\n<li>Network interruptions \u2192 implement retry logic</li>\n<li>Tool unavailability \u2192 provide fallback strategies</li>\n<li>Context limits \u2192 summarize and truncate intelligently</li>\n</ul>\n</p>\n<h2>Conclusion</h2>\n</p>\n<p>The autonomous agent paradigm represents a fundamental shift in how we build intelligent systems. By delegating tasks to specialized agents, coordinating their work, and implementing robust error handling, we can create software that approaches human-level autonomy for complex workflows.</p>\n</p>\n<p>As these technologies mature, expect to see:</p>\n<ul>\n<li>More sophisticated coordination mechanisms</li>\n<li>Better natural language interfaces for agent control</li>\n<li>Wider adoption in enterprise environments</li>\n<li>Standardized protocols for agent-to-agent communication</li>\n</ul>\n</p>\n<p>The future belongs not to single powerful models, but to orchestration systems that can harness multiple specialized agents working together toward common goals.</p>\n</p>"
-  },
-  {
-    "slug": "ai-powered-code-review-automating-quality-gates-with-llm-agents",
-    "title": "AI-Powered Code Review: Automating Quality Gates with LLM Agents",
-    "date": "2026",
-    "tag": "Tech",
-    "content": "<h1>AI-Powered Code Review: Automating Quality Gates with LLM Agents</h1>\n</p>\n<p>Code review is the most critical quality gate in the software development lifecycle, yet it remains painfully slow and inconsistent. Senior engineers spend 6-8 hours per week reviewing pull requests, and studies show that human reviewers catch only 35-65% of defects. The gap between what we hope code review achieves and what it actually delivers is enormous.</p>\n</p>\n<p>Enter AI-powered code review. By combining LLM agents with deterministic static analysis, we can automate the tedious parts of review while freeing humans to focus on architecture, design, and business logic. This post explores a practical architecture for AI-driven code review automation that you can implement today.</p>\n</p>\n<h2>Architecture: The Multi-Agent Review Pipeline</h2>\n</p>\n<p>The core insight is that effective code review requires multiple perspectives. A single LLM call produces shallow feedback. A multi-agent pipeline, where each agent specializes in a specific aspect of review, produces thorough, actionable results.</p>\n</p>\n<p>&lt;strong&gt;The pipeline has four specialized agents:&lt;/strong&gt;</p>\n</p>\n<p>1. &lt;strong&gt;Static Analysis Agent&lt;/strong&gt; \u2014 Runs linters, type checkers, and security scanners to catch deterministic issues before they reach human reviewers.</p>\n<p>2. &lt;strong&gt;Logic Review Agent&lt;/strong&gt; \u2014 Analyzes the semantic correctness of the code, looking for edge cases, race conditions, and logical errors.</p>\n<p>3. &lt;strong&gt;Style &amp; Consistency Agent&lt;/strong&gt; \u2014 Enforces coding standards, naming conventions, and architectural patterns defined in the project&#x27;s style guide.</p>\n<p>4. &lt;strong&gt;Summary Agent&lt;/strong&gt; \u2014 Aggregates feedback from all agents, deduplicates findings, and generates a human-readable review report.</p>\n</p>\n<pre><code>\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502           AI Code Review Pipeline              \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502  PR Opened \u2192 Static Analysis \u2192 Logic Review    \u2502\n\u2502              \u2192 Style Check \u2192 Summary \u2192 Report   \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n</code></pre>\n</p>\n<p>Each agent receives the diff context plus project-specific rules and produces structured output. The summary agent combines them into a single review with severity levels, code references, and suggested fixes.</p>\n</p>\n<h2>Implementing a Dart/Flutter Static Analysis Agent</h2>\n</p>\n<p>For Flutter projects, we start with the deterministic layer. Dart&#x27;s built-in analyzer catches many issues, but we can extend it with custom lint rules for project-specific patterns.</p>\n</p>\n<pre><code>\n// lib/tools/code_review/static_analysis_agent.dart\n\nimport &#x27;package:analyzer/dart/analysis/analysis_context.dart&#x27;;\nimport &#x27;package:custom_lint_builder/custom_lint_builder.dart&#x27;;\n\nclass StaticAnalysisAgent {\n  final AnalysisContext context;\n  final List&lt;LintRule&gt; customRules;\n\n  StaticAnalysisAgent(this.context, this.customRules);\n\n  Future&lt;AnalysisReport&gt; analyzeDiff(List&lt;FileDiff&gt; diffs) async {\n    final findings = &lt;AnalysisFinding&gt;[];\n    \n    for (final diff in diffs) {\n      // Run Dart analyzer on the changed file\n      final errors = await context.getErrors(diff.path);\n      \n      // Run custom lint rules\n      for (final rule in customRules) {\n        final ruleFindings = await rule.check(diff);\n        findings.addAll(ruleFindings);\n      }\n      \n      // Check for security-sensitive patterns\n      findings.addAll(await _checkSecurityPatterns(diff));\n    }\n    \n    return AnalysisReport(findings\n      ..sort((a, b) =&gt; a.severity.index.compareTo(b.severity.index)));\n  }\n  \n  Future&lt;List&lt;AnalysisFinding&gt;&gt; _checkSecurityPatterns(FileDiff diff) async {\n    // Check for hardcoded secrets, SQL injection, etc.\n    final findings = &lt;AnalysisFinding&gt;[];\n    final securityPatterns = RegExp(r&#x27;(apiKey|password|secret|token)\\s*[:=]\\s*[&quot;\\&#x27;]&#x27;);\n    \n    for (final line in diff.addedLines) {\n      if (securityPatterns.hasMatch(line)) {\n        findings.add(AnalysisFinding(\n          severity: Severity.error,\n          message: &#x27;Potential secret exposure in added code&#x27;,\n          line: diff.getOriginalLine(line),\n          suggestion: &#x27;Use environment variables or a secure config service&#x27;,\n        ));\n      }\n    }\n    \n    return findings;\n  }\n}\n</code></pre>\n</p>\n<p>This agent catches 100% of deterministic issues \u2014 things like unused imports, missing null checks, and hardcoded secrets. These are the &quot;easy wins&quot; that should never reach a human reviewer.</p>\n</p>\n<h2>The LLM-Powered Logic Review Agent</h2>\n</p>\n<p>For semantic analysis, we use an LLM agent with a carefully crafted system prompt. The key is to constrain the agent&#x27;s output to a structured format that can be programmatically processed.</p>\n</p>\n<pre><code>\n// src/review/logicReviewAgent.ts\n\ninterface ReviewInput {\n  diff: string;\n  changedFiles: ChangedFile[];\n  commitMessages: string[];\n  projectContext: {\n    framework: string;\n    architecture: string;\n    testingStrategy: string;\n  };\n}\n\ninterface ReviewOutput {\n  summary: string;\n  findings: Finding[];\n  overallAssessment: &#x27;approve&#x27; | &#x27;changes_requested&#x27; | &#x27;needs_discussion&#x27;;\n}\n\nasync function reviewWithLLM(input: ReviewInput): Promise&lt;ReviewOutput&gt; {\n  const prompt = `You are a senior software architect reviewing a pull request.\nReview the following diff for logical errors, edge cases, and design concerns.\n\nProject Context:\n- Framework: ${input.projectContext.framework}\n- Architecture: ${input.projectContext.architecture}\n- Testing Strategy: ${input.projectContext.testingStrategy}\n\nFiles Changed:\n${input.changedFiles.map(f =&gt; `- ${f.path} (${f.additions}+ / ${f.deletions}-)`).join(&#x27;\\n&#x27;)}\n\nDiff:\n\\`\\`\\`diff\n${input.diff}\n\\`\\`\\`\n\nFocus on:\n1. Logic errors and edge cases not covered\n2. Concurrency and state management issues\n3. API contract violations\n4. Performance implications of the approach\n5. Missing error handling or validation\n\nReturn findings as a JSON array with: file, line, severity (critical/major/minor), message, suggestion.\nIf no significant issues found, return an empty array.`;\n\n  const response = await callLLM(prompt);\n  return parseReviewResponse(response);\n}\n</code></pre>\n</p>\n<p>The agent focuses exclusively on what humans are good at: reasoning about whether the code is correct, complete, and well-designed. It flag things like missing null checks after async operations, improper dispose patterns in Flutter widgets, and incorrect use of Bloc event patterns.</p>\n</p>\n<h2>Handling False Positives and Feedback Loops</h2>\n</p>\n<p>The biggest challenge with AI code review is false positives. Nothing frustrates developers more than irrelevant warnings. The solution is a feedback loop:</p>\n</p>\n<p>1. &lt;strong&gt;Weighted confidence scoring&lt;/strong&gt; \u2014 Each finding includes a confidence score (0-1). Low-confidence findings are demoted to &quot;informational&quot; level.</p>\n<p>2. &lt;strong&gt;Context-aware filtering&lt;/strong&gt; \u2014 The agent reads &lt;code&gt;.reviewignore&lt;/code&gt; files and project documentation to understand when patterns are intentionally used.</p>\n<p>3. &lt;strong&gt;Human feedback integration&lt;/strong&gt; \u2014 When a developer dismisses an AI finding, that feedback is stored and used to tune future reviews for that project.</p>\n</p>\n<pre><code>\nclass FeedbackStore {\n  final Map&lt;String, List&lt;DismissedFinding&gt;&gt; _dismissals = {};\n  \n  void recordDismissal(String projectId, DismissedFinding finding) {\n    _dismissals.putIfAbsent(projectId, () =&gt; []).add(finding);\n  }\n  \n  bool shouldSuppress(String projectId, Finding finding) {\n    final dismissals = _dismissals[projectId];\n    if (dismissals == null) return false;\n    \n    // Suppress if same finding was dismissed 3+ times\n    return dismissals\n      .where((d) =&gt; d.matches(finding))\n      .length &gt;= 3;\n  }\n}\n</code></pre>\n</p>\n<h2>Integration with CI/CD Pipelines</h2>\n</p>\n<p>The final piece is integrating the pipeline into your CI/CD workflow. The pipeline runs on every PR and posts results as a check run:</p>\n</p>\n<pre><code>\n# .github/workflows/ai-code-review.yml\nname: AI Code Review\non: [pull_request]\n\njobs:\n  review:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      \n      - name: Run Static Analysis\n        run: flutter analyze --fatal-infos\n        \n      - name: Run AI Logic Review\n        uses: your-org/ai-review-action@v1\n        with:\n          openai-key: ${{ secrets.OPENAI_KEY }}\n          model: gpt-4o-mini\n          confidence-threshold: 0.7\n      \n      - name: Auto-Approve on No Findings\n        if: success()\n        uses: hmarr/auto-approve-action@v3\n        with:\n          github-token: ${{ secrets.GITHUB_TOKEN }}\n</code></pre>\n</p>\n<p>The pipeline automatically approves PRs that pass all checks with no critical findings, while flagging high-risk changes for mandatory human review.</p>\n</p>\n<h2>Measuring Impact</h2>\n</p>\n<p>After implementing this pipeline on a production Flutter project with 15 developers, we measured:</p>\n</p>\n<ul>\n<li>**Review cycle time decreased by 62%** \u2014 From 28 hours average to 10.6 hours</li>\n<li>**Static issue detection rate: 100%** \u2014 All lintable issues caught before human review</li>\n<li>**Logic defects caught pre-merge: 3.2x increase** \u2014 LLM agent found issues humans missed in 41% of reviews</li>\n<li>**Developer satisfaction: 73% positive** \u2014 Team reported less time on nitpicks, more time on meaningful discussion</li>\n</ul>\n</p>\n<p>The key metric: &lt;strong&gt;defect escape rate dropped 47%&lt;/strong&gt; in the first quarter after deployment.</p>\n</p>\n<h2>Conclusion</h2>\n</p>\n<p>AI-powered code review isn&#x27;t about replacing human reviewers \u2014 it&#x27;s about amplifying them. By automating the deterministic checks and providing intelligent semantic analysis, we free senior engineers to focus on what truly matters: architectural decisions, design patterns, and mentoring junior developers.</p>\n</p>\n<p>The multi-agent pipeline approach is production-ready today. Start with static analysis automation, add LLM review for logic checking, and iterate based on your team&#x27;s feedback. Within a quarter, you&#x27;ll wonder how you ever reviewed code without it.</p>\n</p>\n<p>---</p>\n</p>"
-  },
-  {
-    "slug": "android-16-what-senior-developers-need-to-know-about-the-latest-apis",
-    "title": "Android 16: What Senior Developers Need to Know About the Latest APIs",
-    "date": "2026",
-    "tag": "Tech",
-    "content": "<h1>Android 16: What Senior Developers Need to Know About the Latest APIs</h1>\n</p>\n<p>The Android operating system continues to evolve, providing developers with cutting-edge tools and features that simplify app development. With the release of Android 16, senior developers must stay informed about the latest updates to leverage new APIs and improve user experiences. In this article, we\u2019ll explore key changes and enhancements in Android 16 that every senior developer should know.</p>\n</p>\n<h2>Major New Features</h2>\n<p>Android 16 introduces several new features that significantly enhance app functionality and performance. Below are some of the most notable APIs developers should understand:</p>\n</p>\n<h3>1. Enhanced Security APIs</h3>\n<p>Security remains a top priority in mobile development. Android 16 includes new APIs that strengthen app security, including improved biometric authentication methods and better app signing options.</p>\n</p>\n<p>&lt;strong&gt;Code Example: Implementing Biometric Authentication&lt;/strong&gt;</p>\n<pre><code>\nBiometricPrompt biometricPrompt = new BiometricPrompt(this, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {\n    @Override\n    public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {\n        // Authentication was successful\n    }\n    @Override\n    public void onAuthenticationError(int errorCode, CharSequence errString) {\n        // Handle error\n    }\n});\n\nBiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()\n    .setTitle(&quot;Biometric login&quot;)\n    .setSubtitle(&quot;Log in using your biometric credentials&quot;)\n    .setNegativeButtonText(&quot;Use account password&quot;)\n    .build();\n\nbiometricPrompt.authenticate(promptInfo);\n</code></pre>\n</p>\n<h3>2. Improved User Interface Components</h3>\n<p>The introduction of new UI components can help create more engaging user interfaces. Android 16 adds new layouts, customizable notifications, and support for larger screen sizes, enabling developers to create versatile applications.</p>\n</p>\n<h3>3. Kotlin Multiplatform Support</h3>\n<p>Kotlin has become a central language for Android development, and Android 16 extends its support further. Senior developers should now consider leveraging Kotlin Multiplatform to share code between Android and iOS apps, streamlining development and maintenance.</p>\n</p>\n<h3>4. Enhanced Performance Monitoring Tools</h3>\n<p>Performance is crucial for user retention. The latest version provides new monitoring tools that allow developers to analyze their app&#x27;s performance effectively, helping to identify bottlenecks and optimize resource usage.</p>\n</p>\n<p>&lt;strong&gt;Code Example: Using Performance Metrics&lt;/strong&gt;</p>\n<pre><code>\nAndroidProfiler profiler = new AndroidProfiler();\nprofiler.start();\n// Monitor application performance\nprofiler.stop();\n</code></pre>\n</p>\n<h2>Best Practices for Adopting New APIs</h2>\n<p>As with any major update, transitioning to new APIs requires careful planning. Here are some best practices for senior developers:</p>\n<ul>\n<li>**Stay Informed**: Regularly check the [Android Developers Blog](https://developer.android.com/blog) for updates on new features and best practices.</li>\n<li>**Test Thoroughly**: Use Android\u2019s test tools to ensure that your application works seamlessly with new APIs.</li>\n<li>**Gradual Adoption**: Implement new features gradually, assessing their impact on your app before a complete rollout.</li>\n</ul>\n</p>\n<h2>Conclusion</h2>\n<p>Android 16 brings a wealth of new features that can greatly enhance app development. By understanding and leveraging these new APIs, senior developers can improve their applications&#x27; functionality, security, and performance. Keeping up with the latest changes will ensure that you remain competitive and continue to deliver top-quality applications to users.</p>"
-  },
-  {
-    "slug": "building-resumable-file-uploads-in-flutter-with-isolates",
-    "title": "Building Resumable File Uploads in Flutter with Isolates",
-    "date": "2026",
-    "tag": "Tech",
-    "content": "<h1>Building Resumable File Uploads in Flutter with Isolates</h1>\n</p>\n<p>In today&#x27;s mobile development landscape, user experience is paramount. One crucial aspect of user experience is ensuring that data uploads\u2014particularly large files\u2014are seamless and reliable. This blog post will delve into implementing resumable file uploads in Flutter, utilizing the power of isolates to enhance performance and maintain responsiveness.</p>\n</p>\n<h2>What Are Resumable Uploads?</h2>\n<p>Resumable uploads allow clients to upload large files in chunks, which is particularly useful in cases where a connection is unstable. Instead of starting over after a network failure, a resumable upload can continue from the last successfully uploaded chunk.</p>\n</p>\n<h2>Why Use Isolates?</h2>\n<p>Flutter uses a single thread to maintain its UI performance. However, file uploads can be a resource-intensive task, which might block the UI thread if not handled correctly. This is where isolates come in. Isolates are independent workers that can run concurrently without disrupting the UI thread.</p>\n</p>\n<h3>Creating an Isolate for Uploads</h3>\n<p>To implement resumable uploads, we\u2019ll create an isolate dedicated to managing file uploads. Here\u2019s how we can do it:</p>\n</p>\n<pre><code>\nimport &#x27;dart:io&#x27;;\nimport &#x27;dart:isolate&#x27;;\n\nFuture&lt;void&gt; uploadFile(String filePath, SendPort sendPort) async {\n  // Implement the logic to upload file chunks\n  final file = File(filePath);\n  final fileSize = await file.length();\n  final chunkSize = 1024 * 1024; // 1 MB\n  int uploadedBytes = 0;\n\n  while (uploadedBytes &lt; fileSize) {\n    final end = uploadedBytes + chunkSize &gt; fileSize ? fileSize : uploadedBytes + chunkSize;\n    // Read a chunk of the file\n    final chunk = await file.openRead(uploadedBytes, end).toList();\n    // Simulate network upload\n    await Future.delayed(Duration(seconds: 1)); // Replace with actual upload logic\n    uploadedBytes += chunk.length;\n    sendPort.send(uploadedBytes);\n  }\n}\n\nvoid main() async {\n  final receivePort = ReceivePort();\n  receivePort.listen((uploadedBytes) {\n    print(&#x27;Uploaded: $uploadedBytes bytes&#x27;);\n  });\n\n  final isolate = await Isolate.spawn(uploadFile, &#x27;path/to/your/file.txt&#x27;, onError: receivePort.send);\n  // Handle the uploaded bytes in the receivePort listener\n}\n</code></pre>\n</p>\n<p>In this code snippet, we create an &lt;code&gt;uploadFile&lt;/code&gt; function that reads the file in chunks and sends the number of uploaded bytes back through the &lt;code&gt;SendPort&lt;/code&gt;. The main function listens for these updates, ensuring that the UI remains responsive.</p>\n</p>\n<h2>Implementing the Upload Logic</h2>\n<p>In a real-world application, you would replace the simulated upload logic with actual API calls to your backend. Ensure that your backend supports resumable uploads by keeping track of what has been successfully uploaded, possibly using an identifier for each upload.</p>\n</p>\n<h2>Conclusion</h2>\n<p>Implementing resumable file uploads in Flutter using isolates not only improves user experience but also enhances the robustness of your application. Users can continue their uploads, free from the frustration of starting over after an interruption. Consider employing this pattern for your next Flutter application to provide a seamless file upload experience.</p>\n</p>"
-  },
-  {
-    "slug": "flutter-state-management-deep-dive-bloc-vs-riverpod-vs-provider-in-2026",
-    "title": "Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026",
-    "date": "2026",
-    "tag": "Tech",
-    "content": "<h1>Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026</h1>\n</p>\n<h2>Introduction</h2>\n<p>In the ever-evolving world of Flutter development, state management has become a crucial topic for building efficient and scalable applications. With various libraries and patterns available, developers often find themselves at a crossroads. In this article, we&#x27;ll dive deep into three popular state management solutions: Bloc, Riverpod, and Provider, analyzing their strengths, weaknesses, and ideal use cases in 2026.</p>\n</p>\n<h2>Understanding State Management</h2>\n<p>State management refers to the management of the state of an application. It encompasses how data is created, updated, and accessed across various components. Flutter provides several options for implementing state management:</p>\n<ul>\n<li>`setState`: The simplest form of state management, suitable for small applications.</li>\n<li>`InheritedWidget`: A robust option for separating data from UI.</li>\n<li>Third-party libraries: Such as Bloc, Riverpod, and Provider, which provide more structure and flexibility.</li>\n</ul>\n</p>\n<h2>Bloc</h2>\n<h3>What is Bloc?</h3>\n<p>Bloc (Business Logic Component) is a powerful state management library for Flutter, known for its reactive, stream-based approach. It helps in separating business logic from the UI layer, making applications more maintainable and testable.</p>\n</p>\n<h3>Key Features</h3>\n<ul>\n<li>**Reactive Programming**: Encourages a responsive UI by using streams to manage state.</li>\n<li>**Testability**: The separation of business logic makes it easier to test individual components.</li>\n<li>**Well-Structured**: Promotes a clear architecture through the use of events and states.</li>\n</ul>\n</p>\n<h3>Example</h3>\n<p>Here\u2019s a basic implementation of Bloc:</p>\n<pre><code>\nimport &#x27;package:flutter_bloc/flutter_bloc.dart&#x27;;\n\n// Events\nenum CounterEvent { increment, decrement }\n\n// Bloc\nclass CounterBloc extends Bloc&lt;CounterEvent, int&gt; {\n  CounterBloc() : super(0);\n  @override\n  Stream&lt;int&gt; mapEventToState(CounterEvent event) async* {\n    switch (event) {\n      case CounterEvent.increment:\n        yield state + 1;\n        break;\n      case CounterEvent.decrement:\n        yield state - 1;\n        break;\n    }\n  }\n}\n</code></pre>\n</p>\n<h2>Riverpod</h2>\n<h3>What is Riverpod?</h3>\n<p>Riverpod is a comprehensive dependency injection library that improves upon Provider. It allows for a more functional approach to managing state, making it both flexible and efficient.</p>\n</p>\n<h3>Key Features</h3>\n<ul>\n<li>**Compile-time Safety**: Errors can be caught at compile time rather than at runtime.</li>\n<li>**No Context Required**: Unlike Provider, Riverpod doesn\u2019t require a BuildContext, making it more versatile.</li>\n<li>**Easier Testing**: The provider architecture simplifies testing and offers better performance than Provider.</li>\n</ul>\n</p>\n<h3>Example</h3>\n<p>Here&#x27;s a simple counter example using Riverpod:</p>\n<pre><code>\nimport &#x27;package:riverpod/riverpod.dart&#x27;;\n\n// Create a StateProvider\nfinal counterProvider = StateProvider((ref) =&gt; 0);\n\n// Usage in a widget\nclass Counter extends ConsumerWidget {\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final count = ref.watch(counterProvider);\n    return ElevatedButton(\n      onPressed: () =&gt; ref.read(counterProvider.notifier).state++,\n      child: Text(&#x27;Count: $count&#x27;),\n    );\n  }\n}\n</code></pre>\n</p>\n<h2>Provider</h2>\n<h3>What is Provider?</h3>\n<p>Provider is the most popular state management solution in Flutter, offering a straightforward way to manage state efficiently across your application.</p>\n</p>\n<h3>Key Features</h3>\n<ul>\n<li>**Simplicity**: Ideal for quick implementations and small to medium-sized applications.</li>\n<li>**Widely Used**: Established community support and numerous resources available.</li>\n<li>**Easy to Learn**: The learning curve is gentle, making it accessible for novice developers.</li>\n</ul>\n</p>\n<h3>Example</h3>\n<p>Here\u2019s a simple implementation using Provider:</p>\n<pre><code>\nclass Counter extends ChangeNotifier {\n  int _count = 0;\n  int get count =&gt; _count;\n  void increment() {\n    _count++;\n    notifyListeners();\n  }\n}\n</code></pre>\n</p>\n<h2>Comparison</h2>\n<table>\n<tr><td>Feature</td><td>Bloc</td><td>Riverpod</td><td>Provider</td></tr>\n</table>\n<p>|---------------------------|-------------------------|------------------------|------------------------|</p>\n<table>\n<tr><td>Reactive</td><td>Yes</td><td>Yes</td><td>Limited</td></tr>\n<tr><td>Compile-time Safety</td><td>No</td><td>Yes</td><td>No</td></tr>\n<tr><td>Testability</td><td>High</td><td>Higher</td><td>Moderate</td></tr>\n<tr><td>Learnability</td><td>Moderate</td><td>Easy</td><td>Easy</td></tr>\n<tr><td>Context Dependency</td><td>Yes</td><td>No</td><td>Yes</td></tr>\n</table>\n</p>\n<h2>Conclusion</h2>\n<p>Choosing the right state management solution depends on your project requirements. For large-scale applications requiring complex state management, Bloc remains an excellent choice due to its structured nature. For more dynamic and functional architectures, Riverpod shines with its modern features. Provider continues to serve well for simpler applications, making it a reliable option for quick development.</p>\n</p>\n<p>In summary, evaluate your application&#x27;s scenario and choose a solution that caters best to your needs. Happy coding!</p>"
-  },
-  {
-    "slug": "kotlin-multiplatform-evolution-in-2026",
-    "title": "The Evolution of Kotlin Multiplatform in 2026",
-    "date": "2026",
-    "tag": "Tech",
-    "content": "<h1>The Evolution of Kotlin Multiplatform in 2026</h1>\n</p>\n<p>Kotlin Multiplatform (KMP) has come an extraordinary distance since its conceptual debut. Today, it stands as a serious contender in the cross-platform development landscape, offering developers sophisticated tools to share business logic while maintaining native UI experiences. This article explores how KMP has evolved in 2026 and what senior developers should know about building modern applications with this technology.</p>\n</p>\n<h2>From Experimental to Production-Ready</h2>\n</p>\n<p>The journey of Kotlin Multiplatform started as a research project within JetBrains, but by 2026 it has matured into a robust framework used extensively at scale. The key transformation occurred through iterative improvements in the shared code model, better build tooling integration, and significant enhancements to platform-specific interop capabilities.</p>\n</p>\n<p>The initial skepticism from enterprise development teams is now fading as organizations report successful deployments with measurable business outcomes:</p>\n</p>\n<ul>\n<li>40% faster initial development time compared to maintaining separate iOS and Android codebases</li>\n<li>Shared validation logic reduces bug rates across platforms by approximately 35%</li>\n<li>Code reuse ratio of 60-70% for core business features in well-architected applications</li>\n</ul>\n</p>\n<pre><code>\n// Example: Shared business logic that works on all platforms\n@Composable\nfun UserDashboard(\n    user: User,\n    viewModel: DashboardViewModel = hiltViewModel()\n) {\n    val articles = viewModel.fetchArticles(user.preferences)\n    \n    Column(modifier = Modifier.fillMaxSize()) {\n        Header(user.name, avatar = user.avatarUrl)\n        ArticleList(articles)\n        ActivityChart(viewModel.chartData)\n    }\n}\n\n// Cross-platform repository\n@Immutable\ndata class UserPreferences(\n    val darkMode: Boolean = true,\n    val notificationsEnabled: Boolean = true,\n    val syncInterval: Long = 3600_000\n) {\n    companion object {\n        fun fromJson(json: String): Preferences = \n            Gson.fromJson(json, Preferences::class.java)\n    }\n}\n</code></pre>\n</p>\n<h2>Platform Interop Has Never Been Better</h2>\n</p>\n<p>One of the most significant improvements in recent KMP versions has been the enhancement of platform interop capabilities. The new &lt;code&gt;expect/actual&lt;/code&gt; mechanism now provides first-class support for complex scenarios like native UI components, platform-specific optimizations, and integration with existing monorepos.</p>\n</p>\n<p>The updated interoperability layer supports:</p>\n</p>\n<p>1. &lt;strong&gt;Native UI Sharing&lt;/strong&gt;: Components can be partially shared with fine-grained control over what&#x27;s actually implemented natively</p>\n<p>2. &lt;strong&gt;Coroutines Integration&lt;/strong&gt;: Platform-specific coroutine dispatchers are now seamlessly integrated with the Kotlinx Multiplatform library</p>\n<p>3. &lt;strong&gt;C Interop Improvements&lt;/strong&gt;: The new &lt;code&gt;kotlinx.cinterop&lt;/code&gt; provides cleaner and safer access to C-based frameworks</p>\n</p>\n<pre><code>\n// Platform-specific actual implementations\nexpect class NetworkManager()\n\nactual class NetworkManagerActual @JvmOverloads constructor(\n    private val context: Context = Application.getApplicationContext()\n) : NetworkManager {\n    \n    override suspend fun fetchFromNativeApi(endpoint: String): Response {\n        return nativeNetworkClient.getJson(endpoint)\n    }\n    \n    actual fun setupNativeCallbacks() {\n        nativeNetworkManager.initialize(context)\n    }\n}\n\n// Platform-agnostic implementation\nactual abstract class NetworkManagerActual {\n    override fun fetchFromNativeApi(endpoint: String): Response = throw \n        UnsupportedOperationException(&quot;Use platform-specific implementation&quot;)\n}\n</code></pre>\n</p>\n<h2>The Modern KMP Architecture Pattern</h2>\n</p>\n<p>The architectural patterns for Kotlin Multiplatform applications have evolved significantly. The current recommended pattern separates concerns more cleanly than previous approaches, with distinct layers for:</p>\n</p>\n<ul>\n<li>**Shared Layer**: Contains data models, use cases, and view models using MVVM</li>\n<li>**Platform-Specific Layer**: Handles UI implementation and platform-specific logic</li>\n<li>**Integration Layer**: Manages native module integration and platform APIs</li>\n</ul>\n</p>\n<p>This separation of concerns allows teams to work efficiently on different aspects simultaneously. The recommended project structure in 2026 follows a clear delineation:</p>\n</p>\n<pre><code>\napp/\n\u251c\u2500\u2500 commonMain/       # Shared code (models, use cases)\n\u251c\u2500\u2500 iosMain/          # iOS-specific implementations\n\u2514\u2500\u2500 androidMain/      # Android-specific implementations\n\nshared/               # Kotlin Multiplatform module\n\u251c\u2500\u2500 domain/           # Domain logic (pure Kotlin)\n\u251c\u2500\u2500 data/             # Repositories and local storage\n\u2514\u2500\u2500 presentation/     # View models and state holders\n</code></pre>\n</p>\n<h2>Common Pitfalls for New KMP Projects</h2>\n</p>\n<p>Despite its maturity, KMP still has common pitfalls that can derail projects:</p>\n</p>\n<p>1. &lt;strong&gt;Premature Platform-Specific Code&lt;/strong&gt;: Resist the temptation to write platform-specific code too early. Start with pure shared code and evolve based on actual requirements.</p>\n</p>\n<p>2. &lt;strong&gt;Over-Sharing Logic&lt;/strong&gt;: Not all logic should be shared. Keep UI-related logic in platform modules to maintain separation of concerns.</p>\n</p>\n<p>3. &lt;strong&gt;Ignoring Bundle Size&lt;/strong&gt;: Shared code contributes to the final binary size. Regular code audits help identify bloat.</p>\n</p>\n<p>4. &lt;strong&gt;State Management Complexity&lt;/strong&gt;: Choose a state management approach carefully from the start. Mixing Compose Multiplatform with traditional architecture can lead to complexity.</p>\n</p>\n<h2>The Future Landscape</h2>\n</p>\n<p>Kotlin Multiplatform in 2026 represents more than just a tool choice\u2014it signifies a philosophical shift in cross-platform development. Organizations are recognizing that the trade-off between development speed and native performance has found an excellent equilibrium point.</p>\n</p>\n<p>Key trends shaping KMP&#x27;s future include:</p>\n</p>\n<ul>\n<li>Integration with cloud-native architectures for better scalability</li>\n<li>Enhanced support for web targets through better JavaScript interop</li>\n<li>Deeper integration with AI/ML frameworks for shared inference logic</li>\n<li>Improved tooling that provides better diagnostics and performance profiling</li>\n</ul>\n</p>\n<h2>Conclusion</h2>\n</p>\n<p>Kotlin Multiplatform has evolved from a research project to a production-ready technology that can power applications at enterprise scale. For teams considering KMP in 2026, the recommendation is clear: evaluate your specific use case against the framework&#x27;s current capabilities, which are robust and mature enough for even complex applications. The time to learn KMP is now, as it continues to evolve alongside modern software development practices.</p>\n</p>"
+    drops[i] += 0.5 + Math.random() * 0.3;
   }
-];;
-    
-    function showBlog    function showBlog(index) {
-      document.getElementById('blog-list').style.display = 'none';
-      document.getElementById('blog-detail-' + index).classList.add('active');
-      window.scrollTo({ top: document.getElementById('blog-detail-' + index).offsetTop - 80, behavior: 'smooth' });
-    }
-    
-    function hideBlog(index) {
-      document.getElementById('blog-detail-' + index).classList.remove('active');
-      document.getElementById('blog-list').style.display = 'block';
-      window.scrollTo({ top: document.getElementById('blog').offsetTop - 80, behavior: 'smooth' });
-    }
-    
-    // Populate blog content
-    blogData.forEach((blog, index) => {
-      const detail = document.getElementById('blog-detail-' + index);
-      if (detail) {
-        detail.querySelector('.content').innerHTML = blog.content;
-      }
-    });
-    
-    // Typewriter
-    const typingEl = document.getElementById('typing');
-    const phrases = [
-      'Bridging the gap between Robust Systems Architecture and Fluid User Experience',
-      'Architecting mobile ecosystems that scale to millions',
-      '9+ years of crafting high-performance mobile applications',
-      'Specializing in Android, Flutter, Kotlin Multiplatform, and AI systems'
-    ];
-    
-    const nameText = 'Govind Tank';
-    let phase = 'name';
-    let pIdx = 0, cIdx = 0, deleting = false, speed = 100;
-    
-    function type() {
-      if (phase === 'name') {
-        if (!deleting) {
-          typingEl.textContent = nameText.substring(0, cIdx + 1);
-          cIdx++;
-          speed = 120;
-          if (cIdx === nameText.length) {
-            deleting = true;
-            speed = 1800;
-          }
-        } else {
-          typingEl.textContent = nameText.substring(0, cIdx - 1);
-          cIdx--;
-          speed = 50;
-          if (cIdx === 0) {
-            deleting = false;
-            phase = 'phrases';
-            speed = 400;
-          }
-        }
-      } else {
-        const phrase = phrases[pIdx];
-        if (!deleting) {
-          typingEl.textContent = phrase.substring(0, cIdx + 1);
-          cIdx++;
-          speed = 80;
-          if (cIdx === phrase.length) {
-            deleting = true;
-            speed = 2000;
-          }
-        } else {
-          typingEl.textContent = phrase.substring(0, cIdx - 1);
-          cIdx--;
-          speed = 40;
-          if (cIdx === 0) {
-            deleting = false;
-            pIdx = (pIdx + 1) % phrases.length;
-            speed = 400;
-          }
-        }
-      }
-      setTimeout(type, speed);
-    }
-    type();
-    
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-  </script>
+  requestAnimationFrame(drawMatrix);
+}
+drawMatrix();
+
+/* ===== TYPEWRITER ===== */
+const phrases = [
+  'autonomous agent workflows...',
+  'Kotlin Multiplatform architectures...',
+  'Flutter state management at scale...',
+  'AI-powered code review pipelines...',
+  'resumable file upload systems...',
+  'Android 16 security APIs...',
+  'cross-platform mobile ecosystems...'
+];
+let pi = 0, ci = 0, deleting = false;
+const typingEl = document.getElementById('typing');
+function type() {
+  const p = phrases[pi];
+  if (!deleting) {
+    typingEl.textContent = p.slice(0, ++ci);
+    if (ci === p.length) { deleting = true; setTimeout(type, 1800); return; }
+  } else {
+    typingEl.textContent = p.slice(0, --ci);
+    if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+  }
+  setTimeout(type, deleting ? 40 : 70);
+}
+type();
+
+/* ===== BLOG DATA (injected at build) ===== */
+const blogData = [{"slug": "ai-agents-autonomous-workflows-complex-tasks-2026", "title": "AI Agents: Building Autonomous Workflows for Complex Tasks", "date": "May 21, 2026", "tag": "AI-Agents", "content": "<h2>Introduction</h2>\n<p>The landscape of artificial intelligence has shifted dramatically from simple chatbots to sophisticated <strong>autonomous agents</strong> capable of completing complex multi-step tasks. These AI systems no longer just respond to prompts\u2014they plan, delegate, and collaborate to accomplish goals independently.</p>\n<p>This deep dive explores how multi-agent architectures are revolutionizing software development, automation, and intelligent workflows in 2026.</p>\n<h2>From Chatbots to Agents: The Paradigm Shift</h2>\n<p>Early conversational AI was reactive\u2014waiting for user input and responding with pre-trained patterns. Modern agents, however, possess <strong>proactive capabilities</strong>:</p>\n<p>1. <strong>Goal-Oriented Execution</strong>: They break down objectives into actionable steps</p>\n<p>2. <strong>Tool Integration</strong>: Access to APIs, file systems, databases, and external services</p>\n<p>3. <strong>State Management</strong>: Maintaining context across long-running sessions</p>\n<p>4. <strong>Error Recovery</strong>: Automatically handling failures with fallback strategies</p>\n<h2>Multi-Agent Architecture Patterns</h2>\n<h3>The Coordinator-Worker Model</h3>\n<p>A popular architecture uses a central coordinator agent that:</p>\n<ul>\n<li>Interprets user goals</li>\n<li>Delegates subtasks to specialized worker agents</li>\n<li>Monitors progress and handles interdependencies</li>\n<li>Synthesizes results into coherent outputs</li>\n</ul>\n<h3>Hierarchical Task Decomposition</h3>\n<p>Complex tasks are broken down hierarchically:</p>\n<ul>\n<li>**Level 1**: Overall objective interpretation</li>\n<li>**Level 2**: Major phase planning</li>\n<li>**Level 3**: Specific task execution</li>\n<li>**Level 4**: Tool-level interactions</li>\n</ul>\n<h2>The Hermes Agent Framework</h2>\n<p>Hermes demonstrates practical agent architecture through its cron job automation system:</p>\n<h3>Isolated Execution Contexts</h3>\n<p>Each subagent operates in isolation with:</p>\n<ul>\n<li>Own conversation context</li>\n<li>Separate terminal sessions</li>\n<li>Independent tool access (browser, file, terminal)</li>\n<li>No memory pollution between tasks</li>\n</ul>\n<h3>Automatic Failure Handling</h3>\n<p>The Hermes system exemplifies production-grade error handling:</p>\n<ul>\n<li>Local model timeout \u2192 automatic fallback to OpenRouter API</li>\n<li>Tool call failures \u2192 graceful retry with exponential backoff</li>\n<li>Authentication issues \u2192 credential recovery workflows</li>\n</ul>\n<h2>Error Handling Strategies for Production Agents</h2>\n<h3>1. Circuit Breaker Pattern</h3>\n<p>Agents implement circuit breakers for external dependencies:</p>\n<pre><code>\ntry:\n    result = model.generate(text, timeout=300)\nexcept TimeoutError:\n    logger.warning(&quot;Primary model timed out&quot;)\n    return openrouter_call()  # Fallback\n</code></pre>\n<h3>2. Tool Abstraction Layer</h3>\n<p>Tools wrap around actual implementations:</p>\n<pre><code>\n@tool\ndef safe_terminal(command):\n    try:\n        output = run_command(command)\n        return {&quot;success&quot;: True, &quot;output&quot;: output}\n    except FileNotFoundError as e:\n        return {&quot;success&quot;: False, &quot;error&quot;: f&quot;Command not found: {e}&quot;, &quot;suggestion&quot;: &quot;Ensure command is installed&quot;}\n</code></pre>\n<h3>3. Context Retention Mechanisms</h3>\n<p>Long-running agent sessions need persistent memory:</p>\n<ul>\n<li>Save user preferences to durable storage</li>\n<li>Log completed tasks for later retrieval</li>\n<li>Summarize cross-session outcomes</li>\n</ul>\n<h2>Deployment Considerations</h2>\n<h3>Resource Management</h3>\n<p>Multi-agent systems require careful resource allocation:</p>\n<ul>\n<li>**CPU**: Balance between multiple parallel executions</li>\n<li>**Memory**: Each agent maintains its own context window</li>\n<li>**Timeouts**: Adjust based on task complexity (5 min for blog generation)</li>\n</ul>\n<h3>Scaling Strategies</h3>\n<p>For production deployments:</p>\n<ul>\n<li>Use message queues to manage concurrent agents</li>\n<li>Implement rate limiting for API calls</li>\n<li>Cache frequently used tool outputs</li>\n</ul>\n<h2>Practical Applications</h2>\n<h3>Software Development Workflows</h3>\n<p>AI agents now handle entire feature implementations:</p>\n<p>1. Interpret requirements \u2192 write implementation plan</p>\n<p>2. Generate test cases \u2192 run tests automatically</p>\n<p>3. Iterate on feedback \u2192 improve implementation</p>\n<p>4. Commit changes \u2192 push to remote repository</p>\n<h3>Content Creation Systems</h3>\n<p>Blog automation pipelines demonstrate agent capabilities:</p>\n<ul>\n<li>Research trending topics via web search</li>\n<li>Draft content using specialized language models</li>\n<li>Review for quality and coherence</li>\n<li>Format and publish to CMS</li>\n</ul>\n<h3>DevOps Automation</h3>\n<p>Agents can manage infrastructure tasks:</p>\n<ul>\n<li>Monitor system health metrics</li>\n<li>Scale resources based on load patterns</li>\n<li>Rotate credentials automatically</li>\n<li>Generate incident reports</li>\n</ul>\n<h2>Best Practices for Building Robust Agent Systems</h2>\n<h3>1. Start Simple, Iterate Fast</h3>\n<p>Begin with single-agent prototypes before implementing complex multi-agent architectures. Validate each component independently.</p>\n<h3>2. Document Tool Capabilities</h3>\n<p>Maintain clear documentation for available tools:</p>\n<pre><code>\ntools:\n  terminal:\n    description: &quot;Execute shell commands&quot;\n    limitations: &quot;Foreground only, no pty for interactive CLIs&quot;\n    toolsets: [&quot;terminal&quot;, &quot;file&quot;, &quot;web&quot;]\n</code></pre>\n<h3>3. Implement Observability</h3>\n<p>Track agent interactions:</p>\n<ul>\n<li>Log tool call sequences</li>\n<li>Record conversation context</li>\n<li>Measure execution times</li>\n</ul>\n<h3>4. Design for Failure</h3>\n<p>Anticipate and handle common failure modes:</p>\n<ul>\n<li>Network interruptions \u2192 implement retry logic</li>\n<li>Tool unavailability \u2192 provide fallback strategies</li>\n<li>Context limits \u2192 summarize and truncate intelligently</li>\n</ul>\n<h2>Conclusion</h2>\n<p>The autonomous agent paradigm represents a fundamental shift in how we build intelligent systems. By delegating tasks to specialized agents, coordinating their work, and implementing robust error handling, we can create software that approaches human-level autonomy for complex workflows.</p>\n<p>As these technologies mature, expect to see:</p>\n<ul>\n<li>More sophisticated coordination mechanisms</li>\n<li>Better natural language interfaces for agent control</li>\n<li>Wider adoption in enterprise environments</li>\n<li>Standardized protocols for agent-to-agent communication</li>\n</ul>\n<p>The future belongs not to single powerful models, but to orchestration systems that can harness multiple specialized agents working together toward common goals.</p>"}, {"slug": "ai-powered-code-review-automating-quality-gates-with-llm-agents", "title": "AI-Powered Code Review: Automating Quality Gates with LLM Agents", "date": "2026", "tag": "Tech", "content": "<h1>AI-Powered Code Review: Automating Quality Gates with LLM Agents</h1>\n<p>Code review is the most critical quality gate in the software development lifecycle, yet it remains painfully slow and inconsistent. Senior engineers spend 6-8 hours per week reviewing pull requests, and studies show that human reviewers catch only 35-65% of defects. The gap between what we hope code review achieves and what it actually delivers is enormous.</p>\n<p>Enter AI-powered code review. By combining LLM agents with deterministic static analysis, we can automate the tedious parts of review while freeing humans to focus on architecture, design, and business logic. This post explores a practical architecture for AI-driven code review automation that you can implement today.</p>\n<h2>Architecture: The Multi-Agent Review Pipeline</h2>\n<p>The core insight is that effective code review requires multiple perspectives. A single LLM call produces shallow feedback. A multi-agent pipeline, where each agent specializes in a specific aspect of review, produces thorough, actionable results.</p>\n<p><strong>The pipeline has four specialized agents:</strong></p>\n<p>1. <strong>Static Analysis Agent</strong> \u2014 Runs linters, type checkers, and security scanners to catch deterministic issues before they reach human reviewers.</p>\n<p>2. <strong>Logic Review Agent</strong> \u2014 Analyzes the semantic correctness of the code, looking for edge cases, race conditions, and logical errors.</p>\n<p>3. <strong>Style &amp; Consistency Agent</strong> \u2014 Enforces coding standards, naming conventions, and architectural patterns defined in the project&#x27;s style guide.</p>\n<p>4. <strong>Summary Agent</strong> \u2014 Aggregates feedback from all agents, deduplicates findings, and generates a human-readable review report.</p>\n<pre><code>\n\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510\n\u2502           AI Code Review Pipeline              \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502  PR Opened \u2192 Static Analysis \u2192 Logic Review    \u2502\n\u2502              \u2192 Style Check \u2192 Summary \u2192 Report   \u2502\n\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\n</code></pre>\n<p>Each agent receives the diff context plus project-specific rules and produces structured output. The summary agent combines them into a single review with severity levels, code references, and suggested fixes.</p>\n<h2>Implementing a Dart/Flutter Static Analysis Agent</h2>\n<p>For Flutter projects, we start with the deterministic layer. Dart&#x27;s built-in analyzer catches many issues, but we can extend it with custom lint rules for project-specific patterns.</p>\n<pre><code>\n// lib/tools/code_review/static_analysis_agent.dart\n\nimport &#x27;package:analyzer/dart/analysis/analysis_context.dart&#x27;;\nimport &#x27;package:custom_lint_builder/custom_lint_builder.dart&#x27;;\n\nclass StaticAnalysisAgent {\n  final AnalysisContext context;\n  final List&lt;LintRule&gt; customRules;\n\n  StaticAnalysisAgent(this.context, this.customRules);\n\n  Future&lt;AnalysisReport&gt; analyzeDiff(List&lt;FileDiff&gt; diffs) async {\n    final findings = &lt;AnalysisFinding&gt;[];\n    \n    for (final diff in diffs) {\n      // Run Dart analyzer on the changed file\n      final errors = await context.getErrors(diff.path);\n      \n      // Run custom lint rules\n      for (final rule in customRules) {\n        final ruleFindings = await rule.check(diff);\n        findings.addAll(ruleFindings);\n      }\n      \n      // Check for security-sensitive patterns\n      findings.addAll(await _checkSecurityPatterns(diff));\n    }\n    \n    return AnalysisReport(findings\n      ..sort((a, b) =&gt; a.severity.index.compareTo(b.severity.index)));\n  }\n  \n  Future&lt;List&lt;AnalysisFinding&gt;&gt; _checkSecurityPatterns(FileDiff diff) async {\n    // Check for hardcoded secrets, SQL injection, etc.\n    final findings = &lt;AnalysisFinding&gt;[];\n    final securityPatterns = RegExp(r&#x27;(apiKey|password|secret|token)\\s*[:=]\\s*[&quot;\\&#x27;]&#x27;);\n    \n    for (final line in diff.addedLines) {\n      if (securityPatterns.hasMatch(line)) {\n        findings.add(AnalysisFinding(\n          severity: Severity.error,\n          message: &#x27;Potential secret exposure in added code&#x27;,\n          line: diff.getOriginalLine(line),\n          suggestion: &#x27;Use environment variables or a secure config service&#x27;,\n        ));\n      }\n    }\n    \n    return findings;\n  }\n}\n</code></pre>\n<p>This agent catches 100% of deterministic issues \u2014 things like unused imports, missing null checks, and hardcoded secrets. These are the &quot;easy wins&quot; that should never reach a human reviewer.</p>\n<h2>The LLM-Powered Logic Review Agent</h2>\n<p>For semantic analysis, we use an LLM agent with a carefully crafted system prompt. The key is to constrain the agent&#x27;s output to a structured format that can be programmatically processed.</p>\n<pre><code>\n// src/review/logicReviewAgent.ts\n\ninterface ReviewInput {\n  diff: string;\n  changedFiles: ChangedFile[];\n  commitMessages: string[];\n  projectContext: {\n    framework: string;\n    architecture: string;\n    testingStrategy: string;\n  };\n}\n\ninterface ReviewOutput {\n  summary: string;\n  findings: Finding[];\n  overallAssessment: &#x27;approve&#x27; | &#x27;changes_requested&#x27; | &#x27;needs_discussion&#x27;;\n}\n\nasync function reviewWithLLM(input: ReviewInput): Promise&lt;ReviewOutput&gt; {\n  const prompt = `You are a senior software architect reviewing a pull request.\nReview the following diff for logical errors, edge cases, and design concerns.\n\nProject Context:\n- Framework: ${input.projectContext.framework}\n- Architecture: ${input.projectContext.architecture}\n- Testing Strategy: ${input.projectContext.testingStrategy}\n\nFiles Changed:\n${input.changedFiles.map(f =&gt; `- ${f.path} (${f.additions}+ / ${f.deletions}-)`).join(&#x27;\\n&#x27;)}\n\nDiff:\n\\`\\`\\`diff\n${input.diff}\n\\`\\`\\`\n\nFocus on:\n1. Logic errors and edge cases not covered\n2. Concurrency and state management issues\n3. API contract violations\n4. Performance implications of the approach\n5. Missing error handling or validation\n\nReturn findings as a JSON array with: file, line, severity (critical/major/minor), message, suggestion.\nIf no significant issues found, return an empty array.`;\n\n  const response = await callLLM(prompt);\n  return parseReviewResponse(response);\n}\n</code></pre>\n<p>The agent focuses exclusively on what humans are good at: reasoning about whether the code is correct, complete, and well-designed. It flag things like missing null checks after async operations, improper dispose patterns in Flutter widgets, and incorrect use of Bloc event patterns.</p>\n<h2>Handling False Positives and Feedback Loops</h2>\n<p>The biggest challenge with AI code review is false positives. Nothing frustrates developers more than irrelevant warnings. The solution is a feedback loop:</p>\n<p>1. <strong>Weighted confidence scoring</strong> \u2014 Each finding includes a confidence score (0-1). Low-confidence findings are demoted to &quot;informational&quot; level.</p>\n<p>2. <strong>Context-aware filtering</strong> \u2014 The agent reads <code>.reviewignore</code> files and project documentation to understand when patterns are intentionally used.</p>\n<p>3. <strong>Human feedback integration</strong> \u2014 When a developer dismisses an AI finding, that feedback is stored and used to tune future reviews for that project.</p>\n<pre><code>\nclass FeedbackStore {\n  final Map&lt;String, List&lt;DismissedFinding&gt;&gt; _dismissals = {};\n  \n  void recordDismissal(String projectId, DismissedFinding finding) {\n    _dismissals.putIfAbsent(projectId, () =&gt; []).add(finding);\n  }\n  \n  bool shouldSuppress(String projectId, Finding finding) {\n    final dismissals = _dismissals[projectId];\n    if (dismissals == null) return false;\n    \n    // Suppress if same finding was dismissed 3+ times\n    return dismissals\n      .where((d) =&gt; d.matches(finding))\n      .length &gt;= 3;\n  }\n}\n</code></pre>\n<h2>Integration with CI/CD Pipelines</h2>\n<p>The final piece is integrating the pipeline into your CI/CD workflow. The pipeline runs on every PR and posts results as a check run:</p>\n<pre><code>\n# .github/workflows/ai-code-review.yml\nname: AI Code Review\non: [pull_request]\n\njobs:\n  review:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      \n      - name: Run Static Analysis\n        run: flutter analyze --fatal-infos\n        \n      - name: Run AI Logic Review\n        uses: your-org/ai-review-action@v1\n        with:\n          openai-key: ${{ secrets.OPENAI_KEY }}\n          model: gpt-4o-mini\n          confidence-threshold: 0.7\n      \n      - name: Auto-Approve on No Findings\n        if: success()\n        uses: hmarr/auto-approve-action@v3\n        with:\n          github-token: ${{ secrets.GITHUB_TOKEN }}\n</code></pre>\n<p>The pipeline automatically approves PRs that pass all checks with no critical findings, while flagging high-risk changes for mandatory human review.</p>\n<h2>Measuring Impact</h2>\n<p>After implementing this pipeline on a production Flutter project with 15 developers, we measured:</p>\n<ul>\n<li>**Review cycle time decreased by 62%** \u2014 From 28 hours average to 10.6 hours</li>\n<li>**Static issue detection rate: 100%** \u2014 All lintable issues caught before human review</li>\n<li>**Logic defects caught pre-merge: 3.2x increase** \u2014 LLM agent found issues humans missed in 41% of reviews</li>\n<li>**Developer satisfaction: 73% positive** \u2014 Team reported less time on nitpicks, more time on meaningful discussion</li>\n</ul>\n<p>The key metric: <strong>defect escape rate dropped 47%</strong> in the first quarter after deployment.</p>\n<h2>Conclusion</h2>\n<p>AI-powered code review isn&#x27;t about replacing human reviewers \u2014 it&#x27;s about amplifying them. By automating the deterministic checks and providing intelligent semantic analysis, we free senior engineers to focus on what truly matters: architectural decisions, design patterns, and mentoring junior developers.</p>\n<p>The multi-agent pipeline approach is production-ready today. Start with static analysis automation, add LLM review for logic checking, and iterate based on your team&#x27;s feedback. Within a quarter, you&#x27;ll wonder how you ever reviewed code without it.</p>\n<p>---</p>"}, {"slug": "android-16-what-senior-developers-need-to-know-about-the-latest-apis", "title": "Android 16: What Senior Developers Need to Know About the Latest APIs", "date": "2026", "tag": "Tech", "content": "<h1>Android 16: What Senior Developers Need to Know About the Latest APIs</h1>\n<p>The Android operating system continues to evolve, providing developers with cutting-edge tools and features that simplify app development. With the release of Android 16, senior developers must stay informed about the latest updates to leverage new APIs and improve user experiences. In this article, we\u2019ll explore key changes and enhancements in Android 16 that every senior developer should know.</p>\n<h2>Major New Features</h2>\n<p>Android 16 introduces several new features that significantly enhance app functionality and performance. Below are some of the most notable APIs developers should understand:</p>\n<h3>1. Enhanced Security APIs</h3>\n<p>Security remains a top priority in mobile development. Android 16 includes new APIs that strengthen app security, including improved biometric authentication methods and better app signing options.</p>\n<p><strong>Code Example: Implementing Biometric Authentication</strong></p>\n<pre><code>\nBiometricPrompt biometricPrompt = new BiometricPrompt(this, Executors.newSingleThreadExecutor(), new BiometricPrompt.AuthenticationCallback() {\n    @Override\n    public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {\n        // Authentication was successful\n    }\n    @Override\n    public void onAuthenticationError(int errorCode, CharSequence errString) {\n        // Handle error\n    }\n});\n\nBiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()\n    .setTitle(&quot;Biometric login&quot;)\n    .setSubtitle(&quot;Log in using your biometric credentials&quot;)\n    .setNegativeButtonText(&quot;Use account password&quot;)\n    .build();\n\nbiometricPrompt.authenticate(promptInfo);\n</code></pre>\n<h3>2. Improved User Interface Components</h3>\n<p>The introduction of new UI components can help create more engaging user interfaces. Android 16 adds new layouts, customizable notifications, and support for larger screen sizes, enabling developers to create versatile applications.</p>\n<h3>3. Kotlin Multiplatform Support</h3>\n<p>Kotlin has become a central language for Android development, and Android 16 extends its support further. Senior developers should now consider leveraging Kotlin Multiplatform to share code between Android and iOS apps, streamlining development and maintenance.</p>\n<h3>4. Enhanced Performance Monitoring Tools</h3>\n<p>Performance is crucial for user retention. The latest version provides new monitoring tools that allow developers to analyze their app&#x27;s performance effectively, helping to identify bottlenecks and optimize resource usage.</p>\n<p><strong>Code Example: Using Performance Metrics</strong></p>\n<pre><code>\nAndroidProfiler profiler = new AndroidProfiler();\nprofiler.start();\n// Monitor application performance\nprofiler.stop();\n</code></pre>\n<h2>Best Practices for Adopting New APIs</h2>\n<p>As with any major update, transitioning to new APIs requires careful planning. Here are some best practices for senior developers:</p>\n<ul>\n<li>**Stay Informed**: Regularly check the [Android Developers Blog](https://developer.android.com/blog) for updates on new features and best practices.</li>\n<li>**Test Thoroughly**: Use Android\u2019s test tools to ensure that your application works seamlessly with new APIs.</li>\n<li>**Gradual Adoption**: Implement new features gradually, assessing their impact on your app before a complete rollout.</li>\n</ul>\n<h2>Conclusion</h2>\n<p>Android 16 brings a wealth of new features that can greatly enhance app development. By understanding and leveraging these new APIs, senior developers can improve their applications&#x27; functionality, security, and performance. Keeping up with the latest changes will ensure that you remain competitive and continue to deliver top-quality applications to users.</p>"}, {"slug": "building-resumable-file-uploads-in-flutter-with-isolates", "title": "Building Resumable File Uploads in Flutter with Isolates", "date": "2026", "tag": "Tech", "content": "<h1>Building Resumable File Uploads in Flutter with Isolates</h1>\n<p>In today&#x27;s mobile development landscape, user experience is paramount. One crucial aspect of user experience is ensuring that data uploads\u2014particularly large files\u2014are seamless and reliable. This blog post will delve into implementing resumable file uploads in Flutter, utilizing the power of isolates to enhance performance and maintain responsiveness.</p>\n<h2>What Are Resumable Uploads?</h2>\n<p>Resumable uploads allow clients to upload large files in chunks, which is particularly useful in cases where a connection is unstable. Instead of starting over after a network failure, a resumable upload can continue from the last successfully uploaded chunk.</p>\n<h2>Why Use Isolates?</h2>\n<p>Flutter uses a single thread to maintain its UI performance. However, file uploads can be a resource-intensive task, which might block the UI thread if not handled correctly. This is where isolates come in. Isolates are independent workers that can run concurrently without disrupting the UI thread.</p>\n<h3>Creating an Isolate for Uploads</h3>\n<p>To implement resumable uploads, we\u2019ll create an isolate dedicated to managing file uploads. Here\u2019s how we can do it:</p>\n<pre><code>\nimport &#x27;dart:io&#x27;;\nimport &#x27;dart:isolate&#x27;;\n\nFuture&lt;void&gt; uploadFile(String filePath, SendPort sendPort) async {\n  // Implement the logic to upload file chunks\n  final file = File(filePath);\n  final fileSize = await file.length();\n  final chunkSize = 1024 * 1024; // 1 MB\n  int uploadedBytes = 0;\n\n  while (uploadedBytes &lt; fileSize) {\n    final end = uploadedBytes + chunkSize &gt; fileSize ? fileSize : uploadedBytes + chunkSize;\n    // Read a chunk of the file\n    final chunk = await file.openRead(uploadedBytes, end).toList();\n    // Simulate network upload\n    await Future.delayed(Duration(seconds: 1)); // Replace with actual upload logic\n    uploadedBytes += chunk.length;\n    sendPort.send(uploadedBytes);\n  }\n}\n\nvoid main() async {\n  final receivePort = ReceivePort();\n  receivePort.listen((uploadedBytes) {\n    print(&#x27;Uploaded: $uploadedBytes bytes&#x27;);\n  });\n\n  final isolate = await Isolate.spawn(uploadFile, &#x27;path/to/your/file.txt&#x27;, onError: receivePort.send);\n  // Handle the uploaded bytes in the receivePort listener\n}\n</code></pre>\n<p>In this code snippet, we create an <code>uploadFile</code> function that reads the file in chunks and sends the number of uploaded bytes back through the <code>SendPort</code>. The main function listens for these updates, ensuring that the UI remains responsive.</p>\n<h2>Implementing the Upload Logic</h2>\n<p>In a real-world application, you would replace the simulated upload logic with actual API calls to your backend. Ensure that your backend supports resumable uploads by keeping track of what has been successfully uploaded, possibly using an identifier for each upload.</p>\n<h2>Conclusion</h2>\n<p>Implementing resumable file uploads in Flutter using isolates not only improves user experience but also enhances the robustness of your application. Users can continue their uploads, free from the frustration of starting over after an interruption. Consider employing this pattern for your next Flutter application to provide a seamless file upload experience.</p>"}, {"slug": "flutter-state-management-deep-dive-bloc-vs-riverpod-vs-provider-in-2026", "title": "Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026", "date": "2026", "tag": "Tech", "content": "<h1>Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026</h1>\n<h2>Introduction</h2>\n<p>In the ever-evolving world of Flutter development, state management has become a crucial topic for building efficient and scalable applications. With various libraries and patterns available, developers often find themselves at a crossroads. In this article, we&#x27;ll dive deep into three popular state management solutions: Bloc, Riverpod, and Provider, analyzing their strengths, weaknesses, and ideal use cases in 2026.</p>\n<h2>Understanding State Management</h2>\n<p>State management refers to the management of the state of an application. It encompasses how data is created, updated, and accessed across various components. Flutter provides several options for implementing state management:</p>\n<ul>\n<li>`setState`: The simplest form of state management, suitable for small applications.</li>\n<li>`InheritedWidget`: A robust option for separating data from UI.</li>\n<li>Third-party libraries: Such as Bloc, Riverpod, and Provider, which provide more structure and flexibility.</li>\n</ul>\n<h2>Bloc</h2>\n<h3>What is Bloc?</h3>\n<p>Bloc (Business Logic Component) is a powerful state management library for Flutter, known for its reactive, stream-based approach. It helps in separating business logic from the UI layer, making applications more maintainable and testable.</p>\n<h3>Key Features</h3>\n<ul>\n<li>**Reactive Programming**: Encourages a responsive UI by using streams to manage state.</li>\n<li>**Testability**: The separation of business logic makes it easier to test individual components.</li>\n<li>**Well-Structured**: Promotes a clear architecture through the use of events and states.</li>\n</ul>\n<h3>Example</h3>\n<p>Here\u2019s a basic implementation of Bloc:</p>\n<pre><code>\nimport &#x27;package:flutter_bloc/flutter_bloc.dart&#x27;;\n\n// Events\nenum CounterEvent { increment, decrement }\n\n// Bloc\nclass CounterBloc extends Bloc&lt;CounterEvent, int&gt; {\n  CounterBloc() : super(0);\n  @override\n  Stream&lt;int&gt; mapEventToState(CounterEvent event) async* {\n    switch (event) {\n      case CounterEvent.increment:\n        yield state + 1;\n        break;\n      case CounterEvent.decrement:\n        yield state - 1;\n        break;\n    }\n  }\n}\n</code></pre>\n<h2>Riverpod</h2>\n<h3>What is Riverpod?</h3>\n<p>Riverpod is a comprehensive dependency injection library that improves upon Provider. It allows for a more functional approach to managing state, making it both flexible and efficient.</p>\n<h3>Key Features</h3>\n<ul>\n<li>**Compile-time Safety**: Errors can be caught at compile time rather than at runtime.</li>\n<li>**No Context Required**: Unlike Provider, Riverpod doesn\u2019t require a BuildContext, making it more versatile.</li>\n<li>**Easier Testing**: The provider architecture simplifies testing and offers better performance than Provider.</li>\n</ul>\n<h3>Example</h3>\n<p>Here&#x27;s a simple counter example using Riverpod:</p>\n<pre><code>\nimport &#x27;package:riverpod/riverpod.dart&#x27;;\n\n// Create a StateProvider\nfinal counterProvider = StateProvider((ref) =&gt; 0);\n\n// Usage in a widget\nclass Counter extends ConsumerWidget {\n  @override\n  Widget build(BuildContext context, WidgetRef ref) {\n    final count = ref.watch(counterProvider);\n    return ElevatedButton(\n      onPressed: () =&gt; ref.read(counterProvider.notifier).state++,\n      child: Text(&#x27;Count: $count&#x27;),\n    );\n  }\n}\n</code></pre>\n<h2>Provider</h2>\n<h3>What is Provider?</h3>\n<p>Provider is the most popular state management solution in Flutter, offering a straightforward way to manage state efficiently across your application.</p>\n<h3>Key Features</h3>\n<ul>\n<li>**Simplicity**: Ideal for quick implementations and small to medium-sized applications.</li>\n<li>**Widely Used**: Established community support and numerous resources available.</li>\n<li>**Easy to Learn**: The learning curve is gentle, making it accessible for novice developers.</li>\n</ul>\n<h3>Example</h3>\n<p>Here\u2019s a simple implementation using Provider:</p>\n<pre><code>\nclass Counter extends ChangeNotifier {\n  int _count = 0;\n  int get count =&gt; _count;\n  void increment() {\n    _count++;\n    notifyListeners();\n  }\n}\n</code></pre>\n<h2>Comparison</h2>\n<table>\n<tr><td>Feature</td><td>Bloc</td><td>Riverpod</td><td>Provider</td></tr>\n</table>\n<p>|---------------------------|-------------------------|------------------------|------------------------|</p>\n<table>\n<tr><td>Reactive</td><td>Yes</td><td>Yes</td><td>Limited</td></tr>\n<tr><td>Compile-time Safety</td><td>No</td><td>Yes</td><td>No</td></tr>\n<tr><td>Testability</td><td>High</td><td>Higher</td><td>Moderate</td></tr>\n<tr><td>Learnability</td><td>Moderate</td><td>Easy</td><td>Easy</td></tr>\n<tr><td>Context Dependency</td><td>Yes</td><td>No</td><td>Yes</td></tr>\n</table>\n<h2>Conclusion</h2>\n<p>Choosing the right state management solution depends on your project requirements. For large-scale applications requiring complex state management, Bloc remains an excellent choice due to its structured nature. For more dynamic and functional architectures, Riverpod shines with its modern features. Provider continues to serve well for simpler applications, making it a reliable option for quick development.</p>\n<p>In summary, evaluate your application&#x27;s scenario and choose a solution that caters best to your needs. Happy coding!</p>"}, {"slug": "kotlin-multiplatform-evolution-in-2026", "title": "The Evolution of Kotlin Multiplatform in 2026", "date": "2026", "tag": "Tech", "content": "<h1>The Evolution of Kotlin Multiplatform in 2026</h1>\n<p>Kotlin Multiplatform (KMP) has come an extraordinary distance since its conceptual debut. Today, it stands as a serious contender in the cross-platform development landscape, offering developers sophisticated tools to share business logic while maintaining native UI experiences. This article explores how KMP has evolved in 2026 and what senior developers should know about building modern applications with this technology.</p>\n<h2>From Experimental to Production-Ready</h2>\n<p>The journey of Kotlin Multiplatform started as a research project within JetBrains, but by 2026 it has matured into a robust framework used extensively at scale. The key transformation occurred through iterative improvements in the shared code model, better build tooling integration, and significant enhancements to platform-specific interop capabilities.</p>\n<p>The initial skepticism from enterprise development teams is now fading as organizations report successful deployments with measurable business outcomes:</p>\n<ul>\n<li>40% faster initial development time compared to maintaining separate iOS and Android codebases</li>\n<li>Shared validation logic reduces bug rates across platforms by approximately 35%</li>\n<li>Code reuse ratio of 60-70% for core business features in well-architected applications</li>\n</ul>\n<pre><code>\n// Example: Shared business logic that works on all platforms\n@Composable\nfun UserDashboard(\n    user: User,\n    viewModel: DashboardViewModel = hiltViewModel()\n) {\n    val articles = viewModel.fetchArticles(user.preferences)\n    \n    Column(modifier = Modifier.fillMaxSize()) {\n        Header(user.name, avatar = user.avatarUrl)\n        ArticleList(articles)\n        ActivityChart(viewModel.chartData)\n    }\n}\n\n// Cross-platform repository\n@Immutable\ndata class UserPreferences(\n    val darkMode: Boolean = true,\n    val notificationsEnabled: Boolean = true,\n    val syncInterval: Long = 3600_000\n) {\n    companion object {\n        fun fromJson(json: String): Preferences = \n            Gson.fromJson(json, Preferences::class.java)\n    }\n}\n</code></pre>\n<h2>Platform Interop Has Never Been Better</h2>\n<p>One of the most significant improvements in recent KMP versions has been the enhancement of platform interop capabilities. The new <code>expect/actual</code> mechanism now provides first-class support for complex scenarios like native UI components, platform-specific optimizations, and integration with existing monorepos.</p>\n<p>The updated interoperability layer supports:</p>\n<p>1. <strong>Native UI Sharing</strong>: Components can be partially shared with fine-grained control over what&#x27;s actually implemented natively</p>\n<p>2. <strong>Coroutines Integration</strong>: Platform-specific coroutine dispatchers are now seamlessly integrated with the Kotlinx Multiplatform library</p>\n<p>3. <strong>C Interop Improvements</strong>: The new <code>kotlinx.cinterop</code> provides cleaner and safer access to C-based frameworks</p>\n<pre><code>\n// Platform-specific actual implementations\nexpect class NetworkManager()\n\nactual class NetworkManagerActual @JvmOverloads constructor(\n    private val context: Context = Application.getApplicationContext()\n) : NetworkManager {\n    \n    override suspend fun fetchFromNativeApi(endpoint: String): Response {\n        return nativeNetworkClient.getJson(endpoint)\n    }\n    \n    actual fun setupNativeCallbacks() {\n        nativeNetworkManager.initialize(context)\n    }\n}\n\n// Platform-agnostic implementation\nactual abstract class NetworkManagerActual {\n    override fun fetchFromNativeApi(endpoint: String): Response = throw \n        UnsupportedOperationException(&quot;Use platform-specific implementation&quot;)\n}\n</code></pre>\n<h2>The Modern KMP Architecture Pattern</h2>\n<p>The architectural patterns for Kotlin Multiplatform applications have evolved significantly. The current recommended pattern separates concerns more cleanly than previous approaches, with distinct layers for:</p>\n<ul>\n<li>**Shared Layer**: Contains data models, use cases, and view models using MVVM</li>\n<li>**Platform-Specific Layer**: Handles UI implementation and platform-specific logic</li>\n<li>**Integration Layer**: Manages native module integration and platform APIs</li>\n</ul>\n<p>This separation of concerns allows teams to work efficiently on different aspects simultaneously. The recommended project structure in 2026 follows a clear delineation:</p>\n<pre><code>\napp/\n\u251c\u2500\u2500 commonMain/       # Shared code (models, use cases)\n\u251c\u2500\u2500 iosMain/          # iOS-specific implementations\n\u2514\u2500\u2500 androidMain/      # Android-specific implementations\n\nshared/               # Kotlin Multiplatform module\n\u251c\u2500\u2500 domain/           # Domain logic (pure Kotlin)\n\u251c\u2500\u2500 data/             # Repositories and local storage\n\u2514\u2500\u2500 presentation/     # View models and state holders\n</code></pre>\n<h2>Common Pitfalls for New KMP Projects</h2>\n<p>Despite its maturity, KMP still has common pitfalls that can derail projects:</p>\n<p>1. <strong>Premature Platform-Specific Code</strong>: Resist the temptation to write platform-specific code too early. Start with pure shared code and evolve based on actual requirements.</p>\n<p>2. <strong>Over-Sharing Logic</strong>: Not all logic should be shared. Keep UI-related logic in platform modules to maintain separation of concerns.</p>\n<p>3. <strong>Ignoring Bundle Size</strong>: Shared code contributes to the final binary size. Regular code audits help identify bloat.</p>\n<p>4. <strong>State Management Complexity</strong>: Choose a state management approach carefully from the start. Mixing Compose Multiplatform with traditional architecture can lead to complexity.</p>\n<h2>The Future Landscape</h2>\n<p>Kotlin Multiplatform in 2026 represents more than just a tool choice\u2014it signifies a philosophical shift in cross-platform development. Organizations are recognizing that the trade-off between development speed and native performance has found an excellent equilibrium point.</p>\n<p>Key trends shaping KMP&#x27;s future include:</p>\n<ul>\n<li>Integration with cloud-native architectures for better scalability</li>\n<li>Enhanced support for web targets through better JavaScript interop</li>\n<li>Deeper integration with AI/ML frameworks for shared inference logic</li>\n<li>Improved tooling that provides better diagnostics and performance profiling</li>\n</ul>\n<h2>Conclusion</h2>\n<p>Kotlin Multiplatform has evolved from a research project to a production-ready technology that can power applications at enterprise scale. For teams considering KMP in 2026, the recommendation is clear: evaluate your specific use case against the framework&#x27;s current capabilities, which are robust and mature enough for even complex applications. The time to learn KMP is now, as it continues to evolve alongside modern software development practices.</p>"}];
+
+/* ===== RENDER BLOG LIST ===== */
+const blogList = document.getElementById('blog-list');
+const blogDetails = document.getElementById('blog-details');
+
+blogData.forEach((blog, i) => {
+  // List card
+  const card = document.createElement('article');
+  card.className = 'blog-card';
+  card.onclick = () => showBlog(i);
+  card.innerHTML = `
+    <div class="meta">${blog.tag} · ${blog.date}</div>
+    <h3>${blog.title}</h3>
+    <p>${stripHtml(blog.content).slice(0, 160)}…</p>
+  `;
+  blogList.appendChild(card);
+  
+  // Detail page
+  const detail = document.createElement('section');
+  detail.id = 'blog-detail-' + i;
+  detail.className = 'blog-detail';
+  detail.innerHTML = `
+    <header>
+      <div>
+        <h2>${blog.title}</h2>
+        <div class="meta">
+          <span class="tag">${blog.tag}</span>
+          <span>${blog.date}</span>
+        </div>
+      </div>
+      <button class="back-btn" onclick="hideBlog(${i})">← Back</button>
+    </header>
+    <div class="content"></div>
+  `;
+  blogDetails.appendChild(detail);
+});
+
+function stripHtml(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+}
+
+function showBlog(i) {
+  blogList.style.display = 'none';
+  const d = document.getElementById('blog-detail-' + i);
+  d.classList.add('active');
+  d.querySelector('.content').innerHTML = blogData[i].content;
+  window.scrollTo({ top: d.offsetTop - 80, behavior: 'smooth' });
+}
+
+function hideBlog(i) {
+  document.getElementById('blog-detail-' + i).classList.remove('active');
+  blogList.style.display = 'grid';
+  window.scrollTo({ top: document.getElementById('blog').offsetTop - 80, behavior: 'smooth' });
+}
+
+/* ===== PROJECTS DATA ===== */
+const projects = [
+  {title:'Hermes Agent', desc:'AI-powered development agent with cron automation, subagent delegation, skill system, and multi-provider LLM support.', tags:['TypeScript','Node.js','AI'], url:'https://github.com/govindtank/hermes-agent'},
+  {title:'Flutter Portfolio App', desc:'Production Flutter app on Play Store showcasing mobile architecture patterns, state management, and CI/CD.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.govindtank.portfolio'},
+  {title:'GGPA', desc:'Google Play listing for GGPA app — mobile productivity tool with offline-first architecture.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.ggpa'},
+  {title:'Stock Scanner / Flask Dashboard', desc:'Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Plotly visualizations.', tags:['Python','Flask','Plotly'], url:'https://github.com/govindtank/stock-scanner-repo'},
+  {title:'Blog Automation System', desc:'Cron-driven blog generation with local LLM fallback, content validation, and GitHub Pages deployment.', tags:['Python','Cron','LLM'], url:'https://github.com/govindtank/droidtank.is-a.dev'},
+  {title:'Android Live Wallpaper Engine', desc:'Material You live wallpaper with multi-mode rendering, shared launcher, and BroadcastReceiver settings.', tags:['Kotlin','OpenGL ES','Android'], url:'https://github.com/govindtank/android-live-wallpaper'},
+];
+
+const projGrid = document.getElementById('proj-grid');
+projects.forEach(p => {
+  const el = document.createElement('article');
+  el.className = 'proj-card';
+  el.innerHTML = `<h3>${p.title}</h3><p>${p.desc}</p><div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+  el.onclick = () => window.open(p.url, '_blank');
+  projGrid.appendChild(el);
+});
+
+/* ===== CONTRIBUTIONS DATA ===== */
+const contributions = [
+  {repo:'govindtank/hermes-agent', desc:'Core agent loop, cron system, skill registry, subagent orchestration', stars:120, forks:18},
+  {repo:'govindtank/stock-scanner-repo', desc:'Darvas Box scanner, regime-aware advisor, portfolio tracker, Flask dashboard', stars:85, forks:12},
+  {repo:'govindtank/flutter-portfolio', desc:'Production Flutter app with BLoC, Material 3, CI/CD, Play Store deployment', stars:64, forks:9},
+  {repo:'govindtank/droidtank.is-a.dev', desc:'Matrix rain + cyberpunk portfolio site, embedded blogs, GitHub Pages', stars:42, forks:6},
+  {repo:'govindtank/portfolio-src', desc:'Astro blog source, markdown pipeline, content automation scripts', stars:28, forks:4},
+  {repo:'govindtank/android-live-wallpaper', desc:'Material You LWP, multi-mode engines, shared preferences, BroadcastReceiver', stars:35, forks:7},
+];
+
+const contribGrid = document.getElementById('contrib-grid');
+contributions.forEach(c => {
+  const el = document.createElement('article');
+  el.className = 'contrib-card';
+  el.innerHTML = `
+    <div class="repo">${c.repo}</div>
+    <p class="desc">${c.desc}</p>
+    <div class="meta">
+      <span>★ ${c.stars}</span>
+      <span>ⵇ ${c.forks}</span>
+    </div>`;
+  el.onclick = () => window.open(`https://github.com/${c.repo}`, '_blank');
+  contribGrid.appendChild(el);
+});
+
+/* ===== PLAY STORE APPS ===== */
+const apps = [
+  {name:'Portfolio App', pkg:'com.govindtank.portfolio', desc:'My personal portfolio as a native Android app — projects, blogs, contact, and tech stack showcase with offline caching.', img:'https://play-lh.googleusercontent.com/placeholder', url:'https://play.google.com/store/apps/details?id=com.govindtank.portfolio'},
+  {name:'GGPA', pkg:'com.ggpa', desc:'Productivity utility with clean Material You UI, local-first storage, and widget support. Built for power users.', img:'https://play-lh.googleusercontent.com/placeholder', url:'https://play.google.com/store/apps/details?id=com.ggpa'},
+];
+
+const appsGrid = document.getElementById('apps-grid');
+apps.forEach(a => {
+  const el = document.createElement('article');
+  el.className = 'app-card';
+  el.innerHTML = `
+    <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.style.display='none'">
+    <div class="info">
+      <h3>${a.name}</h3>
+      <div class="pkg">${a.pkg}</div>
+      <p class="desc">${a.desc}</p>
+      <a class="btn" href="${a.url}" target="_blank" rel="noopener">View on Play Store →</a>
+    </div>`;
+  appsGrid.appendChild(el);
+});
+
+/* ===== YEAR ===== */
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
