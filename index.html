@@ -1,531 +1,1627 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DroidTank — Android Architect's Tech Showcase</title>
-<meta name="description" content="Open Source Libraries, Top Projects, GitHub Contributions, and Engineering Blog by Govind Tank">
-<link rel="canonical" href="https://droidtank.is-a.dev/">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-:root{
-  --bg:#01030a;--bg-card:rgba(8,14,26,.82);--border:rgba(0,240,255,.16);
-  --text:#e8f4ff;--muted:#8b98ab;--accent:#00f0ff;--green:#00ff9d;
-  --purple:#c17bff;--orange:#ff6b6b;--blue:#58a6ff;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-
-/* ===== MATRIX RAIN CANVAS ===== */
-#matrix{position:fixed;inset:0;z-index:0;opacity:.55;pointer-events:none}
-/* cyber glow layer */
-#glow-layer{position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:
-    radial-gradient(ellipse at 15% 20%,rgba(0,240,255,.07) 0%,transparent 45%),
-    radial-gradient(ellipse at 85% 75%,rgba(193,123,255,.06) 0%,transparent 45%),
-    radial-gradient(ellipse at 50% 110%,rgba(0,255,157,.05) 0%,transparent 50%);
-}
-/* perspective grid floor */
-#grid-floor{position:fixed;left:-50%;right:-50%;bottom:-10%;height:55%;z-index:1;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(0,240,255,.13) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,240,255,.13) 1px,transparent 1px);
-  background-size:44px 44px;
-  transform:perspective(420px) rotateX(62deg);
-  transform-origin:center top;
-  mask-image:linear-gradient(to top,black 30%,transparent 95%);
-  -webkit-mask-image:linear-gradient(to top,black 30%,transparent 95%);
-  animation:gridScroll 2.2s linear infinite;
-}
-@keyframes gridScroll{from{background-position:0 0}to{background-position:0 44px}}
-.scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.09) 3px,rgba(0,0,0,.09) 4px)}
-.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
-  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,2,8,.75) 100%)}
-
-main{position:relative;z-index:5}
-.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
-
-/* ===== NAV ===== */
-nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(12px);
-  background:rgba(1,3,10,.72);border-bottom:1px solid var(--border)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-.logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;color:var(--accent);
-  text-decoration:none;text-shadow:0 0 14px rgba(0,240,255,.6);letter-spacing:.5px}
-.logo span{color:var(--purple);text-shadow:0 0 14px rgba(193,123,255,.6)}
-nav ul{display:flex;gap:22px;list-style:none}
-nav a.nl{color:var(--muted);text-decoration:none;font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;transition:.25s}
-nav a.nl:hover{color:var(--accent);text-shadow:0 0 10px rgba(0,240,255,.7)}
-@media(max-width:720px){nav ul{gap:12px}nav a.nl{font-size:.65rem}}
-
-/* ===== HERO ===== */
-header.hero{min-height:92vh;display:flex;align-items:center;padding-top:80px}
-.glitch{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.6rem,7vw,4.6rem);font-weight:700;line-height:1.08;position:relative;display:inline-block}
-.glitch::before,.glitch::after{content:attr(data-text);position:absolute;inset:0;overflow:hidden}
-.glitch::before{color:var(--accent);animation:glitchA 3.2s infinite steps(1);clip-path:inset(0 0 62% 0);opacity:.75}
-.glitch::after{color:var(--purple);animation:glitchB 2.7s infinite steps(1);clip-path:inset(58% 0 0 0);opacity:.75}
-@keyframes glitchA{0%,92%,100%{transform:none;opacity:0}93%{transform:translate(-4px,-2px);opacity:.8}96%{transform:translate(3px,1px);opacity:.8}}
-@keyframes glitchB{0%,90%,100%{transform:none;opacity:0}91%{transform:translate(4px,2px);opacity:.8}94%{transform:translate(-3px,-1px);opacity:.8}}
-.hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--green),var(--purple));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.tagline{margin-top:18px;font-size:clamp(.95rem,2vw,1.15rem);color:var(--muted);max-width:640px}
-#typing{color:var(--green);border-right:2px solid var(--green);padding-right:3px;animation:caret .9s step-end infinite}
-@keyframes caret{50%{border-color:transparent}}
-.hero-cta{margin-top:34px;display:flex;gap:16px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:6px;
-  font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;text-decoration:none;
-  letter-spacing:.5px;transition:.25s;border:1px solid var(--accent);color:var(--accent);
-  box-shadow:0 0 18px rgba(0,240,255,.18),inset 0 0 12px rgba(0,240,255,.06)}
-.btn:hover{background:rgba(0,240,255,.12);box-shadow:0 0 32px rgba(0,240,255,.45),inset 0 0 20px rgba(0,240,255,.12);transform:translateY(-2px)}
-.btn.solid{background:linear-gradient(135deg,rgba(0,240,255,.18),rgba(193,123,255,.18));border-color:var(--purple);color:#fff;
-  box-shadow:0 0 18px rgba(193,123,255,.25)}
-.btn.solid:hover{box-shadow:0 0 34px rgba(193,123,255,.5)}
-
-/* ===== STATS ===== */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin:70px 0 0}
-.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px 16px;text-align:center;
-  backdrop-filter:blur(8px);transition:.3s;position:relative;overflow:hidden}
-.stat::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(0,240,255,.08),transparent);transition:.6s}
-.stat:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 32px rgba(0,240,255,.18)}
-.stat:hover::before{left:100%}
-.stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:1.9rem;color:var(--accent);
-  text-shadow:0 0 16px rgba(0,240,255,.55)}
-.stat span{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
-/* ===== BLOG SECTION ===== */
-section#blog{padding:70px 0 40px}
-.sec-title{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;margin:0 0 28px;
-  color:var(--accent);text-shadow:0 0 12px rgba(0,240,255,.5);position:relative}
-.sec-title::after{content:'';position:absolute;bottom:-6px;left:0;width:48px;height:3px;
-  background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:2px}
-
-#blog-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-.blog-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;
-  backdrop-filter:blur(8px);transition:.35s;cursor:pointer;position:relative}
-.blog-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,240,255,.06),rgba(193,123,255,.04));
-  opacity:0;transition:.35s}
-.blog-card:hover{border-color:var(--accent);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,240,255,.2)}
-.blog-card:hover::before{opacity:1}
-.blog-card .meta{font-size:.65rem;color:var(--green);text-transform:uppercase;letter-spacing:1.2px;
-  margin-bottom:8px;padding:0 20px 0}
-.blog-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:600;margin:0 0 6px;padding:0 20px;
-  color:var(--text);transition:.25s}
-.blog-card:hover h3{color:var(--accent)}
-.blog-card p{font-size:.78rem;color:var(--muted);line-height:1.6;padding:0 20px 18px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-
-.blog-detail{display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:32px;
-  margin:24px 0;max-height:75vh;overflow-y:auto;backdrop-filter:blur(12px)}
-.blog-detail.active{display:block;animation:detailIn .4s ease}
-@keyframes detailIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.blog-detail header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;
-  padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
-.blog-detail header h2{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;color:var(--text)}
-.blog-detail header .meta{font-size:.68rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
-.blog-detail header .tag{color:var(--purple);text-transform:uppercase;letter-spacing:1px}
-.back-btn{background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 16px;
-  border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;
-  cursor:pointer;transition:.25s;letter-spacing:.5px;text-transform:uppercase}
-.back-btn:hover{background:rgba(0,240,255,.12);box-shadow:0 0 18px rgba(0,240,255,.35)}
-
-.blog-detail .content{font-size:.85rem;line-height:1.85;color:var(--text)}
-.blog-detail .content h1{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin:28px 0 14px;
-  color:var(--text);text-shadow:0 0 16px rgba(0,240,255,.4)}
-.blog-detail .content h2{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;margin:24px 0 10px;
-  color:var(--accent);text-shadow:0 0 12px rgba(0,240,255,.35)}
-.blog-detail .content h3{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;color:var(--purple);
-  margin:20px 0 8px;text-shadow:0 0 10px rgba(193,123,255,.3)}
-.blog-detail .content h4{font-family:'Space Grotesk',sans-serif;font-size:1rem;color:var(--orange);margin:18px 0 6px}
-.blog-detail .content p{margin-bottom:16px}
-.blog-detail .content pre{background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:8px;padding:18px;
-  overflow-x:auto;font-size:.75rem;line-height:1.7;margin:16px 0;box-shadow:0 0 25px rgba(0,240,255,.1)}
-.blog-detail .content code{background:rgba(0,240,255,.1);padding:2px 7px;border-radius:4px;
-  font-size:.85rem;color:var(--accent);border:1px solid rgba(0,240,255,.2)}
-.blog-detail .content pre code{background:transparent;padding:0;border:none;color:var(--text)}
-.blog-detail .content ul{margin:12px 0 12px 24px;list-style:none;padding-left:8px}
-.blog-detail .content li{margin-bottom:10px;padding-left:20px;position:relative;line-height:1.7}
-.blog-detail .content li::before{content:'▸';position:absolute;left:0;color:var(--accent);text-shadow:0 0 6px rgba(0,240,255,.5)}
-.blog-detail .content blockquote{border-left:3px solid var(--purple);padding:12px 20px;margin:16px 0;
-  background:rgba(193,123,255,.06);border-radius:0 6px 6px 0;color:var(--text);font-style:italic}
-.blog-detail .content table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.8rem}
-.blog-detail .content td{padding:10px 14px;border:1px solid var(--border);background:rgba(0,0,0,.25)}
-.blog-detail .content strong{color:var(--green);text-shadow:0 0 6px rgba(0,255,157,.3)}
-.blog-detail .content em{color:var(--orange)}/* ===== PROJECTS ===== */
-section#projects{padding:70px 0}
-.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-.proj-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;
-  backdrop-filter:blur(8px);transition:.35s}
-.proj-card:hover{border-color:var(--purple);transform:translateY(-4px);box-shadow:0 12px 36px rgba(193,123,255,.15)}
-.proj-card h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:var(--accent);margin:0 0 8px}
-.proj-card p{font-size:.75rem;color:var(--muted);line-height:1.6;margin:0 0 12px}
-.proj-card .tags{display:flex;flex-wrap:wrap;gap:6px}
-.proj-card .tag{font-size:.6rem;background:rgba(0,240,255,.12);color:var(--accent);padding:3px 8px;border-radius:4px;
-  text-transform:uppercase;letter-spacing:.5px}
-
-/* ===== CONTRIBUTIONS ===== */
-section#contributions{padding:70px 0}
-.contrib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.contrib-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:22px;
-  backdrop-filter:blur(8px);transition:.35s}
-.contrib-card:hover{border-color:var(--green);transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,255,157,.12)}
-.contrib-card .repo{font-weight:600;color:var(--text);font-size:.82rem;margin-bottom:6px}
-.contrib-card .desc{font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:10px}
-.contrib-card .meta{display:flex;gap:16px;font-size:.65rem;color:var(--muted)}
-.contrib-card .meta span{display:flex;align-items:center;gap:4px}
-.contrib-card .meta svg{width:13px;height:13px;color:var(--accent)}
-
-/* ===== PLAY STORE APPS ===== */
-section#apps{padding:70px 0}
-.apps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
-.app-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;
-  backdrop-filter:blur(8px);transition:.35s;display:flex;flex-direction:column}
-.app-card:hover{border-color:var(--green);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,255,157,.2)}
-.app-card img{width:100%;height:160px;object-fit:cover;background:rgba(0,240,255,.05)}
-.app-card .info{padding:18px;display:flex;flex-direction:column;flex:1}
-.app-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);margin:0 0 6px}
-.app-card .pkg{font-size:.7rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:10px}
-.app-card .desc{font-size:.78rem;color:var(--text);line-height:1.6;margin-bottom:14px;flex:1}
-.app-card .btn{width:100%;text-align:center;padding:11px 16px;font-size:.75rem}
-
-/* ===== GITHUB SNAKE ===== */
-section#snake{padding:70px 0}
-.snake-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:24px;
-  backdrop-filter:blur(8px);text-align:center}
-.snake-wrap .snake-svg{width:100%;max-width:900px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 0 16px rgba(0,255,157,.15))}
-.snake-wrap .snake-link{display:inline-block;margin-top:16px;font-size:.75rem;color:var(--accent);text-decoration:none}
-.snake-wrap .snake-link:hover{text-shadow:0 0 10px rgba(0,240,255,.6)}
-
-/* ===== FOOTER ===== */
-footer{padding:40px 0;border-top:1px solid var(--border);background:rgba(1,3,10,.85)}
-footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px}
-footer .copy{font-size:.68rem;color:var(--muted)}
-footer .links{display:flex;gap:24px}
-footer .links a{font-size:.68rem;color:var(--muted);text-decoration:none;transition:.2s}
-footer .links a:hover{color:var(--accent);text-shadow:0 0 8px rgba(0,240,255,.5)}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:640px){
-  .hero{min-height:85vh}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .blog-card h3{font-size:.95rem}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Droid Tank | Mobile Architect</title>
+  <link rel="canonical" href="https://govindtank.github.io/droidtank.is-a.dev/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #111318;
+      --border: #23262d;
+      --text: #d1d5db;
+      --muted: #9ca3af;
+      --accent: #00d4ff;
+      --green: #00ff88;
+      --purple: #bc8cff;
+      --orange: #ff7b72;
+      --blue: #58a6ff;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    #matrix {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    nav .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .logo::before {
+      content: '>';
+      color: var(--green);
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%,50% { opacity:1; }
+      51%,100% { opacity:0; }
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+    
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 80px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 60px;
+    }
+    .hero-pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 22px;
+      text-align: left;
+      display: inline-block;
+    }
+    .hero-pre .prompt {
+      color: var(--green);
+      font-weight: 700;
+    }
+    .hero-pre .output {
+      color: var(--accent);
+    }
+    .hero-pre .cursor {
+      color: var(--green);
+      animation: blink 1s infinite;
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.2rem, 7vw, 4.2rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .role {
+      color: var(--green);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .role::before { content: '$ '; color: var(--accent); }
+    .role::after { content: '_'; animation: blink 1s infinite; }
+    
+    .typing {
+      color: var(--muted);
+      font-size: 0.9rem;
+      min-height: 40px;
+      margin-bottom: 30px;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      min-width: 130px;
+      text-align: center;
+      transition: all 0.25s;
+    }
+    .stat:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,212,255,0.25);
+      transform: translateY(-3px);
+    }
+    .stat-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    
+    .cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 11px 24px;
+      border: none;
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .btn::before { content: '>'; font-weight: 700; }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 18px rgba(0,212,255,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(0,212,255,0.5);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn-secondary:hover { background: rgba(0,212,255,0.08); }
+    
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::before {
+      content: '//';
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.2rem;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 36px;
+    }
+    
+    /* Blog Section */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .blog-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .blog-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,212,255,0.2);
+      transform: translateY(-3px);
+    }
+    .blog-tag {
+      display: inline-block;
+      padding: 3px 9px;
+      background: rgba(188,140,255,0.08);
+      border: 1px solid rgba(188,140,255,0.18);
+      border-radius: 3px;
+      font-size: 0.7rem;
+      color: var(--purple);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .blog-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .blog-excerpt {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .blog-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .blog-read {
+      color: var(--green);
+      font-weight: 600;
+    }
+    
+    /* Blog Detail */
+    #blog-detail {
+      display: none;
+      position: relative;
+      z-index: 2;
+      padding: 100px 20px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    #blog-detail.active {
+      display: block;
+    }
+    #blog-detail.hidden {
+      display: none !important;
+    }
+    .blog-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .blog-back:hover {
+      color: var(--green);
+    }
+    .blog-detail-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .blog-detail-tag {
+      display: inline-block;
+      padding: 3px 9px;
+      background: rgba(188,140,255,0.08);
+      border: 1px solid rgba(188,140,255,0.18);
+      border-radius: 3px;
+      font-size: 0.7rem;
+      color: var(--purple);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .blog-detail-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .blog-detail-date {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .blog-detail-content {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .blog-detail-content h1, .blog-detail-content h2, .blog-detail-content h3, .blog-detail-content h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      margin-top: 32px;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .blog-detail-content h2 { font-size: 1.6rem; }
+    .blog-detail-content h3 { font-size: 1.3rem; }
+    .blog-detail-content h4 { font-size: 1.1rem; }
+    .blog-detail-content p {
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .blog-detail-content strong { color: var(--accent); }
+    .blog-detail-content em { color: var(--purple); }
+    .blog-detail-content code {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.85rem;
+      color: var(--green);
+    }
+    .blog-detail-content pre {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    .blog-detail-content pre code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: var(--text);
+    }
+    .blog-detail-content ul, .blog-detail-content ol {
+      margin-bottom: 16px;
+      padding-left: 24px;
+    }
+    .blog-detail-content li {
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .blog-detail-content li::marker {
+      color: var(--accent);
+    }
+    .blog-detail-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 16px;
+      margin: 20px 0;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .blog-detail-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+    }
+    .blog-detail-content th, .blog-detail-content td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    .blog-detail-content th {
+      background: var(--bg-card);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+    @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+    
+    .about-text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    .about-text .hl { color: var(--accent); font-weight: 600; }
+    .about-text .kw { color: var(--purple); }
+    .about-text .str { color: var(--green); }
+    .about-text .cmt { color: var(--muted); font-style: italic; }
+    
+    .code-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .ln { color: var(--muted); opacity: 0.4; margin-right: 14px; user-select: none; }
+    .k { color: var(--purple); }
+    .f { color: var(--blue); }
+    .s { color: var(--green); }
+    .c { color: var(--muted); font-style: italic; }
+    .v { color: var(--orange); }
+    .t { color: var(--accent); }
+    
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .skill-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      transition: all 0.25s;
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+      transform: translateY(-2px);
+    }
+    .skill-card h3 {
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .skill-card h3::before {
+      content: '◆';
+      color: var(--green);
+      font-size: 0.7rem;
+    }
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .skill-tag {
+      padding: 4px 10px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 3px;
+      font-size: 0.75rem;
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+    .skill-tag:hover {
+      background: rgba(0,212,255,0.18);
+      transform: scale(1.04);
+    }
+    
+    .tech-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      margin: 40px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .tech-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.08), transparent);
+      animation: scan 3s infinite;
+    }
+    @keyframes scan { 0% { left:-100%; } 100% { left:100%; } }
+    .tech-banner h3 {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .tech-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tech-item {
+      padding: 6px 14px;
+      background: rgba(0,255,136,0.04);
+      border: 1px solid rgba(0,255,136,0.18);
+      border-radius: 4px;
+      color: var(--green);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .tech-item:hover {
+      background: rgba(0,255,136,0.12);
+      transform: scale(1.04);
+    }
+    
+    /* Experience */
+    .experience-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .exp-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s;
+    }
+    .exp-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--purple));
+    }
+    .exp-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+      transform: translateX(4px);
+    }
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .exp-company { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+    .exp-role { color: var(--green); font-size: 0.85rem; margin-top: 3px; }
+    .exp-meta { color: var(--muted); font-size: 0.75rem; margin-top: 3px; }
+    .exp-period { color: var(--orange); font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+    .exp-achievements { list-style: none; padding: 0; }
+    .exp-achievements li {
+      padding: 6px 0 6px 18px;
+      position: relative;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .exp-achievements li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+    
+    /* Apps */
+    .apps-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .app-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: start;
+      transition: all 0.25s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .app-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,212,255,0.2);
+      transform: translateY(-3px);
+    }
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .app-info { flex: 1; min-width: 0; }
+    .app-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .app-desc {
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .app-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .app-tag {
+      padding: 2px 8px;
+      background: rgba(188,140,255,0.08);
+      border: 1px solid rgba(188,140,255,0.18);
+      border-radius: 3px;
+      font-size: 0.65rem;
+      color: var(--purple);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .app-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.75rem;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .app-link:hover { text-decoration: underline; }
+    .app-link::before { content: '↗'; }
+    
+    /* Open Source */
+    .projects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .project-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: start;
+      transition: all 0.25s;
+    }
+    @media (max-width: 640px) {
+      .project-item { grid-template-columns: 1fr; }
+    }
+    .project-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+    }
+    .project-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .project-tag {
+      padding: 3px 9px;
+      background: rgba(188,140,255,0.08);
+      border: 1px solid rgba(188,140,255,0.18);
+      border-radius: 3px;
+      font-size: 0.7rem;
+      color: var(--purple);
+    }
+    .project-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .project-link {
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .project-link:hover {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    
+    /* Contact */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    .contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.25s;
+    }
+    .contact-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(0,212,255,0.2);
+      transform: translateY(-2px);
+    }
+    .contact-icon { font-size: 1.3rem; margin-bottom: 8px; }
+    .contact-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .contact-value {
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+    
+    .terminal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: linear-gradient(180deg, #2d333b, #22262e);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.red { background: #ff5f56; }
+    .dot.yellow { background: #ffbd2e; }
+    .dot.green { background: #27c93f; }
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .terminal-body {
+      padding: 20px;
+    }
+    .terminal-body p {
+      color: var(--green);
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+    }
+    .terminal-body .muted {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    
+    /* Snake */
+    .snake-section {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .snake-section h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .snake-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    
+    footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 22px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer .prompt { color: var(--green); }
+    footer .accent { color: var(--accent); }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    ::selection { background: var(--accent); color: var(--bg); }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      section { padding: 60px 14px; }
+      .section-title { font-size: 1.5rem; }
+      .blog-detail-title { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
-<canvas id="matrix"></canvas>
-<div id="glow-layer"></div>
-<div id="grid-floor"></div>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-
-<main>
-<nav><div class="wrap">
-  <a class="logo" href="#top">Droid<span>Tank</span></a>
-  <ul>
-    <li><a class="nl" href="#blog">Blog</a></li>
-    <li><a class="nl" href="#projects">Projects</a></li>
-    <li><a class="nl" href="#contributions">Contributions</a></li>
-    <li><a class="nl" href="#apps">Play Store</a></li>
-    <li><a class="nl" href="#snake">GitHub Snake</a></li>
-  </ul>
-</div></nav>
-
-<header class="hero" id="top"><div class="wrap">
-  <h1 class="glitch" data-text="DroidTank">Android Architect<span class="grad">.</span></h1>
-  <p class="tagline">Open-source libraries · High-scale mobile systems · Technical writing · 9+ yrs</p>
-  <p class="tagline">Currently building: <span id="typing">autonomous agent workflows...</span></p>
-  <div class="hero-cta">
-    <a class="btn solid" href="#blog">Read Latest Posts</a>
-    <a class="btn" href="#projects">Explore Projects</a>
-  </div>
-</div></header>
-
-<div class="stats wrap">
-  <div class="stat"><b>40+</b><span>Repositories</span></div>
-  <div class="stat"><b>500+</b><span>Stars Earned</span></div>
-  <div class="stat"><b>8</b><span>Pub Packages</span></div>
-  <div class="stat"><b>2K+</b><span>Commits</span></div>
-</div>
-
-<section id="blog" class="wrap">
-  <h2 class="sec-title">Engineering Blog</h2>
-  <div id="blog-list"></div>
-  <div id="blog-details"></div>
-</section>
-
-<section id="projects" class="wrap">
-  <h2 class="sec-title">Top Projects</h2>
-  <div class="proj-grid" id="proj-grid"></div>
-</section>
-
-<section id="contributions" class="wrap">
-  <h2 class="sec-title">Open Source Contributions</h2>
-  <div class="contrib-grid" id="contrib-grid"></div>
-</section>
-
-<section id="apps" class="wrap">
-  <h2 class="sec-title">Play Store Apps</h2>
-  <div class="apps-grid" id="apps-grid"></div>
-</section>
-
-<section id="snake" class="wrap">
-  <h2 class="sec-title">GitHub Contribution Snake</h2>
-  <div class="snake-wrap">
-    <img class="snake-svg" src="https://raw.githubusercontent.com/govindtank/govindtank/master/dist/github-snake.svg" alt="GitHub contribution snake animation" loading="lazy">
-    <a class="snake-link" href="https://github.com/govindtank" target="_blank" rel="noopener">View on GitHub Profile →</a>
-  </div>
-</section>
-
-<footer><div class="wrap">
-  <p class="copy">© <span id="year"></span> DroidTank — Built with matrix rain + cyberpunk code</p>
-  <div class="links">
-    <a href="https://github.com/govindtank" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://govindtank.github.io" target="_blank" rel="noopener">Portfolio</a>
-    <a href="https://play.google.com/store/apps/dev?id=8565833188455940638" target="_blank" rel="noopener">Play Store</a>
-  </div>
-</div></footer>
-</main>
-<script>
-/* ===== MATRIX RAIN EFFECT ===== */
-const cv = document.getElementById('matrix');
-const c = cv.getContext('2d');
-let w = 0, h = 0, cols = 0, drops = [];
-const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=<>{}[]()_~^|&%#@!abcdefghijklmnopqrstuvwxyzアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-const fontSize = 15;
-const trailLength = 28;
-
-function resize() {
-  w = cv.width = window.innerWidth;
-  h = cv.height = window.innerHeight;
-  cols = Math.floor(w / fontSize);
-  drops = new Array(cols).fill(0).map(() => Math.random() * -h);
-}
-resize();
-window.addEventListener('resize', resize);
-
-function drawMatrix() {
-  // Fade background for trail effect
-  c.fillStyle = 'rgba(1,3,10,0.11)';
-  c.fillRect(0, 0, w, h);
+  <canvas id="matrix"></canvas>
+  <div class="scanlines"></div>
   
-  c.font = fontSize + 'px "JetBrains Mono", monospace';
-  c.textBaseline = 'top';
+  <nav>
+    <div class="wrap">
+      <a href="#home" class="logo">droidtank</a>
+      <ul class="nav-links">
+        <li><a href="#about">about</a></li>
+        <li><a href="#skills">skills</a></li>
+        <li><a href="#experience">experience</a></li>
+        <li><a href="#apps">apps</a></li>
+        <li><a href="#opensource">open_source</a></li>
+        <li><a href="#blog">blog</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+    </div>
+  </nav>
   
-  for (let i = 0; i < cols; i++) {
-    const x = i * fontSize;
-    const y = drops[i] * fontSize;
-    
-    // Character
-    const char = chars[Math.floor(Math.random() * chars.length)];
-    const distFromTop = (drops[i] * fontSize) / h;
-    
-    // Color gradient: green at head, fading to cyan/purple
-    const head = Math.floor(drops[i]);
-    const isHead = drops[i] % 1 === 0;
-    
-    if (isHead && distFromTop < 0.95) {
-      // Bright head
-      c.fillStyle = '#00ff9d';
-      c.shadowColor = '#00ff9d';
-      c.shadowBlur = 8;
-      c.fillText(char, x, y);
-      c.shadowBlur = 0;
+  <section id="home" class="hero">
+    <div>
+      <div class="hero-pre">
+        <span class="prompt">$</span> whoami<br>
+        <span class="output">Govind Tank</span><br>
+        <span class="prompt">$</span> cat role.txt<br>
+        <span class="output">Mobile Architect & Android Expert</span><br>
+        <span class="prompt">$</span> <span class="cursor">_</span>
+      </div>
+      <h1>Govind Tank</h1>
+      <div class="role">Mobile Architect & Android Expert</div>
+      <div class="typing" id="typing"></div>
       
-      // Trail
-      for (let t = 1; t < trailLength; t++) {
-        const ty = y - t * fontSize;
-        if (ty < -fontSize) break;
-        const alpha = 1 - t / trailLength;
-        const hue = Math.min(180, 140 + t * 2); // green to cyan
-        c.fillStyle = `hsla(${hue}, 100%, 50%, ${alpha * 0.6})`;
-        c.shadowColor = `hsla(${hue}, 100%, 50%, ${alpha * 0.4})`;
-        c.shadowBlur = 4;
-        const tc = chars[Math.floor(Math.random() * chars.length)];
-        c.fillText(tc, x, ty);
-      }
-      c.shadowBlur = 0;
-    } else {
-      // Regular falling chars - dim
-      c.fillStyle = `rgba(0, 240, 255, ${0.08 + distFromTop * 0.12})`;
-      c.fillText(char, x, y);
-    }
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">9+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">100K+</div>
+          <div class="stat-label">App Downloads</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">5+</div>
+          <div class="stat-label">Play Store Apps</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">20+</div>
+          <div class="stat-label">Open Source Repos</div>
+        </div>
+      </div>
+      
+      <div class="cta">
+        <a href="#apps" class="btn btn-primary">View Apps</a>
+        <a href="#blog" class="btn btn-secondary">Read Blog</a>
+        <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-secondary">GitHub</a>
+      </div>
+    </div>
+  </section>
+  
+  <section id="about">
+    <div class="section-title">About</div>
+    <div class="section-sub">// system.manifest['engineer']</div>
     
-    // Reset drop
-    if (y > h + Math.random() * 200) {
-      drops[i] = Math.random() * -30;
-    }
-    drops[i] += 0.5 + Math.random() * 0.3;
-  }
-  requestAnimationFrame(drawMatrix);
-}
-drawMatrix();
-
-/* ===== TYPEWRITER ===== */
-const phrases = [
-  'autonomous agent workflows...',
-  'Kotlin Multiplatform architectures...',
-  'Flutter state management at scale...',
-  'AI-powered code review pipelines...',
-  'resumable file upload systems...',
-  'Android 16 security APIs...',
-  'cross-platform mobile ecosystems...'
-];
-let pi = 0, ci = 0, deleting = false;
-const typingEl = document.getElementById('typing');
-function type() {
-  const p = phrases[pi];
-  if (!deleting) {
-    typingEl.textContent = p.slice(0, ++ci);
-    if (ci === p.length) { deleting = true; setTimeout(type, 1800); return; }
-  } else {
-    typingEl.textContent = p.slice(0, --ci);
-    if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
-  }
-  setTimeout(type, deleting ? 40 : 70);
-}
-type();
-
-/* ===== BLOG DATA (loaded from external JSON) ===== */
-let blogData = [];
-fetch('/blog-data.json')
-  .then(r => r.json())
-  .then(data => { blogData = data; renderBlogs(); })
-  .catch(() => { console.warn('Failed to load blog data'); });
-
-/* ===== RENDER BLOG LIST ===== */
-const blogList = document.getElementById('blog-list');
-const blogDetails = document.getElementById('blog-details');
-
-function renderBlogs() {
-  blogData.forEach((blog, i) => {
-    const card = document.createElement('article');
-    card.className = 'blog-card';
-    card.onclick = () => showBlog(i);
-    card.innerHTML = `
-      <div class="meta">${blog.tag} · ${blog.date}</div>
-      <h3>${blog.title}</h3>
-      <p>${stripHtml(blog.content).slice(0, 180)}…</p>
-    `;
-    blogList.appendChild(card);
-
-    const detail = document.createElement('section');
-    detail.id = 'blog-detail-' + i;
-    detail.className = 'blog-detail';
-    detail.innerHTML = `
-      <header>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm a <span class="hl">Senior Mobile Architect</span> with <span class="hl">9+ years</span> of experience specializing in <span class="kw">Android Native</span>, <span class="kw">Flutter</span>, <span class="kw">Kotlin Multiplatform</span>, and <span class="kw">AI systems</span>.
+        </p>
+        <br>
+        <p>
+          Currently building scalable mobile ecosystems at <span class="str">Rysun Labs</span>, architecting applications serving <span class="hl">100,000+ users</span> with near-perfect stability.
+        </p>
+        <br>
+        <p>
+          <span class="cmt">// Core competencies:</span><br>
+          • <span class="hl">Android Native</span> — Kotlin, Jetpack Compose, CameraX<br>
+          • <span class="hl">Flutter</span> — Bloc, Riverpod, Provider, FFI<br>
+          • <span class="hl">Kotlin Multiplatform</span> — Shared logic across Android & iOS<br>
+          • <span class="hl">AI Systems</span> — Local LLMs, RAG, on-device ML<br>
+          • <span class="hl">Backend</span> — FastAPI, Node.js, Firebase, MQTT
+        </p>
+      </div>
+      
+      <div class="code-block">
+        <div><span class="ln">01</span><span class="c">// system_manifest.json</span></div>
+        <div><span class="ln">02</span>{</div>
+        <div><span class="ln">03</span>  <span class="s">"name"</span>: <span class="s">"Govind Tank"</span>,</div>
+        <div><span class="ln">04</span>  <span class="s">"role"</span>: <span class="s">"Mobile Architect"</span>,</div>
+        <div><span class="ln">05</span>  <span class="s">"location"</span>: <span class="s">"Gandhinagar, India"</span>,</div>
+        <div><span class="ln">06</span>  <span class="s">"experience"</span>: <span class="s">"9+ years"</span>,</div>
+        <div><span class="ln">07</span>  <span class="s">"specialization"</span>: [</div>
+        <div><span class="ln">08</span>    <span class="s">"Android Architecture"</span>,</div>
+        <div><span class="ln">09</span>    <span class="s">"Flutter & Dart"</span>,</div>
+        <div><span class="ln">10</span>    <span class="s">"Kotlin Multiplatform"</span>,</div>
+        <div><span class="ln">11</span>    <span class="s">"AI Systems"</span>,</div>
+        <div><span class="ln">12</span>    <span class="s">"Cloud Architecture"</span></div>
+        <div><span class="ln">13</span>  ],</div>
+        <div><span class="ln">14</span>  <span class="s">"status"</span>: <span class="s">"Open for collaboration"</span>,</div>
+        <div><span class="ln">15</span>  <span class="s">"availability"</span>: <span class="k">true</span></div>
+        <div><span class="ln">16</span>}</div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="skills">
+    <div class="section-title">Technical Arsenal</div>
+    <div class="section-sub">// skills.database['export']</div>
+    
+    <div class="skills-grid">
+      <div class="skill-card">
+        <h3>Languages</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Kotlin</span>
+          <span class="skill-tag">Java</span>
+          <span class="skill-tag">Dart</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">SQL</span>
+        </div>
+      </div>
+      
+      <div class="skill-card">
+        <h3>Android Native</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Jetpack Compose</span>
+          <span class="skill-tag">Coroutines</span>
+          <span class="skill-tag">State Flow</span>
+          <span class="skill-tag">Android Auto</span>
+          <span class="skill-tag">Material 3</span>
+          <span class="skill-tag">CameraX</span>
+        </div>
+      </div>
+      
+      <div class="skill-card">
+        <h3>Flutter Ecosystem</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Flutter Bloc</span>
+          <span class="skill-tag">Provider</span>
+          <span class="skill-tag">AutoRoute</span>
+          <span class="skill-tag">Freezed</span>
+          <span class="skill-tag">audio_service</span>
+        </div>
+      </div>
+      
+      <div class="skill-card">
+        <h3>Architecture</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Clean Architecture</span>
+          <span class="skill-tag">MVVM</span>
+          <span class="skill-tag">MVI</span>
+          <span class="skill-tag">Repository Pattern</span>
+          <span class="skill-tag">Dagger Hilt</span>
+          <span class="skill-tag">Koin</span>
+        </div>
+      </div>
+      
+      <div class="skill-card">
+        <h3>Backend & Cloud</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Express.js</span>
+          <span class="skill-tag">Firebase</span>
+          <span class="skill-tag">AWS CloudFront</span>
+          <span class="skill-tag">GraphQL</span>
+          <span class="skill-tag">MQTT</span>
+        </div>
+      </div>
+      
+      <div class="skill-card">
+        <h3>AI & Next-Gen</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Cursor</span>
+          <span class="skill-tag">Windsurf</span>
+          <span class="skill-tag">Claude Code</span>
+          <span class="skill-tag">Local LLMs</span>
+          <span class="skill-tag">AI-Augmented Dev</span>
+          <span class="skill-tag">RAG</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tech-banner">
+      <h3>// currently_shipping_with</h3>
+      <div class="tech-items">
+        <span class="tech-item">Kotlin 2.0</span>
+        <span class="tech-item">Flutter 4.x</span>
+        <span class="tech-item">React 19</span>
+        <span class="tech-item">TypeScript</span>
+        <span class="tech-item">FastAPI</span>
+        <span class="tech-item">Docker</span>
+        <span class="tech-item">AWS</span>
+        <span class="tech-item">MQTT</span>
+        <span class="tech-item">RAG</span>
+        <span class="tech-item">Local LLMs</span>
+      </div>
+    </div>
+  </section>
+  
+  <section id="experience">
+    <div class="section-title">Experience</div>
+    <div class="section-sub">// professional_history.log</div>
+    
+    <div class="experience-list">
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Rysun Labs Pvt. Ltd.</div>
+            <div class="exp-role">Senior Software Developer L2</div>
+            <div class="exp-meta">📍 Ahmedabad, India</div>
+          </div>
+          <div class="exp-period">Nov 2025 – Present</div>
+        </div>
+        <ul class="exp-achievements">
+          <li>Directed complete overhaul of 'BAPS Prakash' application (50k+ users), engineering secure audio streaming with AWS CloudFront Signed Cookies</li>
+          <li>Integrated audio_service for background tasks, lock-screen controls, and Android Auto compatibility</li>
+          <li>Architected high-concurrency RESTful APIs using Node.js and TypeScript for internal HCP ERP system</li>
+        </ul>
+      </div>
+      
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Rysun Labs Pvt. Ltd.</div>
+            <div class="exp-role">Senior Software Developer / Project Owner</div>
+            <div class="exp-meta">📍 Ahmedabad, India</div>
+          </div>
+          <div class="exp-period">Apr 2022 – Oct 2025</div>
+        </div>
+        <ul class="exp-achievements">
+          <li>Spearheaded 'Akshar Amrutam' development, scaling to 100,000+ downloads with 99.95% crash-free session rate</li>
+          <li>Utilized Flutter Bloc for complex state management, ensuring 60fps performance across fragmented devices</li>
+          <li>Engineered Android Auto companion app for seamless media control and content discovery</li>
+          <li>Built 'Smartindia/Autozon' IoT application with real-time MQTT communication</li>
+        </ul>
+      </div>
+      
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Phycom Corporations</div>
+            <div class="exp-role">Software Engineer - Android</div>
+            <div class="exp-meta">📍 Ahmedabad, India</div>
+          </div>
+          <div class="exp-period">Apr 2021 – Mar 2022</div>
+        </div>
+        <ul class="exp-achievements">
+          <li>Engineered robust background services for 'La Crosse View', ensuring reliable hardware data synchronization</li>
+          <li>Reduced application startup time by 30% and memory footprint by 20% through aggressive code profiling</li>
+          <li>Refactored legacy Java codebases to Kotlin, reducing NullPointerExceptions by 95%</li>
+        </ul>
+      </div>
+      
+      <div class="exp-item">
+        <div class="exp-header">
+          <div>
+            <div class="exp-company">Micro App Solutions</div>
+            <div class="exp-role">Remote Android Developer</div>
+            <div class="exp-meta">📍 Surat, India</div>
+          </div>
+          <div class="exp-period">Aug 2017 – Dec 2019</div>
+        </div>
+        <ul class="exp-achievements">
+          <li>Developed 'Fastrrr-Floating Apps' and 'Water Reminder' with complex overlay window permissions</li>
+          <li>Built 'OfferzZone', hyper-local marketplace utilizing Geofencing APIs for location-based notifications</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  
+  <section id="apps">
+    <div class="section-title">Play Store Apps</div>
+    <div class="section-sub">// published_apps.manifest</div>
+    
+    <div class="apps-list">
+      <a href="https://play.google.com/store/apps/details?id=com.govindtank.portfolio&hl=en_IN" target="_blank" rel="noopener" class="app-card">
+        <img src="https://play-lh.googleusercontent.com/placeholder" alt="Portfolio App" class="app-icon" onerror="this.style.display='none'">
+        <div class="app-info">
+          <div class="app-title">Portfolio App</div>
+          <p class="app-desc">Personal portfolio and project showcase app built with Flutter. Demonstrates clean architecture, state management patterns, and modern mobile UI design.</p>
+          <div class="app-tags">
+            <span class="app-tag">Flutter</span>
+            <span class="app-tag">Dart</span>
+            <span class="app-tag">Clean Architecture</span>
+          </div>
+          <div class="app-link">View on Play Store</div>
+        </div>
+      </a>
+      
+      <a href="https://play.google.com/store/apps/details?id=com.ggpa&hl=en_IN" target="_blank" rel="noopener" class="app-card">
+        <img src="https://play-lh.googleusercontent.com/placeholder" alt="GGPA" class="app-icon" onerror="this.style.display='none'">
+        <div class="app-info">
+          <div class="app-title">GGPA</div>
+          <p class="app-desc">Mobile productivity tool with offline-first architecture. Built for reliability and performance with modern Android development practices.</p>
+          <div class="app-tags">
+            <span class="app-tag">Flutter</span>
+            <span class="app-tag">Dart</span>
+            <span class="app-tag">Offline-First</span>
+          </div>
+          <div class="app-link">View on Play Store</div>
+        </div>
+      </a>
+    </div>
+  </section>
+  
+  <section id="opensource">
+    <div class="section-title">Open Source</div>
+    <div class="section-sub">// github_repositories.index</div>
+    
+    <div class="projects-list">
+      <div class="project-item">
         <div>
-          <h2>${blog.title}</h2>
-          <div class="meta">
-            <span class="tag">${blog.tag}</span>
-            <span>${blog.date}</span>
+          <div class="project-title">stock-scanner-repo</div>
+          <p class="project-desc">
+            Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Flask dashboard with Plotly visualizations.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Python</span>
+            <span class="project-tag">Flask</span>
+            <span class="project-tag">Plotly</span>
+            <span class="project-tag">Finance</span>
           </div>
         </div>
-        <button class="back-btn" onclick="hideBlog(${i})">← Back</button>
-      </header>
-      <div class="content"></div>
-    `;
-    blogDetails.appendChild(detail);
-  });
-}
-
-function stripHtml(html) {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent || div.innerText || '';
-}
-
-function showBlog(i) {
-  blogList.style.display = 'none';
-  const d = document.getElementById('blog-detail-' + i);
-  if (!d) return;
-  d.classList.add('active');
-  d.querySelector('.content').innerHTML = blogData[i].content;
-  window.scrollTo({ top: d.offsetTop - 80, behavior: 'smooth' });
-}
-
-function hideBlog(i) {
-  const d = document.getElementById('blog-detail-' + i);
-  if (d) d.classList.remove('active');
-  blogList.style.display = 'grid';
-  window.scrollTo({ top: document.getElementById('blog').offsetTop - 80, behavior: 'smooth' });
-}
-
-/* ===== PROJECTS DATA ===== */
-const projects = [
-  {title:'Stock Scanner', desc:'Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Plotly visualizations.', tags:['Python','Flask','Plotly'], url:'https://github.com/govindtank/stock-scanner'},
-  {title:'Portfolio App', desc:'Production Flutter app on Play Store showcasing mobile architecture patterns, state management, and CI/CD.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.govindtank.portfolio'},
-  {title:'GGPA', desc:'Google Play listing for GGPA app — mobile productivity tool with offline-first architecture.', tags:['Flutter','Dart','Play Store'], url:'https://play.google.com/store/apps/details?id=com.ggpa'},
-  {title:'LiveWally', desc:'Digital Wellbeing Live Wallpaper that tracks daily unlocks with animated counter transitions.', tags:['Kotlin','OpenGL ES','Android'], url:'https://github.com/govindtank/livewally'},
-  {title:'WallPulse', desc:'Modernized Android live wallpaper with daily unlock tracking and smooth animated counters.', tags:['Kotlin','Android','Live Wallpaper'], url:'https://github.com/govindtank/WallPulse'},
-  {title:'cmp-keyboard', desc:'Compose Multiplatform reactive keyboard-aware layout. Handle keyboard insets on Android & iOS with a single composable.', tags:['Kotlin','Compose Multiplatform'], url:'https://github.com/govindtank/cmp-keyboard'},
-  {title:'cmp-clipboard', desc:'Kotlin Multiplatform unified clipboard manager. Read/write text and images on Android & iOS via Compose API.', tags:['Kotlin','Compose Multiplatform'], url:'https://github.com/govindtank/cmp-clipboard'},
-  {title:'flutter_whisper', desc:'On-device speech-to-text transcription using whisper.cpp. No cloud, no API keys — models run locally on Android.', tags:['Flutter','Dart','Whisper'], url:'https://github.com/govindtank/flutter_whisper'},
-  {title:'waveform_pro', desc:'Production-quality Flutter waveform widget with GPU-accelerated rendering, zoom, region selection, and cue markers.', tags:['Flutter','Dart','Audio'], url:'https://github.com/govindtank/waveform_pro'},
-  {title:'Dharmyudh', desc:'High-fidelity 2D/3D hybrid mythological fighting game built with vanilla JS, HTML5 Canvas, WebGL & Web Audio API.', tags:['JavaScript','WebGL','Game'], url:'https://github.com/govindtank/dharmyudh_game'},
-];
-
-const projGrid = document.getElementById('proj-grid');
-projects.forEach(p => {
-  const el = document.createElement('article');
-  el.className = 'proj-card';
-  el.innerHTML = `<h3>${p.title}</h3><p>${p.desc}</p><div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
-  el.onclick = () => window.open(p.url, '_blank');
-  projGrid.appendChild(el);
-});
-
-/* ===== CONTRIBUTIONS DATA ===== */
-const contributions = [
-  {repo:'govindtank/stock-scanner', desc:'Real-time NSE stock scanner with Darvas Box analysis, regime-aware advisor, and Flask dashboard', url:'https://github.com/govindtank/stock-scanner'},
-  {repo:'govindtank/livewally', desc:'Digital Wellbeing Live Wallpaper with unlock tracking and animated counters', url:'https://github.com/govindtank/livewally'},
-  {repo:'govindtank/WallPulse', desc:'Modernized Android live wallpaper with daily unlock tracking and animated transitions', url:'https://github.com/govindtank/WallPulse'},
-  {repo:'govindtank/cmp-keyboard', desc:'Compose Multiplatform keyboard-aware layout for Android & iOS', url:'https://github.com/govindtank/cmp-keyboard'},
-  {repo:'govindtank/cmp-clipboard', desc:'Kotlin Multiplatform unified clipboard manager for Android & iOS', url:'https://github.com/govindtank/cmp-clipboard'},
-  {repo:'govindtank/cmp-linked-text', desc:'Compose Multiplatform composable that auto-detects URLs, emails, phone numbers in text', url:'https://github.com/govindtank/cmp-linked-text'},
-  {repo:'govindtank/capture-improvement-kotlin', desc:'Android native library for image blur detection, angle/pose matching, and orientation detection', url:'https://github.com/govindtank/capture-improvement-kotlin'},
-  {repo:'govindtank/flutter_whisper', desc:'On-device speech-to-text using whisper.cpp on Android — no cloud, no API keys', url:'https://github.com/govindtank/flutter_whisper'},
-  {repo:'govindtank/quote_painter', desc:'Flutter package for rendering styled text on image/video canvas with gradient fill, stroke, shadow', url:'https://github.com/govindtank/quote_painter'},
-  {repo:'govindtank/waveform_pro', desc:'Production-quality Flutter waveform widget with GPU-accelerated rendering and zoom', url:'https://github.com/govindtank/waveform_pro'},
-  {repo:'govindtank/dharmyudh_game', desc:'High-fidelity 2D/3D hybrid mythological fighting game with WebGL & Web Audio', url:'https://github.com/govindtank/dharmyudh_game'},
-  {repo:'govindtank/Box-Breakout-Tracker', desc:'Portfolio assistance and Box and Momentum Tracker for stock analysis', url:'https://github.com/govindtank/Box-Breakout-Tracker'},
-];
-
-const contribGrid = document.getElementById('contrib-grid');
-contributions.forEach(c => {
-  const el = document.createElement('article');
-  el.className = 'contrib-card';
-  el.innerHTML = `
-    <div class="repo">${c.repo}</div>
-    <p class="desc">${c.desc}</p>
-    <div class="meta">
-      <a href="${c.url}" target="_blank" rel="noopener">View Repository →</a>
-    </div>`;
-  el.onclick = () => window.open(c.url, '_blank');
-  contribGrid.appendChild(el);
-});
-
-/* ===== PLAY STORE APPS ===== */
-const apps = [
-  {name:'Portfolio App', pkg:'com.govindtank.portfolio', desc:'My personal portfolio as a native Android app — projects, blogs, contact, and tech stack showcase with offline caching.', img:'https://play-lh.googleusercontent.com/placeholder', url:'https://play.google.com/store/apps/details?id=com.govindtank.portfolio'},
-  {name:'GGPA', pkg:'com.ggpa', desc:'Productivity utility with clean Material You UI, local-first storage, and widget support. Built for power users.', img:'https://play-lh.googleusercontent.com/placeholder', url:'https://play.google.com/store/apps/details?id=com.ggpa'},
-];
-
-const appsGrid = document.getElementById('apps-grid');
-apps.forEach(a => {
-  const el = document.createElement('article');
-  el.className = 'app-card';
-  el.innerHTML = `
-    <img src="${a.img}" alt="${a.name}" loading="lazy" onerror="this.style.display='none'">
-    <div class="info">
-      <h3>${a.name}</h3>
-      <div class="pkg">${a.pkg}</div>
-      <p class="desc">${a.desc}</p>
-      <a class="btn" href="${a.url}" target="_blank" rel="noopener">View on Play Store →</a>
-    </div>`;
-  appsGrid.appendChild(el);
-});
-
-/* ===== YEAR ===== */
-document.getElementById('year').textContent = new Date().getFullYear();
-</script>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/stock-scanner-repo" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div>
+          <div class="project-title">WallPulse</div>
+          <p class="project-desc">
+            Modernized Android live wallpaper that tracks daily unlocks with animated counter transitions. Built with Jetpack Compose and modern Android architecture patterns.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Kotlin</span>
+            <span class="project-tag">Android</span>
+            <span class="project-tag">Jetpack Compose</span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/WallPulse" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div>
+          <div class="project-title">flutter_whisper</div>
+          <p class="project-desc">
+            On-device speech-to-text transcription using whisper.cpp. No cloud, no API keys — models run locally on Android for privacy-first transcription.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Flutter</span>
+            <span class="project-tag">whisper.cpp</span>
+            <span class="project-tag">On-Device AI</span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/flutter_whisper" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div>
+          <div class="project-title">capture-improvement-kotlin</div>
+          <p class="project-desc">
+            Modular Android native library for image blur detection, angle/pose matching, and orientation detection — built for CameraX with easy-to-use Kotlin DSL APIs.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Kotlin</span>
+            <span class="project-tag">CameraX</span>
+            <span class="project-tag">Android Library</span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/capture-improvement-kotlin" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div>
+          <div class="project-title">cmp-clipboard</div>
+          <p class="project-desc">
+            Kotlin Multiplatform unified clipboard manager. Read/write text and images on Android & iOS via Compose Multiplatform API with a single shared UI layer.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Kotlin Multiplatform</span>
+            <span class="project-tag">Compose</span>
+            <span class="project-tag">Android</span>
+            <span class="project-tag">iOS</span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/cmp-clipboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div>
+          <div class="project-title">cmp-keyboard</div>
+          <p class="project-desc">
+            Compose Multiplatform reactive keyboard-aware layout. Handle keyboard insets on Android & iOS with a single composable, ensuring UI never hides behind the keyboard.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Kotlin Multiplatform</span>
+            <span class="project-tag">Compose</span>
+            <span class="project-tag">Android</span>
+            <span class="project-tag">iOS</span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/cmp-keyboard" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div>
+          <div class="project-title">cmp-linked-text</div>
+          <p class="project-desc">
+            Compose Multiplatform composable that auto-detects URLs, emails, phone numbers in text and makes them clickable. Available for Android & iOS from a single codebase.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Kotlin Multiplatform</span>
+            <span class="project-tag">Compose</span>
+            <span class="project-tag">Android</span>
+            <span class="project-tag">iOS</span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/govindtank/cmp-linked-text" target="_blank" rel="noopener" class="project-link">GitHub →</a>
+        </div>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px;">
+      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-primary">
+        View Full GitHub Profile
+      </a>
+    </div>
+  </section>
+  
+  <section id="snake">
+    <div class="snake-section">
+      <h3>// github_contributions.snake</h3>
+      <img src="https://raw.githubusercontent.com/govindtank/govindtank/master/dist/github-snake.svg" alt="GitHub Snake" class="snake-img" onerror="this.parentElement.innerHTML='<a href=\'https://github.com/govindtank\' target=\'_blank\' rel=\'noopener\'>View GitHub Profile</a>'">
+    </div>
+  </section>
+  
+  <section id="blog">
+    <div class="section-title">Engineering Blog</div>
+    <div class="section-sub">// thoughts.export['technical']</div>
+    
+    <div class="blog-grid" id="blog-grid"></div>
+  </section>
+  
+  <section id="blog-detail">
+    <div class="blog-back" onclick="hideBlog()">← Back to Blog</div>
+    <div class="blog-detail-header">
+      <div class="blog-detail-tag" id="blog-detail-tag"></div>
+      <h1 class="blog-detail-title" id="blog-detail-title"></h1>
+      <div class="blog-detail-date" id="blog-detail-date"></div>
+    </div>
+    <div class="blog-detail-content" id="blog-detail-content"></div>
+  </section>
+  
+  <section id="contact">
+    <div class="section-title">Get In Touch</div>
+    <div class="section-sub">// initiate_communication()</div>
+    
+    <div class="contact-grid">
+      <a href="mailto:govindtank600@gmail.com" class="contact-card">
+        <div class="contact-icon">📧</div>
+        <div class="contact-label">Email</div>
+        <div class="contact-value">govindtank600@gmail.com</div>
+      </a>
+      
+      <a href="tel:+918460484061" class="contact-card">
+        <div class="contact-icon">📱</div>
+        <div class="contact-label">Phone</div>
+        <div class="contact-value">+91 8460 48 4061</div>
+      </a>
+      
+      <a href="https://linkedin.com/in/govindtank" target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon">💼</div>
+        <div class="contact-label">LinkedIn</div>
+        <div class="contact-value">/in/govindtank</div>
+      </a>
+      
+      <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="contact-card">
+        <div class="contact-icon">⌂</div>
+        <div class="contact-label">GitHub</div>
+        <div class="contact-value">@govindtank</div>
+      </a>
+    </div>
+    
+    <div class="terminal-box">
+      <div class="terminal-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <div class="terminal-title">contact.sh</div>
+      </div>
+      <div class="terminal-body">
+        <p>
+          $ echo "Let's build something exceptional together"<br>
+          <span class="muted">Currently open for system architecture audits, custom application development, and senior technical leadership consultations.</span>
+        </p>
+        <a href="mailto:govindtank600@gmail.com?subject=Let's%20Collaborate&body=Hi%20Govind,%0A%0AI'd%20like%20to%20discuss%20a%20project..." class="btn btn-primary">
+          Send Message
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <p>
+      <span class="prompt">$</span> echo "Architecting mobile excellence since 2017" <span style="color: var(--muted);">|</span>
+      <span class="accent">© 2017–<span id="year"></span> Govind Tank</span> <span style="color: var(--muted);">|</span>
+      <span style="color: var(--green);">System.Status: Online</span>
+    </p>
+  </footer>
+  
+  <script>
+    // Blog Data
+    const blogData = [
+      {
+        slug: "ai-agents-autonomous-workflows-complex-tasks-2026",
+        title: "AI Agents: Building Autonomous Workflows for Complex Tasks",
+        date: "May 21, 2026",
+        tag: "AI-Agents",
+        content: `<h2>Introduction</h2><p>The landscape of artificial intelligence has shifted dramatically from simple chatbots to sophisticated <strong>autonomous agents</strong> capable of completing complex multi-step tasks. These AI systems no longer just respond to prompts—they plan, delegate, and collaborate to achieve goals.</p><h2>What Are Autonomous AI Agents?</h2><p>An autonomous AI agent is a system that can:</p><ul><li><strong>Perceive</strong> its environment through inputs and context</li><li><strong>Reason</strong> about the best course of action using LLMs</li><li><strong>Act</strong> by executing tools, APIs, or code</li><li><strong>Learn</strong> from feedback and iterate on its approach</li></ul><h2>Key Components</h2><p>Building production-grade agents requires several critical components working in harmony:</p><h3>1. Planning Layer</h3><p>The planning layer breaks down complex objectives into actionable steps. Modern approaches use chain-of-thought prompting and task decomposition to create reliable execution plans.</p><h3>2. Tool Integration</h3><p>Agents need access to external tools—search APIs, code execution environments, database queries, and third-party services. The <strong>Model Context Protocol (MCP)</strong> has emerged as a standard for tool integration.</p><h3>3. Memory Systems</h3><p>Short-term memory (conversation context) and long-term memory (vector stores, knowledge bases) allow agents to maintain state across interactions and learn from past experiences.</p><h2>Real-World Applications</h2><p>We're seeing autonomous agents transform industries:</p><ul><li><strong>Software Development</strong>: AI pair programmers that understand entire codebases</li><li><strong>Customer Support</strong>: Agents that resolve tickets end-to-end without human intervention</li><li><strong>Data Analysis</strong>: Automated research and reporting pipelines</li><li><strong>DevOps</strong>: Self-healing infrastructure and automated deployments</li></ul><h2>Challenges & Considerations</h2><p>Building reliable agents isn't without challenges. Hallucination, context window limits, tool failure handling, and safety guardrails all require careful engineering. The key is building <strong>observability and fallback mechanisms</strong> from day one.</p><h2>Conclusion</h2><p>Autonomous AI agents represent a fundamental shift in how we build software. Rather than scripting every workflow, we're moving toward systems that can reason, adapt, and execute complex tasks independently—with human oversight where it matters most.</p>`
+      },
+      {
+        slug: "ai-powered-code-review-automating-quality-gates-with-llm-agents",
+        title: "AI-Powered Code Review: Automating Quality Gates with LLM Agents",
+        date: "June 3, 2026",
+        tag: "AI-DevTools",
+        content: `<h2>The Code Review Bottleneck</h2><p>Code review is essential but notoriously time-consuming. Senior engineers spend 15-20% of their time reviewing PRs, and the quality of reviews varies significantly based on reviewer availability and expertise. <strong>AI-powered code review</strong> is changing this equation.</p><h2>How LLM Agents Transform Code Review</h2><p>Modern LLM agents can analyze code changes holistically, understanding not just syntax but architecture, patterns, and potential issues:</p><ul><li><strong>Static Analysis</strong>: Detect bugs, security vulnerabilities, and performance issues</li><li><strong>Style Consistency</strong>: Enforce team conventions and best practices</li><li><strong>Architecture Review</strong>: Identify coupling issues and design pattern violations</li><li><strong>Documentation</strong>: Auto-generate PR descriptions and changelog entries</li></ul><h2>Building an AI Review Pipeline</h2><p>A production-grade AI review system typically follows this flow:</p><h3>1. Diff Parsing</h3><p>Parse the PR diff into semantic chunks that the LLM can analyze. Group related changes and filter out noise (formatting, generated code).</p><h3>2. Context Injection</h3><p>Feed the LLM relevant context: coding standards, architectural decisions, similar past PRs, and team conventions.</p><h3>3. Multi-Agent Analysis</h3><p>Use specialized agents for different review aspects: security, performance, style, and architecture. Aggregate findings into a unified report.</p><h3>4. Human-in-the-Loop</h3><p>Present AI findings to human reviewers as a starting point. Engineers can approve, modify, or reject suggestions, creating a feedback loop that improves the system.</p><h2>Benefits</h2><p>Teams using AI-assisted code review report:</p><ul><li>40-60% reduction in review time</li><li>Consistent enforcement of standards across the team</li><li>Earlier detection of security vulnerabilities</li><li>More time for senior engineers to focus on complex architectural decisions</li></ul><h2>Conclusion</h2><p>AI won't replace human code review—it will amplify it. By automating the mechanical aspects of review, we free engineers to focus on what matters: design thinking, mentorship, and strategic improvements.</p>`
+      },
+      {
+        slug: "kotlin-multiplatform-evolution-in-2026",
+        title: "The Evolution of Kotlin Multiplatform in 2026",
+        date: "April 15, 2026",
+        tag: "Kotlin",
+        content: `<h2>A Mature Cross-Platform Story</h2><p>Kotlin Multiplatform (KMP) has evolved from an experimental technology into a production-ready solution for sharing code across platforms. In 2026, it's reached a level of maturity that makes it a serious contender for cross-platform development.</p><h2>What's New in 2026</h2><h3>Compose Multiplatform Goes Stable</h3><p>The biggest milestone is Compose Multiplatform reaching stable on both Android and iOS. You can now build entire UI layers with shared Compose code, with platform-specific integrations where needed.</p><h3>Improved Tooling</h3><p>The Kotlin team has invested heavily in IDE support, build tooling, and debugging experience. Android Studio and IntelliJ now offer first-class KMP support with hot reload, intelligent completion, and seamless debugging.</p><h2>When to Choose KMP</h2><p>KMP shines in specific scenarios:</p><ul><li><strong>Business logic sharing</strong>: Domain models, repositories, use cases</li><li><strong>Data layer</strong>: API clients, database access, serialization</li><li><strong>Utility libraries</strong>: Date/time handling, extensions, helpers</li><li><strong>Gradual adoption</strong>: Start with shared logic, add shared UI incrementally</li></ul><h2>Architecture Patterns</h2><p>The recommended approach follows Clean Architecture with clear separation:</p><ul><li><strong>commonMain</strong>: Pure Kotlin, platform-agnostic</li><li><strong>androidMain</strong>: Android-specific implementations</li><li><strong>iosMain</strong>: iOS-specific implementations</li></ul><p>Use <strong>expect/actual</strong> declarations sparingly—prefer dependency injection interfaces for better testability.</p><h2>Conclusion</h2><p>KMP in 2026 offers a pragmatic path to cross-platform development. It's not about writing once and running everywhere—it's about sharing what makes sense and keeping platform-specific code where it belongs.</p>`
+      },
+      {
+        slug: "flutter-state-management-deep-dive-bloc-vs-riverpod-vs-provider-in-2026",
+        title: "Flutter State Management Deep Dive: Bloc vs Riverpod vs Provider in 2026",
+        date: "March 28, 2026",
+        tag: "Flutter",
+        content: `<h2>The State Management Landscape</h2><p>State management remains one of the most debated topics in Flutter development. As Flutter matures, the ecosystem has converged around a few robust solutions. Let's compare the three most popular approaches in 2026.</p><h2>Bloc: The Enterprise Standard</h2><p><strong>Bloc</strong> (Business Logic Component) enforces a strict separation of concerns using events and states. It's the most opinionated option, which makes it ideal for large teams and complex applications.</p><h3>Pros:</h3><ul><li>Excellent testability with predictable state transitions</li><li>Great developer tools (Bloc Inspector)</li><li>Clear separation of UI and business logic</li><li>Strong typing with sealed classes</li></ul><h3>Cons:</h3><ul><li>Boilerplate-heavy for simple screens</li><li>Steeper learning curve</li><li>Overkill for small projects</li></ul><h2>Riverpod: The Modern Contender</h2><p><strong>Riverpod</strong> is the spiritual successor to Provider, addressing its limitations while maintaining simplicity. It's compile-safe and highly flexible.</p><h3>Pros:</h3><ul><li>Compile-safe dependency injection</li><li>Less boilerplate than Bloc</li><li>Excellent documentation</li><li>Great for both small and large apps</li></ul><h3>Cons:</h3><ul><li>Still evolving rapidly</li><li>Multiple paradigms can confuse newcomers</li></ul><h2>Provider: The Classic</h2><p><strong>Provider</strong> remains the simplest entry point for state management in Flutter. It's built on InheritedWidget and offers gentle learning curve.</p><h3>Pros:</h3><ul><li>Simple and intuitive</li><li>Minimal boilerplate</li><li>Great for beginners</li></ul><h3>Cons:</h3><ul><li>Not compile-safe</li><li>Can lead to unnecessary rebuilds</li><li>Limited testing support</li></ul><h2>My Recommendation</h2><p>For production apps in 2026:</p><ul><li><strong>Enterprise/Large Teams</strong>: Bloc for its predictability and tooling</li><li><strong>Medium Apps</strong>: Riverpod for its flexibility and safety</li><li><strong>Small Projects</strong>: Provider or Riverpod with minimal setup</li></ul><p>The best choice depends on your team size, app complexity, and preference for explicitness vs. convenience.</p>`
+      },
+      {
+        slug: "building-resumable-file-uploads-in-flutter-with-isolates",
+        title: "Building Resumable File Uploads in Flutter with Isolates",
+        date: "February 10, 2026",
+        tag: "Flutter",
+        content: `<h2>The Challenge</h2><p>File uploads in mobile apps are tricky. Poor network conditions, app backgrounding, and large file sizes can all interrupt uploads. A robust solution needs <strong>resumability</strong>, <strong>progress tracking</strong>, and <strong>background execution</strong>.</p><h2>Why Isolates Matter</h2><p>Flutter's single-threaded architecture means heavy I/O operations can block the UI. Isolates provide true parallelism, allowing you to:</p><ul><li>Chunk large files without freezing the UI</li><li>Compute checksums in the background</li><li>Manage multipart uploads concurrently</li></ul><h2>Architecture</h2><h3>1. Chunking Strategy</h3><p>Split files into 1-5MB chunks. Each chunk gets a unique ID and can be uploaded independently. If an upload fails, only retry the failed chunks.</p><h3>2. Isolate Communication</h3><p>Use <code>SendPort</code> and <code>ReceivePort</code> for isolate communication. Send file chunks to the isolate for processing (compression, encryption, checksum) while the main isolate handles UI updates.</p><h3>3. Persistence</h3><p>Store upload state in a local database (Hive, Drift, or SQLite). Track which chunks have been uploaded, their ETags, and the upload ID for resumption.</p><h3>4. Background Execution</h3><p>Use <code>workmanager</code> for Android and <code>background_fetch</code> for iOS to continue uploads when the app is backgrounded.</p><h2>Implementation Example</h2><p>The core pattern involves creating an <code>UploadManager</code> that coordinates between the UI, isolate workers, and persistence layer:</p><ul><li>User selects file → Manager chunks it → Isolates process chunks → Upload service sends them → Progress streams to UI</li><li>On interruption → Manager reads persisted state → Resumes from last successful chunk</li></ul><h2>Conclusion</h2><p>Building resumable uploads with Isolates requires careful architecture, but the result is a robust feature that users appreciate—especially in regions with unreliable connectivity. The key is separating concerns: UI, processing, and networking should each have clear boundaries.</p>`
+      },
+      {
+        slug: "android-16-what-senior-developers-need-to-know-about-the-latest-apis",
+        title: "Android 16: What Senior Developers Need to Know About the Latest APIs",
+        date: "January 22, 2026",
+        tag: "Android",
+        content: `<h2>Android 16 Arrives</h2><p>Android 16 brings significant API changes that impact how senior developers architect applications. From health connect enhancements to advanced media capabilities, this release focuses on <strong>privacy</strong>, <strong>cross-device experiences</strong>, and <strong>AI integration</strong>.</p><h2>Key API Changes</h2><h3>1. Health Connect 3.0</h3><p>The new Health Connect API offers unified access to health data across apps with granular permissions. Senior developers should migrate to the new <code>HealthClient</code> APIs for better type safety and performance.</p><h3>2. Advanced Media Capabilities</h3><p>Android 16 expands <code>Media3</code> with new transcoding APIs, making it easier to build apps that handle any media format. The new <code>MediaTransformer</code> class simplifies video editing workflows.</p><h3>3. Predictive Back Gesture</h3><p>The predictive back gesture is now fully customizable. Apps can provide custom previews and handle the gesture at the system level, creating more fluid navigation experiences.</p><h3>4. Privacy Dashboard Enhancements</h3><p>New privacy indicators and controls give users more visibility into app behavior. Developers need to ensure their permission requests are justified and their data handling is transparent.</p><h2>Migration Considerations</h2><p>For existing apps targeting Android 16:</p><ul><li>Update target SDK to API 36</li><li>Review privacy-sensitive permissions</li><li>Test predictive back gesture behavior</li><li>Migrate Health Connect to 3.0 APIs</li></ul><h2>Conclusion</h2><p>Android 16 represents a maturing platform with a focus on user privacy and cross-device continuity. Senior developers should view these changes as opportunities to build more trustworthy and integrated experiences.</p>`
+      }
+    ];
+    
+    // Dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Matrix rain (same as govindtank.is-a.dev)
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+    const charArray = chars.split('');
+    const fontSize = 13;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+    
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = fontSize + 'px monospace';
+      
+      for (let i = 0; i < drops.length; i++) {
+        const text = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillStyle = `rgba(0, 255, 136, ${Math.random() * 0.5 + 0.5})`;
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 50);
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    
+    // Typewriter
+    const typingEl = document.getElementById('typing');
+    const phrases = [
+      'Building scalable mobile ecosystems that serve millions',
+      '9+ years of crafting high-performance mobile applications',
+      'Specializing in Android, Flutter, Kotlin Multiplatform, and AI systems',
+      'Architecting robust systems with clean, maintainable code'
+    ];
+    
+    const nameText = 'Govind Tank';
+    let phase = 'name';
+    let pIdx = 0, cIdx = 0, deleting = false, speed = 100;
+    
+    function type() {
+      if (phase === 'name') {
+        if (!deleting) {
+          typingEl.textContent = nameText.substring(0, cIdx + 1);
+          cIdx++;
+          speed = 120;
+          if (cIdx === nameText.length) {
+            deleting = true;
+            speed = 1800;
+          }
+        } else {
+          typingEl.textContent = nameText.substring(0, cIdx - 1);
+          cIdx--;
+          speed = 50;
+          if (cIdx === 0) {
+            deleting = false;
+            phase = 'phrases';
+            speed = 400;
+          }
+        }
+      } else {
+        const phrase = phrases[pIdx];
+        if (!deleting) {
+          typingEl.textContent = phrase.substring(0, cIdx + 1);
+          cIdx++;
+          speed = 80;
+          if (cIdx === phrase.length) {
+            deleting = true;
+            speed = 2000;
+          }
+        } else {
+          typingEl.textContent = phrase.substring(0, cIdx - 1);
+          cIdx--;
+          speed = 40;
+          if (cIdx === 0) {
+            deleting = false;
+            pIdx = (pIdx + 1) % phrases.length;
+            speed = 400;
+          }
+        }
+      }
+      setTimeout(type, speed);
+    }
+    type();
+    
+    // Blog rendering
+    const blogGrid = document.getElementById('blog-grid');
+    const blogDetail = document.getElementById('blog-detail');
+    
+    function renderBlogs() {
+      blogGrid.innerHTML = '';
+      blogData.forEach(blog => {
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+        card.onclick = () => showBlog(blog.slug);
+        card.innerHTML = `
+          <div class="blog-tag">${blog.tag}</div>
+          <div class="blog-title">${blog.title}</div>
+          <div class="blog-excerpt">${blog.content.replace(/<[^>]+>/g, '').substring(0, 150)}...</div>
+          <div class="blog-meta">
+            <span>${blog.date}</span>
+            <span class="blog-read">Read →</span>
+          </div>
+        `;
+        blogGrid.appendChild(card);
+      });
+    }
+    
+    function showBlog(slug) {
+      const blog = blogData.find(b => b.slug === slug);
+      if (!blog) return;
+      
+      document.getElementById('blog-detail-tag').textContent = blog.tag;
+      document.getElementById('blog-detail-title').textContent = blog.title;
+      document.getElementById('blog-detail-date').textContent = blog.date;
+      document.getElementById('blog-detail-content').innerHTML = blog.content;
+      
+      blogDetail.classList.add('active');
+      blogDetail.classList.remove('hidden');
+      blogGrid.parentElement.style.display = 'none';
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function hideBlog() {
+      blogDetail.classList.remove('active');
+      blogDetail.classList.add('hidden');
+      blogGrid.parentElement.style.display = '';
+    }
+    
+    renderBlogs();
+    
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
 </body>
 </html>
