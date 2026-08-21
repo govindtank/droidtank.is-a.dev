@@ -497,10 +497,9 @@ contributions.forEach(c => {
     <div class="repo">${c.repo}</div>
     <p class="desc">${c.desc}</p>
     <div class="meta">
-      <span>★ ${c.stars}</span>
-      <span>ⵇ ${c.forks}</span>
+      <a href="${c.url}" target="_blank" rel="noopener">View Repository →</a>
     </div>`;
-  el.onclick = () => window.open(`https://github.com/${c.repo}`, '_blank');
+  el.onclick = () => window.open(c.url, '_blank');
   contribGrid.appendChild(el);
 });
 
