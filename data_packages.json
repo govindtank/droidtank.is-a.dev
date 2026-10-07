@@ -1,0 +1,534 @@
+[
+  {
+    "id": "spatial_card",
+    "name": "spatial_card",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ui",
+    "version": "1.0.1",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "VisionOS 3D Spatial Tilt & Glare Card Widget",
+    "description": "Spatial interactive 3D card widget with physical dynamic lighting, specular glare shaders, gyroscope tilt, and glassmorphic depth layers.",
+    "install": "flutter pub add spatial_card",
+    "pubUrl": "https://pub.dev/packages/spatial_card",
+    "repoUrl": "https://github.com/govindtank/spatial_card",
+    "demoUrl": "https://govindtank.github.io/spatial_card/",
+    "score": "140/140",
+    "highlights": [
+      "VisionOS 3D Tilt",
+      "Sensor Reactive",
+      "Specular Glare",
+      "Glassmorphic Depth"
+    ]
+  },
+  {
+    "id": "ambient_backdrop_glow",
+    "name": "ambient_backdrop_glow",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ui",
+    "version": "1.1.2",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "Ambient Background Glow & Fluid Mesh Gradients",
+    "description": "Extracts dominant color palettes from image artwork and renders dynamic, fluid ambient backdrops with OKLab color space interpolation.",
+    "install": "flutter pub add ambient_backdrop_glow",
+    "pubUrl": "https://pub.dev/packages/ambient_backdrop_glow",
+    "repoUrl": "https://github.com/govindtank/ambient_backdrop_glow",
+    "demoUrl": "https://govindtank.github.io/ambient_backdrop_glow/",
+    "score": "140/140",
+    "highlights": [
+      "OKLab Color Blending",
+      "Fluid Mesh Gradients",
+      "Artwork Extraction",
+      "Zero-Lag Canvas"
+    ]
+  },
+  {
+    "id": "ai_voice_orb",
+    "name": "ai_voice_orb",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ai",
+    "version": "1.0.0",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "Neural Voice Orb for Conversational AI & Voice Agents",
+    "description": "Fluid, audio-reactive neural voice orb for Gemini Live and Siri style AI assistants with real-time waveform frequency response and GPU shaders.",
+    "install": "flutter pub add ai_voice_orb",
+    "pubUrl": "https://pub.dev/packages/ai_voice_orb",
+    "repoUrl": "https://github.com/govindtank/ai_voice_orb",
+    "demoUrl": "https://govindtank.github.io/ai_voice_orb/",
+    "score": "140/140",
+    "highlights": [
+      "Conversational AI UI",
+      "Audio-Reactive Pulse",
+      "State Transitions",
+      "GPU Shaders"
+    ]
+  },
+  {
+    "id": "dart_vector_index",
+    "name": "dart_vector_index",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ai",
+    "version": "1.0.1",
+    "platforms": [
+      "Dart",
+      "Flutter",
+      "Server",
+      "CLI",
+      "Web"
+    ],
+    "tagline": "Pure-Dart Vector Search & HNSW Index for On-Device RAG",
+    "description": "Ultra-fast on-device vector search database and HNSW graph index for semantic search, local embeddings, SQ8 quantization, and metadata filtering.",
+    "install": "dart pub add dart_vector_index",
+    "pubUrl": "https://pub.dev/packages/dart_vector_index",
+    "repoUrl": "https://github.com/govindtank/dart_vector_index",
+    "score": "140/140",
+    "highlights": [
+      "HNSW Graph Index",
+      "Sub-ms On-Device RAG",
+      "SQ8 Quantization",
+      "Zero Dependencies"
+    ]
+  },
+  {
+    "id": "waveform_pro",
+    "name": "waveform_pro",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "audio",
+    "version": "1.1.4",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "GPU Audio Waveforms, Scrubbing & Peak Extraction",
+    "description": "Production-ready Flutter audio waveform widget with curved splines, discrete bars, dual-color playback scrubbing, zoom/pan, and peak extraction.",
+    "install": "flutter pub add waveform_pro",
+    "pubUrl": "https://pub.dev/packages/waveform_pro",
+    "repoUrl": "https://github.com/govindtank/waveform_pro",
+    "demoUrl": "https://govindtank.github.io/waveform_pro/",
+    "score": "140/140",
+    "highlights": [
+      "GPU Canvas Render",
+      "Peak Extraction",
+      "Dual-Color Scrubbing",
+      "Pinch Zoom"
+    ]
+  },
+  {
+    "id": "scratch_reveal",
+    "name": "scratch_reveal",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ui",
+    "version": "1.1.1",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "High-Performance Scratch Card & Gamification Canvas",
+    "description": "GPU-accelerated scratch card and scratch-to-reveal canvas widget for Flutter with sub-millisecond bitmask progress tracking and trigger callbacks.",
+    "install": "flutter pub add scratch_reveal",
+    "pubUrl": "https://pub.dev/packages/scratch_reveal",
+    "repoUrl": "https://github.com/govindtank/scratch_reveal",
+    "demoUrl": "https://govindtank.github.io/scratch_reveal/",
+    "score": "140/140",
+    "highlights": [
+      "Sub-ms Bitmask",
+      "Gamification UX",
+      "Custom Brushes",
+      "Threshold Triggers"
+    ]
+  },
+  {
+    "id": "segmented_ring_painter",
+    "name": "segmented_ring_painter",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ui",
+    "version": "1.1.2",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "Concentric Activity Rings & Segmented Progress Widget",
+    "description": "High-performance segmented circular progress and concentric activity ring widget for Flutter with gradient arcs, rounded caps, and tap hit-testing.",
+    "install": "flutter pub add segmented_ring_painter",
+    "pubUrl": "https://pub.dev/packages/segmented_ring_painter",
+    "repoUrl": "https://github.com/govindtank/segmented_ring_painter",
+    "demoUrl": "https://govindtank.github.io/segmented_ring_painter/",
+    "score": "140/140",
+    "highlights": [
+      "Apple Activity Rings",
+      "Concentric Bands",
+      "Hit-Test Taps",
+      "Gradient Arcs"
+    ]
+  },
+  {
+    "id": "currency_field_formatter",
+    "name": "currency_field_formatter",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "core",
+    "version": "1.1.1",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "Bulletproof Currency Formatter with Cursor Tracking",
+    "description": "Zero-glitch currency TextInputFormatter with exact cursor tracking on mid-string edits/backspaces, Indian Lakhs/Crores grouping, and ISO 4217 presets.",
+    "install": "flutter pub add currency_field_formatter",
+    "pubUrl": "https://pub.dev/packages/currency_field_formatter",
+    "repoUrl": "https://github.com/govindtank/currency_field_formatter",
+    "score": "140/140",
+    "highlights": [
+      "Exact Cursor Tracking",
+      "Indian Lakhs/Crores",
+      "Zero Glitch Backspace",
+      "ISO 4217"
+    ]
+  },
+  {
+    "id": "country_mobile_validator",
+    "name": "country_mobile_validator",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "core",
+    "version": "0.2.1",
+    "platforms": [
+      "Dart",
+      "Flutter",
+      "Server",
+      "All Platforms"
+    ],
+    "tagline": "International Phone Validator & Formatter (240+ Countries)",
+    "description": "Ultra-fast international mobile number validator, formatter, and metadata parser supporting 240+ countries, dial codes, flags, and E.164 normalization.",
+    "install": "flutter pub add country_mobile_validator",
+    "pubUrl": "https://pub.dev/packages/country_mobile_validator",
+    "repoUrl": "https://github.com/govindtank/country_mobile_validator",
+    "score": "140/140",
+    "highlights": [
+      "240+ Countries",
+      "E.164 Normalization",
+      "Zero Libphonenumber Bloat",
+      "Instant Parsing"
+    ]
+  },
+  {
+    "id": "cron_schedule",
+    "name": "cron_schedule",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "core",
+    "version": "1.1.1",
+    "platforms": [
+      "Dart",
+      "Flutter",
+      "Server",
+      "CLI",
+      "Web"
+    ],
+    "tagline": "Pure-Dart Cron Parser, Predictor & Fluent Schedule Builder",
+    "description": "Lightweight cron parser, next-occurrence predictor, human translator, and fluent schedule builder for Dart and Flutter with 100% test coverage.",
+    "install": "dart pub add cron_schedule",
+    "pubUrl": "https://pub.dev/packages/cron_schedule",
+    "repoUrl": "https://github.com/govindtank/cron_schedule",
+    "score": "140/140",
+    "highlights": [
+      "Cron Parser & Validator",
+      "Next Occurrence Predictor",
+      "Fluent Builder API",
+      "Human Translator"
+    ]
+  },
+  {
+    "id": "offline_outbox",
+    "name": "offline_outbox",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "core",
+    "version": "1.1.1",
+    "platforms": [
+      "Dart",
+      "Flutter",
+      "All Platforms"
+    ],
+    "tagline": "Resilient Offline-First Outbox & Reliable Retry Engine",
+    "description": "Offline-first queue and retry engine for Dart and Flutter apps. Features persistent disk storage, exponential backoff with jitter, and deduplication.",
+    "install": "dart pub add offline_outbox",
+    "pubUrl": "https://pub.dev/packages/offline_outbox",
+    "repoUrl": "https://github.com/govindtank/offline_outbox",
+    "score": "140/140",
+    "highlights": [
+      "Guaranteed Delivery",
+      "Exponential Backoff",
+      "Disk Persistence",
+      "Deduplication"
+    ]
+  },
+  {
+    "id": "quote_painter",
+    "name": "quote_painter",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ui",
+    "version": "0.2.4",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "tagline": "Dynamic Typography Canvas Engine & Social Media Card Renderer",
+    "description": "High-fidelity typography rendering engine for Flutter canvases with multi-layer gradient typography, decorative quotation glyphs, badges, and high-res image export.",
+    "install": "flutter pub add quote_painter",
+    "pubUrl": "https://pub.dev/packages/quote_painter",
+    "repoUrl": "https://github.com/govindtank/quote_painter",
+    "score": "140/140",
+    "highlights": [
+      "Multi-layer Gradients",
+      "Quotation Glyphs",
+      "Line Highlights",
+      "Image Export"
+    ]
+  },
+  {
+    "id": "flutter_whisper",
+    "name": "flutter_whisper",
+    "ecosystem": "pub.dev",
+    "type": "flutter",
+    "category": "ai",
+    "version": "0.2.1",
+    "platforms": [
+      "Android",
+      "macOS",
+      "iOS"
+    ],
+    "tagline": "100% On-Device Whisper Speech-to-Text via Whisper.cpp",
+    "description": "Local on-device speech-to-text transcription for Flutter using whisper.cpp NDK bindings with automatic model downloads, streaming results, and zero cloud costs.",
+    "install": "flutter pub add flutter_whisper",
+    "pubUrl": "https://pub.dev/packages/flutter_whisper",
+    "repoUrl": "https://github.com/govindtank/flutter_whisper",
+    "score": "140/140",
+    "highlights": [
+      "100% On-Device NDK",
+      "Whisper.cpp Engine",
+      "Zero Cloud Latency",
+      "Streaming Results"
+    ]
+  },
+  {
+    "id": "cmp-biometrics",
+    "name": "cmp-biometrics",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "core",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "iOS",
+      "JVM Desktop"
+    ],
+    "tagline": "Unified Biometrics & Authentication for Compose Multiplatform",
+    "description": "Face ID, Touch ID, Android BiometricPrompt, and device passcode fallback unified under declarative Kotlin Coroutines & Jetpack Compose APIs.",
+    "install": "implementation(\"com.github.govindtank:cmp-biometrics:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/cmp-biometrics",
+    "repoUrl": "https://github.com/govindtank/cmp-biometrics",
+    "score": "Kotlin 2.0",
+    "highlights": [
+      "Face ID & Touch ID",
+      "BiometricPrompt",
+      "Passcode Fallback",
+      "Kotlin 2.0"
+    ]
+  },
+  {
+    "id": "cmp-haptics",
+    "name": "cmp-haptics",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "audio",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "iOS"
+    ],
+    "tagline": "Tactile Haptic Feedback Engine for Compose Multiplatform",
+    "description": "Unified tactile haptics bridging Android Material You LRA actuators with iOS Taptic Engine (.hapticClickable, impact, notification, selection feedback).",
+    "install": "implementation(\"com.github.govindtank:cmp-haptics:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/cmp-haptics",
+    "repoUrl": "https://github.com/govindtank/cmp-haptics",
+    "score": "Kotlin 2.0",
+    "highlights": [
+      "Material You LRAs",
+      "iOS Taptic Engine",
+      ".hapticClickable()",
+      "Zero Native Glue"
+    ]
+  },
+  {
+    "id": "cmp-media-player",
+    "name": "cmp-media-player",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "audio",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Desktop"
+    ],
+    "tagline": "Declarative Video & Audio Player for Compose Multiplatform",
+    "description": "Declarative VideoPlayer and AudioPlayer for CMP backed by AndroidX Media3 ExoPlayer and iOS AVPlayer with unified playback controllers.",
+    "install": "implementation(\"com.github.govindtank:cmp-media-player:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/cmp-media-player",
+    "repoUrl": "https://github.com/govindtank/cmp-media-player",
+    "score": "Kotlin 2.0",
+    "highlights": [
+      "Media3 ExoPlayer",
+      "iOS AVPlayer",
+      "Unified State Controller",
+      "PiP & Streaming"
+    ]
+  },
+  {
+    "id": "cmp-clipboard",
+    "name": "cmp-clipboard",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "core",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "iOS",
+      "Desktop"
+    ],
+    "tagline": "Cross-Platform Clipboard Manager for Compose Multiplatform",
+    "description": "Unified clipboard reader and writer for text, HTML, and images across Android and iOS with permission-safe APIs and reactive observers.",
+    "install": "implementation(\"com.github.govindtank:cmp-clipboard:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/cmp-clipboard",
+    "repoUrl": "https://github.com/govindtank/cmp-clipboard",
+    "score": "Kotlin 2.0",
+    "highlights": [
+      "Text & Image Clipboard",
+      "Reactive Observers",
+      "Cross-Platform",
+      "Permission Safe"
+    ]
+  },
+  {
+    "id": "cmp-keyboard",
+    "name": "cmp-keyboard",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "ui",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "iOS"
+    ],
+    "tagline": "Zero-Boilerplate Keyboard Insets & IME Sync for CMP",
+    "description": "Seamless keyboard insets, animation synchronization, IME visibility state, and auto-scrolling focus management for Compose Multiplatform screens.",
+    "install": "implementation(\"com.github.govindtank:cmp-keyboard:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/cmp-keyboard",
+    "repoUrl": "https://github.com/govindtank/cmp-keyboard",
+    "score": "Kotlin 2.0",
+    "highlights": [
+      "IME Animation Sync",
+      "Window Insets",
+      "Auto-Scroll on Focus",
+      "Compose Multiplatform"
+    ]
+  },
+  {
+    "id": "cmp-linked-text",
+    "name": "cmp-linked-text",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "ui",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "iOS",
+      "JVM"
+    ],
+    "tagline": "Auto-Linking URLs, Mentions & Hashtags for Jetpack Compose",
+    "description": "High-performance auto-linking text component for Jetpack Compose and Compose Multiplatform with custom clickable matchers and regex rules.",
+    "install": "implementation(\"com.github.govindtank:cmp-linked-text:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/cmp-linked-text",
+    "repoUrl": "https://github.com/govindtank/cmp-linked-text",
+    "score": "Kotlin 2.0",
+    "highlights": [
+      "Auto-Link URLs",
+      "Mentions & Hashtags",
+      "Custom Regex Matchers",
+      "CMP Ready"
+    ]
+  },
+  {
+    "id": "capture-improvement-kotlin",
+    "name": "capture-improvement-kotlin",
+    "ecosystem": "JitPack",
+    "type": "kotlin",
+    "category": "audio",
+    "version": "v1.0.0",
+    "platforms": [
+      "Android",
+      "CameraX"
+    ],
+    "tagline": "Real-Time Image Blur & Pose Quality Detection for CameraX",
+    "description": "Modular Android native library for real-time image blur detection, angle/pose matching, and orientation detection built specifically for CameraX.",
+    "install": "implementation(\"com.github.govindtank:capture-improvement-kotlin:v1.0.0\")",
+    "pubUrl": "https://jitpack.io/#govindtank/capture-improvement-kotlin",
+    "repoUrl": "https://github.com/govindtank/capture-improvement-kotlin",
+    "score": "Android NDK",
+    "highlights": [
+      "CameraX Pipeline",
+      "Real-Time Blur Detection",
+      "Pose & Angle Matching",
+      "Kotlin DSL"
+    ]
+  }
+]
