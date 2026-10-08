@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Source Package Live Playground Hub | DroidTank Dev Tools</title>
+  <meta name="description" content="Interactive browser playgrounds for spatial_card, waveform_pro, ambient_backdrop_glow, and scratch_reveal Flutter &amp; CMP packages.">
+  <link rel="canonical" href="https://droidtank.is-a.dev/tools/playground.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <script data-goatcounter="https://govindtank.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    :root {
+      --bg: #000000;
+      --card-bg: #050505;
+      --border: #262626;
+      --border-lit: #404040;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --green: #00ff66;
+      --green-glow: rgba(0, 255, 102, 0.15);
+      --cyan: #38bdf8;
+      --purple: #c084fc;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; min-height:100vh; }
+    .bg-grid { position:fixed; inset:0; background-image:linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size:40px 40px; z-index:-1; pointer-events:none; }
+    .nav { border-bottom:1px solid var(--border); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; background:#000; position:sticky; top:0; z-index:10; }
+    .nav-brand { font-family:var(--mono); font-size:13px; font-weight:700; color:#fff; text-decoration:none; }
+    .nav-brand span { color:var(--text-dim); }
+    .nav-links { display:flex; gap:16px; list-style:none; font-family:var(--mono); font-size:12px; }
+    .nav-links a { color:var(--text-muted); text-decoration:none; }
+    .nav-links a:hover { color:#fff; }
+    .container { max-width:1200px; margin:0 auto; padding:40px 24px; }
+    .tag { display:inline-block; font-family:var(--mono); font-size:11px; color:var(--green); background:rgba(0,255,102,0.08); border:1px solid rgba(0,255,102,0.3); padding:3px 8px; margin-bottom:12px; }
+    h1 { font-family:var(--mono); font-size:clamp(1.8rem, 3vw, 2.4rem); font-weight:700; margin-bottom:8px; }
+    .desc { color:var(--text-muted); font-size:14px; max-width:700px; margin-bottom:30px; }
+    .play-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    @media (max-width: 860px) { .play-grid { grid-template-columns:1fr; } }
+    .play-card { background:var(--card-bg); border:1px solid var(--border); padding:24px; display:flex; flex-direction:column; }
+    .play-card:hover { border-color:var(--border-lit); }
+    .card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+    .pkg-title { font-family:var(--mono); font-size:16px; font-weight:700; color:#fff; }
+    .badge { font-family:var(--mono); font-size:10px; padding:2px 6px; border:1px solid var(--border); color:var(--text-muted); }
+    .demo-stage { height:220px; background:#000; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; margin-bottom:16px; perspective:800px; }
+    .btn { font-family:var(--mono); font-size:11px; font-weight:600; padding:8px 14px; cursor:pointer; background:var(--green); color:#000; border:1px solid var(--green); text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+    .btn-outline { background:transparent; color:#fff; border:1px solid var(--border-lit); }
+    .btn-outline:hover { border-color:#fff; }
+
+    /* Spatial Card Interactive 3D Mock */
+    .spatial-card-box {
+      width: 180px;
+      height: 120px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.1s ease-out;
+      transform-style: preserve-3d;
+      cursor: crosshair;
+    }
+    .spatial-glare {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25), transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* Waveform Canvas */
+    #wave-canvas { width: 100%; height: 100%; }
+
+    /* Ambient Glow Canvas */
+    .glow-sphere {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--cyan), var(--purple), transparent 70%);
+      filter: blur(20px);
+      animation: pulseGlow 4s infinite alternate ease-in-out;
+    }
+    @keyframes pulseGlow {
+      0% { transform: scale(0.8) translate(-10px, -10px); opacity: 0.6; }
+      100% { transform: scale(1.3) translate(10px, 10px); opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <nav class="nav">
+    <a href="../" class="nav-brand">govindtank<span>/droidtank/tools</span></a>
+    <ul class="nav-links">
+      <li><a href="./">all tools</a></li>
+      <li><a href="../#packages">packages</a></li>
+      <li><a href="../blog/">articles</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <span class="tag">OPEN SOURCE INTERACTIVE SUITE</span>
+    <h1>Package Live Playgrounds</h1>
+    <p class="desc">Real-time web simulations and verified web demos for published Flutter and Kotlin Multiplatform packages.</p>
+
+    <div class="play-grid">
+      <!-- Spatial Card -->
+      <div class="play-card">
+        <div class="card-header">
+          <div>
+            <div class="pkg-title">spatial_card</div>
+            <div style="font-size:12px; color:var(--text-muted);">VisionOS 3D Spatial Tilt &amp; Glare</div>
+          </div>
+          <span class="badge">140/140 PUB</span>
+        </div>
+        <div class="demo-stage" id="spatial-stage">
+          <div class="spatial-card-box" id="tilt-box">
+            <div class="spatial-glare" id="glare"></div>
+            <span style="font-family:var(--mono); font-size:10px; color:var(--green);">$ spatial_card</span>
+            <span style="font-family:var(--mono); font-size:12px; font-weight:700;">VisionOS 3D</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:auto;">
+          <a href="https://govindtank.github.io/spatial_card/" target="_blank" class="btn" style="flex:1;">Full Flutter Web Demo ↗</a>
+          <a href="https://pub.dev/packages/spatial_card" target="_blank" class="btn btn-outline">pub.dev ↗</a>
+        </div>
+      </div>
+
+      <!-- Waveform Pro -->
+      <div class="play-card">
+        <div class="card-header">
+          <div>
+            <div class="pkg-title">waveform_pro</div>
+            <div style="font-size:12px; color:var(--text-muted);">60 FPS Audio Visualizer Engine</div>
+          </div>
+          <span class="badge">140/140 PUB</span>
+        </div>
+        <div class="demo-stage">
+          <canvas id="wave-canvas"></canvas>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:auto;">
+          <a href="https://govindtank.github.io/waveform_pro/" target="_blank" class="btn" style="flex:1;">Full Flutter Web Demo ↗</a>
+          <a href="https://pub.dev/packages/waveform_pro" target="_blank" class="btn btn-outline">pub.dev ↗</a>
+        </div>
+      </div>
+
+      <!-- Ambient Backdrop Glow -->
+      <div class="play-card">
+        <div class="card-header">
+          <div>
+            <div class="pkg-title">ambient_backdrop_glow</div>
+            <div style="font-size:12px; color:var(--text-muted);">OKLab Fluid Mesh Gradients</div>
+          </div>
+          <span class="badge">140/140 PUB</span>
+        </div>
+        <div class="demo-stage">
+          <div class="glow-sphere"></div>
+          <div style="position:relative; z-index:2; font-family:var(--mono); font-size:11px; background:rgba(0,0,0,0.6); padding:6px 12px; border:1px solid var(--border);">
+            Extracting OKLab Colors
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:auto;">
+          <a href="https://govindtank.github.io/ambient_backdrop_glow/" target="_blank" class="btn" style="flex:1;">Full Flutter Web Demo ↗</a>
+          <a href="https://pub.dev/packages/ambient_backdrop_glow" target="_blank" class="btn btn-outline">pub.dev ↗</a>
+        </div>
+      </div>
+
+      <!-- Scratch Reveal -->
+      <div class="play-card">
+        <div class="card-header">
+          <div>
+            <div class="pkg-title">scratch_reveal</div>
+            <div style="font-size:12px; color:var(--text-muted);">Scratch-Card Shader Engine</div>
+          </div>
+          <span class="badge">140/140 PUB</span>
+        </div>
+        <div class="demo-stage">
+          <canvas id="scratch-canvas" width="280" height="160" style="cursor:crosshair;"></canvas>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:auto;">
+          <a href="https://govindtank.github.io/scratch_reveal/" target="_blank" class="btn" style="flex:1;">Full Flutter Web Demo ↗</a>
+          <a href="https://pub.dev/packages/scratch_reveal" target="_blank" class="btn btn-outline">pub.dev ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 3D Spatial Card Tilt
+    const stage = document.getElementById('spatial-stage');
+    const box = document.getElementById('tilt-box');
+    const glare = document.getElementById('glare');
+
+    stage.addEventListener('mousemove', (e) => {
+      const rect = stage.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      const rx = -(y / (rect.height / 2)) * 18;
+      const ry = (x / (rect.width / 2)) * 18;
+      box.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(20px)`;
+      glare.style.opacity = '1';
+      glare.style.background = `radial-gradient(circle at ${e.clientX - rect.left}px ${e.clientY - rect.top}px, rgba(255,255,255,0.3), transparent 60%)`;
+    });
+
+    stage.addEventListener('mouseleave', () => {
+      box.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0)';
+      glare.style.opacity = '0';
+    });
+
+    // Waveform Animation
+    const waveCanvas = document.getElementById('wave-canvas');
+    const wCtx = waveCanvas.getContext('2d');
+    let phase = 0;
+    function renderWave() {
+      waveCanvas.width = waveCanvas.clientWidth;
+      waveCanvas.height = waveCanvas.clientHeight;
+      wCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      const bars = 28;
+      const bw = waveCanvas.width / bars;
+      for (let i = 0; i < bars; i++) {
+        const h = Math.abs(Math.sin(phase + i * 0.35)) * (waveCanvas.height * 0.75);
+        wCtx.fillStyle = '#00ff66';
+        wCtx.fillRect(i * bw + 2, (waveCanvas.height - h) / 2, bw - 4, h);
+      }
+      phase += 0.08;
+      requestAnimationFrame(renderWave);
+    }
+    renderWave();
+
+    // Scratch Card Demo
+    const sCanvas = document.getElementById('scratch-canvas');
+    const sCtx = sCanvas.getContext('2d');
+    function initScratch() {
+      sCtx.fillStyle = '#181818';
+      sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+      sCtx.fillStyle = '#00ff66';
+      sCtx.font = '12px JetBrains Mono';
+      sCtx.textAlign = 'center';
+      sCtx.fillText('★ SCRATCH HERE WITH CURSOR ★', sCanvas.width / 2, sCanvas.height / 2);
+    }
+    initScratch();
+
+    let isDrawing = false;
+    sCanvas.addEventListener('mousedown', () => isDrawing = true);
+    window.addEventListener('mouseup', () => isDrawing = false);
+    sCanvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      const rect = sCanvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      sCtx.globalCompositeOperation = 'destination-out';
+      sCtx.beginPath();
+      sCtx.arc(x, y, 16, 0, Math.PI * 2);
+      sCtx.fill();
+    });
+  </script>
+</body>
+</html>

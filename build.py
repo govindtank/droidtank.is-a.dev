@@ -588,6 +588,7 @@ def build():
 
       <ul class="nav-links">
         <li><a href="#packages" class="nav-link">packages</a></li>
+        <li><a href="tools/" class="nav-link" style="color:var(--green);">dev tools</a></li>
         <li><a href="#author" class="nav-link">architect</a></li>
         <li><a href="#blog" class="nav-link">articles (120)</a></li>
         <li><a href="https://pub.dev/publishers/govindtank.is-a.dev/packages" target="_blank" rel="noopener" class="nav-link">publisher ↗</a></li>
@@ -1026,9 +1027,10 @@ def build():
       </a>
 
       <ul class="nav-links">
-        <li><a href="../" class="nav-link">home</a></li>
         <li><a href="../#packages" class="nav-link">packages</a></li>
-        <li><a href="./" class="nav-link active">blog (120)</a></li>
+        <li><a href="../tools/" class="nav-link" style="color:var(--green);">dev tools</a></li>
+        <li><a href="../#author" class="nav-link">architect</a></li>
+        <li><a href="./" class="nav-link active">articles (120)</a></li>
         <li><a href="https://pub.dev/publishers/govindtank.is-a.dev/packages" target="_blank" rel="noopener" class="nav-link">publisher ↗</a></li>
         <li><a href="https://github.com/govindtank" target="_blank" rel="noopener" class="nav-link">github ↗</a></li>
       </ul>
@@ -1371,6 +1373,7 @@ def build():
 
       <ul class="nav-links">
         <li><a href="../" class="nav-link">home</a></li>
+        <li><a href="../tools/" class="nav-link" style="color:var(--green);">dev tools</a></li>
         <li><a href="./" class="nav-link active">blog archive</a></li>
         <li><a href="https://pub.dev/publishers/govindtank.is-a.dev/packages" target="_blank" rel="noopener" class="nav-link">publisher ↗</a></li>
         <li><a href="https://github.com/govindtank" target="_blank" rel="noopener" class="nav-link">github ↗</a></li>
@@ -1536,6 +1539,11 @@ Sitemap: https://droidtank.is-a.dev/sitemap.xml
     # Generate sitemap.xml
     sitemap_entries = [
         "  <url>\n    <loc>https://droidtank.is-a.dev/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>",
+        "  <url>\n    <loc>https://droidtank.is-a.dev/tools/</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>",
+        "  <url>\n    <loc>https://droidtank.is-a.dev/tools/svg-to-vector.html</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.85</priority>\n  </url>",
+        "  <url>\n    <loc>https://droidtank.is-a.dev/tools/adaptive-icon-tester.html</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.85</priority>\n  </url>",
+        "  <url>\n    <loc>https://droidtank.is-a.dev/tools/flutter-config-builder.html</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.85</priority>\n  </url>",
+        "  <url>\n    <loc>https://droidtank.is-a.dev/tools/playground.html</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.85</priority>\n  </url>",
         "  <url>\n    <loc>https://droidtank.is-a.dev/blog/</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>"
     ]
     for b in blogs:

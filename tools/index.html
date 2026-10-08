@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Tools &amp; Utilities Suite | DroidTank</title>
+  <meta name="description" content="Free browser-based developer tools for Android, Kotlin Multiplatform (CMP), and Flutter engineering by Govind Tank.">
+  <link rel="canonical" href="https://droidtank.is-a.dev/tools/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
+  <script data-goatcounter="https://govindtank.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    :root {
+      --bg: #000000;
+      --card-bg: #050505;
+      --border: #262626;
+      --border-lit: #404040;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --green: #00ff66;
+      --green-glow: rgba(0, 255, 102, 0.15);
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; min-height:100vh; }
+    .bg-grid { position:fixed; inset:0; background-image:linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size:40px 40px; z-index:-1; pointer-events:none; }
+    .nav { border-bottom:1px solid var(--border); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; background:#000; position:sticky; top:0; z-index:10; }
+    .nav-brand { font-family:var(--mono); font-size:13px; font-weight:700; color:#fff; text-decoration:none; }
+    .nav-brand span { color:var(--text-dim); }
+    .nav-links { display:flex; gap:16px; list-style:none; font-family:var(--mono); font-size:12px; }
+    .nav-links a { color:var(--text-muted); text-decoration:none; }
+    .nav-links a:hover { color:#fff; }
+    .container { max-width:1200px; margin:0 auto; padding:60px 24px 80px; }
+    .tag { display:inline-block; font-family:var(--mono); font-size:11px; color:var(--green); background:rgba(0,255,102,0.08); border:1px solid rgba(0,255,102,0.3); padding:3px 8px; margin-bottom:12px; }
+    h1 { font-family:var(--mono); font-size:clamp(2rem, 4vw, 3rem); font-weight:700; margin-bottom:10px; }
+    .desc { color:var(--text-muted); font-size:15px; max-width:680px; margin-bottom:40px; }
+    .tools-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:24px; }
+    .tool-card { background:var(--card-bg); border:1px solid var(--border); padding:28px; text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.2s; }
+    .tool-card:hover { border-color:var(--green); }
+    .tool-icon { font-size:2rem; margin-bottom:16px; }
+    .tool-title { font-family:var(--mono); font-size:17px; font-weight:700; color:#fff; margin-bottom:8px; }
+    .tool-desc { color:var(--text-muted); font-size:13px; line-height:1.6; margin-bottom:20px; }
+    .tool-action { font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600; display:flex; align-items:center; gap:6px; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <nav class="nav">
+    <a href="../" class="nav-brand">govindtank<span>/droidtank/tools</span></a>
+    <ul class="nav-links">
+      <li><a href="../#packages">packages</a></li>
+      <li><a href="../blog/">articles</a></li>
+      <li><a href="https://github.com/govindtank" target="_blank" rel="noopener">github ↗</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <span class="tag">0% LATENCY • 100% CLIENT-SIDE • $0 BACKEND</span>
+    <h1>Developer Utilities &amp; Playgrounds</h1>
+    <p class="desc">High-performance engineering tools and interactive playgrounds for Android, Compose Multiplatform, Flutter, and mobile systems architects.</p>
+
+    <div class="tools-grid">
+      <!-- SVG to Vector -->
+      <a href="svg-to-vector.html" class="tool-card">
+        <div>
+          <div class="tool-icon">⚡</div>
+          <div class="tool-title">SVG to Android Vector &amp; ImageVector</div>
+          <div class="tool-desc">Convert standard SVGs to Android Vector Drawable XML and Kotlin Jetpack / Compose Multiplatform ImageVector code with 1-tap clipboard copy.</div>
+        </div>
+        <div class="tool-action">Launch Converter →</div>
+      </a>
+
+      <!-- Adaptive Icon Tester -->
+      <a href="adaptive-icon-tester.html" class="tool-card">
+        <div>
+          <div class="tool-icon">🎯</div>
+          <div class="tool-title">Adaptive Icon Safe-Zone Tester</div>
+          <div class="tool-desc">Test your app icon against OEM masks (Pixel Circle, Samsung Squircle, Xiaomi Rounded) and verify inner 66dp safe-zone compliance.</div>
+        </div>
+        <div class="tool-action">Launch Safe-Zone Tester →</div>
+      </a>
+
+      <!-- Flutter YAML Builder -->
+      <a href="flutter-config-builder.html" class="tool-card">
+        <div>
+          <div class="tool-icon">⚙️</div>
+          <div class="tool-title">Flutter Icon &amp; Splash Config Builder</div>
+          <div class="tool-desc">Visually generate production-ready <code>flutter_launcher_icons.yaml</code> and <code>flutter_native_splash.yaml</code> with dark mode and Android 12 support.</div>
+        </div>
+        <div class="tool-action">Launch YAML Builder →</div>
+      </a>
+
+      <!-- Interactive Playgrounds -->
+      <a href="playground.html" class="tool-card">
+        <div>
+          <div class="tool-icon">🎮</div>
+          <div class="tool-title">Open Source Package Playgrounds</div>
+          <div class="tool-desc">Interactive live simulations for <code>spatial_card</code> (3D Gyroscope/Glare), <code>waveform_pro</code> (Audio DSP), <code>ambient_backdrop_glow</code>, and <code>scratch_reveal</code>.</div>
+        </div>
+        <div class="tool-action">Launch Playgrounds →</div>
+      </a>
+    </div>
+  </div>
+</body>
+</html>

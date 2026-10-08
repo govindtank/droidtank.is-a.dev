@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flutter Icon &amp; Splash Screen YAML Generator | DroidTank Dev Tools</title>
+  <meta name="description" content="Visually generate flutter_launcher_icons.yaml and flutter_native_splash.yaml configurations with dark mode and Android 12 support.">
+  <link rel="canonical" href="https://droidtank.is-a.dev/tools/flutter-config-builder.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+  <script data-goatcounter="https://govindtank.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    :root {
+      --bg: #000000;
+      --card-bg: #050505;
+      --border: #262626;
+      --border-lit: #404040;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --green: #00ff66;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; min-height:100vh; }
+    .bg-grid { position:fixed; inset:0; background-image:linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size:40px 40px; z-index:-1; pointer-events:none; }
+    .nav { border-bottom:1px solid var(--border); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; background:#000; position:sticky; top:0; z-index:10; }
+    .nav-brand { font-family:var(--mono); font-size:13px; font-weight:700; color:#fff; text-decoration:none; }
+    .nav-brand span { color:var(--text-dim); }
+    .nav-links { display:flex; gap:16px; list-style:none; font-family:var(--mono); font-size:12px; }
+    .nav-links a { color:var(--text-muted); text-decoration:none; }
+    .nav-links a:hover { color:#fff; }
+    .container { max-width:1200px; margin:0 auto; padding:40px 24px; }
+    .tag { display:inline-block; font-family:var(--mono); font-size:11px; color:var(--green); background:rgba(0,255,102,0.08); border:1px solid rgba(0,255,102,0.3); padding:3px 8px; margin-bottom:12px; }
+    h1 { font-family:var(--mono); font-size:clamp(1.8rem, 3vw, 2.4rem); font-weight:700; margin-bottom:8px; }
+    .desc { color:var(--text-muted); font-size:14px; max-width:700px; margin-bottom:30px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    @media (max-width: 860px) { .grid { grid-template-columns:1fr; } }
+    .panel { background:var(--card-bg); border:1px solid var(--border); padding:24px; }
+    .form-group { margin-bottom:18px; }
+    label { display:block; font-family:var(--mono); font-size:11.5px; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em; }
+    input[type="text"] { width:100%; background:#020202; border:1px solid var(--border); padding:8px 12px; color:#fff; font-family:var(--mono); font-size:12px; outline:none; }
+    input[type="text"]:focus { border-color:var(--green); }
+    .checkbox-group { display:flex; flex-wrap:wrap; gap:14px; margin-top:6px; }
+    .checkbox-group label { text-transform:none; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+    textarea { width:100%; height:360px; background:#020202; border:1px solid var(--border); padding:16px; color:var(--green); font-family:var(--mono); font-size:12px; outline:none; resize:vertical; }
+    .btn { font-family:var(--mono); font-size:11px; font-weight:600; padding:8px 16px; cursor:pointer; background:var(--green); color:#000; border:1px solid var(--green); display:inline-flex; align-items:center; gap:6px; }
+    .btn:hover { filter:brightness(1.1); }
+    .btn-outline { background:transparent; color:#fff; border:1px solid var(--border-lit); }
+    .toast { position:fixed; bottom:24px; right:24px; background:var(--green); color:#000; font-family:var(--mono); font-size:12px; font-weight:700; padding:10px 18px; display:none; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <nav class="nav">
+    <a href="../" class="nav-brand">govindtank<span>/droidtank/tools</span></a>
+    <ul class="nav-links">
+      <li><a href="./">all tools</a></li>
+      <li><a href="../#packages">packages</a></li>
+      <li><a href="../blog/">articles</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <span class="tag">FLUTTER TOOLKIT</span>
+    <h1>Flutter Icon &amp; Splash YAML Builder</h1>
+    <p class="desc">Configure <code>flutter_launcher_icons</code> and <code>flutter_native_splash</code> YAML with Android 12 splash screen, adaptive icons, and dark-mode assets.</p>
+
+    <div class="grid">
+      <div class="panel">
+        <h3 style="font-family:var(--mono); font-size:13px; margin-bottom:18px; color:var(--green);">$ CONFIGURATION PARAMS</h3>
+
+        <div class="form-group">
+          <label>Target Platforms</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="chk-android" checked onchange="generateYaml()"> Android</label>
+            <label><input type="checkbox" id="chk-ios" checked onchange="generateYaml()"> iOS</label>
+            <label><input type="checkbox" id="chk-web" checked onchange="generateYaml()"> Web</label>
+            <label><input type="checkbox" id="chk-macos" checked onchange="generateYaml()"> macOS</label>
+            <label><input type="checkbox" id="chk-windows" checked onchange="generateYaml()"> Windows</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Icon Image Path</label>
+          <input type="text" id="icon-path" value="assets/icon/app_icon.png" oninput="generateYaml()">
+        </div>
+
+        <div class="form-group">
+          <label>Adaptive Icon (Android 8.0+)</label>
+          <input type="text" id="adaptive-bg" value="#050505" placeholder="Background Hex Color or image path" oninput="generateYaml()" style="margin-bottom:6px;">
+          <input type="text" id="adaptive-fg" value="assets/icon/app_icon_foreground.png" placeholder="Foreground image path" oninput="generateYaml()">
+        </div>
+
+        <div class="form-group">
+          <label>Splash Screen Background Color (Light / Dark)</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <input type="text" id="splash-bg" value="#000000" placeholder="Light BG Color (#ffffff)" oninput="generateYaml()">
+            <input type="text" id="splash-bg-dark" value="#000000" placeholder="Dark BG Color (#000000)" oninput="generateYaml()">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Splash Image Path</label>
+          <input type="text" id="splash-img" value="assets/splash/logo.png" oninput="generateYaml()">
+        </div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-family:var(--mono); font-size:13px; color:#fff;">GENERATED YAML</h3>
+          <button class="btn" onclick="copyYaml()">Copy YAML</button>
+        </div>
+        <textarea id="yaml-output" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">YAML Copied!</div>
+
+  <script>
+    function generateYaml() {
+      const android = document.getElementById('chk-android').checked;
+      const ios = document.getElementById('chk-ios').checked;
+      const web = document.getElementById('chk-web').checked;
+      const macos = document.getElementById('chk-macos').checked;
+      const windows = document.getElementById('chk-windows').checked;
+
+      const iconPath = document.getElementById('icon-path').value;
+      const adaptiveBg = document.getElementById('adaptive-bg').value;
+      const adaptiveFg = document.getElementById('adaptive-fg').value;
+      const splashBg = document.getElementById('splash-bg').value;
+      const splashBgDark = document.getElementById('splash-bg-dark').value;
+      const splashImg = document.getElementById('splash-img').value;
+
+      const yaml = `# Generated by DroidTank Dev Tools (https://droidtank.is-a.dev/tools)
+# Run:
+#   dart run flutter_launcher_icons
+#   dart run flutter_native_splash:create
+
+flutter_launcher_icons:
+  android: ${android}
+  ios: ${ios}
+  image_path: "${iconPath}"
+  min_sdk_android: 21
+  adaptive_icon_background: "${adaptiveBg}"
+  adaptive_icon_foreground: "${adaptiveFg}"
+  web:
+    generate: ${web}
+    image_path: "${iconPath}"
+  macos:
+    generate: ${macos}
+    image_path: "${iconPath}"
+  windows:
+    generate: ${windows}
+    image_path: "${iconPath}"
+
+flutter_native_splash:
+  color: "${splashBg}"
+  color_dark: "${splashBgDark}"
+  image: "${splashImg}"
+  image_dark: "${splashImg}"
+  android_12:
+    image: "${splashImg}"
+    icon_background_color: "${splashBg}"
+    image_dark: "${splashImg}"
+    icon_background_color_dark: "${splashBgDark}"
+  android: ${android}
+  ios: ${ios}
+  web: ${web}`;
+
+      document.getElementById('yaml-output').value = yaml;
+    }
+
+    function copyYaml() {
+      const txt = document.getElementById('yaml-output').value;
+      navigator.clipboard.writeText(txt).then(() => {
+        const t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2000);
+      });
+    }
+
+    window.onload = generateYaml;
+  </script>
+</body>
+</html>

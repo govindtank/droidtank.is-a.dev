@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android Adaptive Icon Safe-Zone Tester | DroidTank Dev Tools</title>
+  <meta name="description" content="Test Android Adaptive App Icons against Squircle, Circle, Rounded Square, and Teardrop masks with foreground/background safe-zone visualization.">
+  <link rel="canonical" href="https://droidtank.is-a.dev/tools/adaptive-icon-tester.html">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <script data-goatcounter="https://govindtank.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+    :root {
+      --bg: #000000;
+      --card-bg: #050505;
+      --border: #262626;
+      --border-lit: #404040;
+      --text: #ffffff;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --green: #00ff66;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; min-height:100vh; }
+    .bg-grid { position:fixed; inset:0; background-image:linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); background-size:40px 40px; z-index:-1; pointer-events:none; }
+    .nav { border-bottom:1px solid var(--border); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; background:#000; position:sticky; top:0; z-index:10; }
+    .nav-brand { font-family:var(--mono); font-size:13px; font-weight:700; color:#fff; text-decoration:none; }
+    .nav-brand span { color:var(--text-dim); }
+    .nav-links { display:flex; gap:16px; list-style:none; font-family:var(--mono); font-size:12px; }
+    .nav-links a { color:var(--text-muted); text-decoration:none; }
+    .nav-links a:hover { color:#fff; }
+    .container { max-width:1200px; margin:0 auto; padding:40px 24px; }
+    .tag { display:inline-block; font-family:var(--mono); font-size:11px; color:var(--green); background:rgba(0,255,102,0.08); border:1px solid rgba(0,255,102,0.3); padding:3px 8px; margin-bottom:12px; }
+    h1 { font-family:var(--mono); font-size:clamp(1.8rem, 3vw, 2.4rem); font-weight:700; margin-bottom:8px; }
+    .desc { color:var(--text-muted); font-size:14px; max-width:700px; margin-bottom:30px; }
+    .grid { display:grid; grid-template-columns:360px 1fr; gap:32px; }
+    @media (max-width: 860px) { .grid { grid-template-columns:1fr; } }
+    .control-panel { background:var(--card-bg); border:1px solid var(--border); padding:24px; }
+    .form-group { margin-bottom:20px; }
+    label { display:block; font-family:var(--mono); font-size:11.5px; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em; }
+    .btn { font-family:var(--mono); font-size:11px; font-weight:600; padding:8px 16px; cursor:pointer; background:var(--green); color:#000; border:1px solid var(--green); display:inline-flex; align-items:center; gap:6px; }
+    .btn:hover { filter:brightness(1.1); }
+    .btn-outline { background:transparent; color:#fff; border:1px solid var(--border-lit); }
+    .btn-outline:hover { border-color:#fff; }
+    .preview-canvas-card { background:var(--card-bg); border:1px solid var(--border); padding:24px; display:flex; flex-direction:column; align-items:center; }
+    .masks-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:20px; width:100%; margin-top:24px; }
+    .mask-item { display:flex; flex-direction:column; align-items:center; gap:8px; background:#000; padding:16px; border:1px solid var(--border); }
+    .mask-item span { font-family:var(--mono); font-size:11px; color:var(--text-muted); }
+    .icon-preview { width:96px; height:96px; position:relative; overflow:hidden; background:#111; display:flex; align-items:center; justify-content:center; }
+    .mask-circle { border-radius:50% !important; }
+    .mask-squircle { border-radius:24% !important; }
+    .mask-rounded { border-radius:14% !important; }
+    .mask-teardrop { border-radius:50% 50% 12% 50% !important; }
+    .safezone-guide { position:absolute; width:66%; height:66%; border:1.5px dashed #ff0055; border-radius:50% !important; pointer-events:none; }
+    .icon-layer-fg { width:100%; height:100%; object-fit:contain; position:absolute; inset:0; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <nav class="nav">
+    <a href="../" class="nav-brand">govindtank<span>/droidtank/tools</span></a>
+    <ul class="nav-links">
+      <li><a href="./">all tools</a></li>
+      <li><a href="../#packages">packages</a></li>
+      <li><a href="../blog/">articles</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <span class="tag">ANDROID SYSTEM DESIGN TOOL</span>
+    <h1>Adaptive Icon Safe-Zone Tester</h1>
+    <p class="desc">Verify that your Android app icon foreground graphics stay strictly inside the 66dp inner safe circle across Google Pixel, Samsung OneUI, and OEM launchers.</p>
+
+    <div class="grid">
+      <div class="control-panel">
+        <div class="form-group">
+          <label>Foreground Graphic (Icon / Logo)</label>
+          <input type="file" id="fg-file" accept="image/*" style="display:none;" onchange="handleFg(event)">
+          <button class="btn" style="width:100%; justify-content:center;" onclick="document.getElementById('fg-file').click()">Upload Foreground PNG/SVG</button>
+        </div>
+
+        <div class="form-group">
+          <label>Background Color</label>
+          <input type="color" id="bg-color" value="#050505" style="width:100%; height:40px; background:#000; border:1px solid var(--border); cursor:pointer;" oninput="updateBg(this.value)">
+        </div>
+
+        <div class="form-group">
+          <label>Foreground Scale: <span id="scale-val" style="color:var(--green)">100%</span></label>
+          <input type="range" id="scale-range" min="40" max="140" value="100" style="width:100%; accent-color:var(--green);" oninput="updateScale(this.value)">
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="toggle-guides" checked onchange="toggleGuides(this.checked)"> Show 66dp Safe Zone Circle
+          </label>
+        </div>
+
+        <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
+          <div style="font-family:var(--mono); font-size:11px; color:var(--text-muted); line-height:1.5;">
+            <strong>Android Spec:</strong> Full asset is 108dp x 108dp. Inner 66dp circle is guaranteed visible; outer 18dp on each side is masked for parallax &amp; shape shifting.
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-canvas-card">
+        <h3 style="font-family:var(--mono); font-size:14px; margin-bottom:16px;">LIVE OEM LAUNCHER MASKS</h3>
+        <div class="masks-grid">
+          <div class="mask-item">
+            <div class="icon-preview mask-circle" id="preview-1">
+              <div class="safezone-guide"></div>
+              <img id="fg-img-1" class="icon-layer-fg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='70' text-anchor='middle' x='50'>🤖</text></svg>">
+            </div>
+            <span>Circle (Pixel / AOSP)</span>
+          </div>
+
+          <div class="mask-item">
+            <div class="icon-preview mask-squircle" id="preview-2">
+              <div class="safezone-guide"></div>
+              <img id="fg-img-2" class="icon-layer-fg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='70' text-anchor='middle' x='50'>🤖</text></svg>">
+            </div>
+            <span>Squircle (Samsung OneUI)</span>
+          </div>
+
+          <div class="mask-item">
+            <div class="icon-preview mask-rounded" id="preview-3">
+              <div class="safezone-guide"></div>
+              <img id="fg-img-3" class="icon-layer-fg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='70' text-anchor='middle' x='50'>🤖</text></svg>">
+            </div>
+            <span>Rounded Square (Xiaomi)</span>
+          </div>
+
+          <div class="mask-item">
+            <div class="icon-preview mask-teardrop" id="preview-4">
+              <div class="safezone-guide"></div>
+              <img id="fg-img-4" class="icon-layer-fg" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='70' text-anchor='middle' x='50'>🤖</text></svg>">
+            </div>
+            <span>Teardrop (ColorOS)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleFg(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        for (let i = 1; i <= 4; i++) {
+          document.getElementById('fg-img-' + i).src = evt.target.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateBg(color) {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById('preview-' + i).style.backgroundColor = color;
+      }
+    }
+
+    function updateScale(val) {
+      document.getElementById('scale-val').textContent = val + '%';
+      const scale = val / 100;
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById('fg-img-' + i).style.transform = `scale(${scale})`;
+      }
+    }
+
+    function toggleGuides(show) {
+      const guides = document.querySelectorAll('.safezone-guide');
+      guides.forEach(g => g.style.display = show ? 'block' : 'none');
+    }
+  </script>
+</body>
+</html>
