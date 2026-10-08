@@ -605,9 +605,9 @@
 
             <div style="display:flex; gap:10px; flex-wrap:wrap;" class="reveal delay-3">
               <a href="#packages" class="btn btn-primary">explore 20 packages</a>
-              <a href="#packages" onclick="setFilter('demos')" class="btn btn-green">view 6 live demos ↗</a>
+              <a href="#tools" class="btn btn-green">⚡ online dev tools (4)</a>
+              <a href="tools/playground.html" class="btn btn-muted">live playgrounds ↗</a>
               <a href="blog/" class="btn btn-muted">read 120 articles →</a>
-              <a href="https://github.com/govindtank" target="_blank" rel="noopener" class="btn btn-muted">github profile ↗</a>
             </div>
           </div>
 
@@ -668,6 +668,62 @@
             <div class="metric-val" id="hero-visitor-count" style="color:#ffffff;">--</div>
             <div class="metric-lbl">site visits</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVELOPER UTILITIES & TOOLS SHOWCASE SECTION -->
+    <section id="tools" style="border-top:1px solid var(--border); padding-top:60px; padding-bottom:60px; background:#030303;">
+      <div class="wrapper">
+        <div class="cli-tag reveal"><span>$</span> droidtank tools --online --interactive</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px; flex-wrap:wrap; gap:12px;" class="reveal delay-1">
+          <div>
+            <h2 class="section-title" style="margin-bottom:4px;">online developer utilities &amp; playgrounds</h2>
+            <p style="font-size:13.5px; color:var(--text-muted);">Free browser-based dev tools &amp; live package visualizers. 100% client-side, zero latency.</p>
+          </div>
+          <a href="tools/" class="btn btn-green">launch all tools suite →</a>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px;" class="reveal delay-2">
+          <!-- Tool 1: SVG to Vector -->
+          <a href="tools/svg-to-vector.html" style="background:var(--card-bg); border:1px solid var(--border); padding:20px; text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div>
+              <div style="font-size:1.8rem; margin-bottom:10px;">⚡</div>
+              <div style="font-family:var(--mono); font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">SVG to Vector &amp; Compose</div>
+              <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">Convert SVG XML to Android Vector Drawable &amp; Compose Kotlin <code>ImageVector</code>.</div>
+            </div>
+            <div style="font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600; margin-top:14px;">Launch Tool →</div>
+          </a>
+
+          <!-- Tool 2: Adaptive Icon Tester -->
+          <a href="tools/adaptive-icon-tester.html" style="background:var(--card-bg); border:1px solid var(--border); padding:20px; text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div>
+              <div style="font-size:1.8rem; margin-bottom:10px;">🎯</div>
+              <div style="font-family:var(--mono); font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">Adaptive Icon Safe-Zone</div>
+              <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">Test app icons against Pixel, Samsung OneUI, and Xiaomi launcher masks with 66dp guides.</div>
+            </div>
+            <div style="font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600; margin-top:14px;">Launch Tool →</div>
+          </a>
+
+          <!-- Tool 3: Flutter YAML Builder -->
+          <a href="tools/flutter-config-builder.html" style="background:var(--card-bg); border:1px solid var(--border); padding:20px; text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div>
+              <div style="font-size:1.8rem; margin-bottom:10px;">⚙️</div>
+              <div style="font-family:var(--mono); font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">Flutter Icon &amp; Splash Builder</div>
+              <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">Generate <code>flutter_launcher_icons</code> &amp; splash screen YAML with Android 12 support.</div>
+            </div>
+            <div style="font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600; margin-top:14px;">Launch Tool →</div>
+          </a>
+
+          <!-- Tool 4: Live Playgrounds -->
+          <a href="tools/playground.html" style="background:var(--card-bg); border:1px solid var(--border); padding:20px; text-decoration:none; color:inherit; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div>
+              <div style="font-size:1.8rem; margin-bottom:10px;">🎮</div>
+              <div style="font-family:var(--mono); font-size:14px; font-weight:700; color:#fff; margin-bottom:6px;">Package Playgrounds</div>
+              <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">Interactive 60 FPS simulations for <code>spatial_card</code> 3D tilt, <code>waveform_pro</code> DSP, and more.</div>
+            </div>
+            <div style="font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600; margin-top:14px;">Launch Tool →</div>
+          </a>
         </div>
       </div>
     </section>
