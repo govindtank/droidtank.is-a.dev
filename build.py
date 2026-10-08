@@ -1524,7 +1524,36 @@ def build():
     with open('/Users/govind/workspace/droidtank.is-a.dev/blog/post.html', 'w') as f:
         f.write(blog_post_html)
 
-    print("Complete site rebuilt with 100% pure real telemetry.")
+    # Generate robots.txt
+    robots_txt = """User-agent: *
+Allow: /
+
+Sitemap: https://droidtank.is-a.dev/sitemap.xml
+"""
+    with open('/Users/govind/workspace/droidtank.is-a.dev/robots.txt', 'w') as f:
+        f.write(robots_txt)
+
+    # Generate sitemap.xml
+    sitemap_entries = [
+        "  <url>\n    <loc>https://droidtank.is-a.dev/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>",
+        "  <url>\n    <loc>https://droidtank.is-a.dev/blog/</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>"
+    ]
+    for b in blogs:
+        slug = b.get('slug')
+        if slug:
+            sitemap_entries.append(
+                f"  <url>\n    <loc>https://droidtank.is-a.dev/blog/post.html?slug={slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>"
+            )
+
+    sitemap_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{chr(10).join(sitemap_entries)}
+</urlset>
+"""
+    with open('/Users/govind/workspace/droidtank.is-a.dev/sitemap.xml', 'w') as f:
+        f.write(sitemap_xml)
+
+    print(f"Complete site rebuilt with {len(blogs)} blog sitemap entries, robots.txt, and real telemetry.")
 
 if __name__ == '__main__':
     build()
